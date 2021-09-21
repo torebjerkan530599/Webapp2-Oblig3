@@ -4,20 +4,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blog.Models;
 using Blog.Models.Entities;
 
 namespace Blog.Controllers
 {
     public class BlogController : Controller
     {
+        private IBlogRepository blogRepository;
+
+        public BlogController(IBlogRepository _blogRepository)
+        {
+            blogRepository = _blogRepository;
+        }
+
         // GET: BlogController
         public ActionResult Index()
         {
-            List<Models.Entities.Blog> blogs = new()
-            {
-                new Models.Entities.Blog {BlogId = 1, Name = "First in line", ClosedForPosts = false},
-                new Models.Entities.Blog {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
-            };
+         
+            var blogs = blogRepository.GetAllBlogs();//.ToList(); ;
             return View(blogs);
         }
 
@@ -27,21 +32,33 @@ namespace Blog.Controllers
             return View();
         }
 
-        // GET: BlogController/Create
+        // GET: Blog/Create
+        //[Authorize]
+        [HttpGet]
         public ActionResult Create()
         {
+            //var newBlog = blogRepository.GetBlogEditViewModel();
+            //return View(newBlog);
             return View();
         }
 
         // POST: BlogController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Models.Entities.Blog newBlog)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    blogRepository.Save(newBlog);
+                    //TempData["message"] = string.Format("{0} har blitt opprettet", newBlog.Name);
+                    return RedirectToAction(nameof(Index));
+                }
+                
+                return View(newBlog);
             }
+
             catch
             {
                 return View();
