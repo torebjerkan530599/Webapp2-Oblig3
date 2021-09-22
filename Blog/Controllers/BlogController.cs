@@ -45,7 +45,7 @@ namespace Blog.Controllers
         // POST: BlogController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Models.Entities.Blog newBlog)
+        public ActionResult Create(Models.Entities.Blogg newBlog)
         {
             try
             {

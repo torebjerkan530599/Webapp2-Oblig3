@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Blog.Models.Entities
 {
-    public class Blog
+    public class Blogg
     {
         [Key]
         public int BlogId { get; set; }

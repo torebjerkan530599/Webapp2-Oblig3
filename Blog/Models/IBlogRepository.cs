@@ -7,8 +7,8 @@ namespace Blog.Models
 {
     public interface IBlogRepository
     {
-        IEnumerable<Entities.Blog> GetAllBlogs();
+        IEnumerable<Entities.Blogg> GetAllBlogs();
 
-        void Save(Entities.Blog blog);
+        void Save(Entities.Blogg blog);
     }
 }

@@ -29,9 +29,9 @@ namespace BlogUnitTest
         [TestMethod]
         public void IndexReturnsAllProducts()
         {
-            List<Blog.Models.Entities.Blog> blog = new List<Blog.Models.Entities.Blog>{
-                new Blog.Models.Entities.Blog {BlogId = 1, Name = "First in line", ClosedForPosts = false},
-                new Blog.Models.Entities.Blog {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
+            List<Blog.Models.Entities.Blogg> blog = new List<Blog.Models.Entities.Blogg>{
+                new Blog.Models.Entities.Blogg {BlogId = 1, Name = "First in line", ClosedForPosts = false},
+                new Blog.Models.Entities.Blogg {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
             };
 
             // Arrange
@@ -40,9 +40,9 @@ namespace BlogUnitTest
             // Act
             var result = controller.Index() as ViewResult;
             // Assert
-            CollectionAssert.AllItemsAreInstancesOfType((ICollection)result.ViewData.Model, typeof(Blog.Models.Entities.Blog));
+            CollectionAssert.AllItemsAreInstancesOfType((ICollection)result.ViewData.Model, typeof(Blog.Models.Entities.Blogg));
             Assert.IsNotNull(result, "View Result is null");
-            var products = result.ViewData.Model as List<Blog.Models.Entities.Blog>;
+            var products = result.ViewData.Model as List<Blog.Models.Entities.Blogg>;
             //Assert.AreEqual(5, products.Count, "Got wrong number of products");
         }
 
@@ -50,10 +50,10 @@ namespace BlogUnitTest
         public void SaveIsCalledWhenProductIsCreated()
         { // Arrange
             _repository = new Mock<IBlogRepository>();
-            _repository.Setup(x => x.Save(It.IsAny<Blog.Models.Entities.Blog>()));
+            _repository.Setup(x => x.Save(It.IsAny<Blog.Models.Entities.Blogg>()));
             var controller = new BlogController(_repository.Object);
             // Act
-            var result = controller.Create(new Blog.Models.Entities.Blog());
+            var result = controller.Create(new Blog.Models.Entities.Blogg());
             // Assert
             _repository.VerifyAll();
             // test på at save er kalt et bestemt antall ganger
