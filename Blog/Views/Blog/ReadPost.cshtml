@@ -1,0 +1,67 @@
+﻿@model Blog.Models.ViewModels.PostViewModel
+
+@{
+    ViewData["Title"] = "Innlegg";
+}
+
+<h1>Innlegg</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+        @*<dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Modified)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Modified)
+        </dd>*@
+    </dl>
+        <table class="table table-hover">
+            <tr>
+                @*<th>@Html.DisplayNameFor(model => model.Content) </th>
+        <th>@Html.DisplayNameFor(model => model.Content) </th>*@
+
+                <th>Kommentar</th>
+                <th>Eier</th>
+                <th>Opprettet</th>
+            </tr>
+
+
+            @foreach (var item in Model.Comments)
+            {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Text)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Owner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+        </tr>
+            }
+
+        </table>
+
+        @*<dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Blog)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Blog.Name)
+        </dd>*@
+    
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.PostId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

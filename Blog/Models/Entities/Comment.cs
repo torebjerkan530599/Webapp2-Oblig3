@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models.Entities
 {
@@ -29,5 +30,7 @@ namespace Blog.Models.Entities
         [Display(Name = "Blogg")]
         public int PostId { get; set; }
         public virtual Post Post{ get; set; }
+
+        public virtual IdentityUser Owner { get; set; }
     }
 }

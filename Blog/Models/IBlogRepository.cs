@@ -23,5 +23,7 @@ namespace Blog.Models
         CreateBloggViewModel GetCreateBlogViewModel(int? id);
 
         Task SaveBlog(Blogg blog,  ClaimsPrincipal user); 
+
+        PostViewModel GetPostViewModel(int? id);
     }
 }

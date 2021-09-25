@@ -13,18 +13,18 @@ namespace Blog.Controllers
 {
     public class BlogController : Controller
     {
-        private IBlogRepository blogRepository;
+        private readonly IBlogRepository _blogRepository;
 
-        public BlogController(IBlogRepository _blogRepository)
+        public BlogController(IBlogRepository blogRepository)
         {
-            blogRepository = _blogRepository;
+            _blogRepository = blogRepository;
         }
 
         // GET: BlogController
         public ActionResult Index()
         {
          
-            var blogs = blogRepository.GetAllBlogs();//.ToList(); ;
+            var blogs = _blogRepository.GetAllBlogs();//.ToList(); ;
             return View(blogs);
         }
 
@@ -32,8 +32,8 @@ namespace Blog.Controllers
         public ActionResult ReadBlog(int id)
         {
 
-            var blog = blogRepository.GetBlog(id);
-            var posts = blogRepository.GetAllPosts(id);
+            var blog = _blogRepository.GetBlog(id);
+            var posts = _blogRepository.GetAllPosts(id);
 
             if (!ModelState.IsValid) return View();
 
@@ -46,6 +46,12 @@ namespace Blog.Controllers
             };
             
             return View(bv);
+        }
+
+        public ActionResult ReadPost(int id)
+        {
+            var postViewModel = _blogRepository.GetPostViewModel(id);
+            return View(postViewModel);
         }
 
         // GET: BlogController/Details/5
@@ -80,7 +86,7 @@ namespace Blog.Controllers
                     ClosedForPosts = newBlog.ClosedForPosts
 
                 };
-                    blogRepository.SaveBlog(blog,User).Wait();
+                    _blogRepository.SaveBlog(blog,User).Wait();
                     TempData["message"] = $"{blog.Name} har blitt opprettet";
                     return RedirectToAction(nameof(Index));
             }

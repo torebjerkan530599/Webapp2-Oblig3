@@ -57,6 +57,16 @@ namespace Blog.Models
 
         }
 
+        public IEnumerable<Comment> GetAllComments(int? postIdToGet)
+        {
+            IEnumerable<Comment> comments = _db.Comments;
+            var commentsQuery = from comment in comments
+                where comment.PostId == postIdToGet
+                orderby comment.Created descending 
+                select comment;
+            return commentsQuery;
+        }
+
         public async Task SaveBlog(Blogg blog,  ClaimsPrincipal user)
         {
             var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);
@@ -89,5 +99,30 @@ namespace Blog.Models
             return p;
         }
 
+        public PostViewModel GetPostViewModel(int? id)
+        {
+            PostViewModel p;
+            if (id == null)
+            {
+                p = new PostViewModel();
+            }
+            else
+            {
+                p = (_db.Posts.Include(o=>o.Comments)
+                    .Where(o => o.PostId == id)
+                    .Select(o => new PostViewModel() 
+                        {
+                            PostId = o.PostId,
+                            Content = o.Content,
+                            Created = o.Created,
+                            Modified = o.Modified,
+                            BlogId = o.BlogId,
+                            Comments = GetAllComments(id).ToList(),
+                            Owner = o.Owner
+                        }
+                    ).FirstOrDefault());
+            }
+            return p;
+        }
     }
 }
