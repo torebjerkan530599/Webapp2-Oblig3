@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blog.Models;
 using Blog.Models.Entities;
+using Blog.Models.ViewModels;
 
 namespace Blog.Controllers
 {
@@ -26,37 +27,64 @@ namespace Blog.Controllers
             return View(blogs);
         }
 
+        [HttpGet]
+        public ActionResult ReadBlog(int id)
+        {
+
+            var blog = blogRepository.GetBlog(id);
+            var posts = blogRepository.GetAllPosts(id);
+
+            if (!ModelState.IsValid) return View();
+
+            BloggViewModel bv = new BloggViewModel()
+            {
+                BlogId = id,
+                Name = blog.Name,
+                Title = (from p in posts where p.BlogId==id select p.Title).ToString(),
+                Posts = posts.ToList()
+            };
+            
+            return View(bv);
+        }
+
         // GET: BlogController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Blog/Create
+        // GET: Blogg/Create
         //[Authorize]
         [HttpGet]
         public ActionResult Create()
         {
-            //var newBlog = blogRepository.GetBlogEditViewModel();
+            var newBlog = blogRepository.GetCreateBlogViewModel();
             //return View(newBlog);
-            return View();
+            return View(newBlog);
         }
 
-        // POST: BlogController/Create
+        // POST: Blog/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Models.Entities.Blogg newBlog)
+        public ActionResult Create([Bind("Name")]Blogg newBlog)
         {
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid) return View();
+                var p = new Blogg()
                 {
+                    Name = newBlog.Name,
+                    Created = DateTime.Now
+                    
+                    //Description = newBlog.Description,
+                    
+                };
+
+
                     blogRepository.Save(newBlog);
                     //TempData["message"] = string.Format("{0} har blitt opprettet", newBlog.Name);
                     return RedirectToAction(nameof(Index));
-                }
-                
-                return View(newBlog);
+                    
             }
 
             catch

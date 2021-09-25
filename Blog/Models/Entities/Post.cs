@@ -31,8 +31,6 @@ namespace Blog.Models.Entities
         public DateTime Modified { get; set; }
         
         //Navigational Properties
-        //[Required]
-        //[Display(Name = "Blogg")]
         public int BlogId { get; set; }
         public virtual Blogg Blog{ get; set; }
         public virtual List<Comment> Comments { get; set; }

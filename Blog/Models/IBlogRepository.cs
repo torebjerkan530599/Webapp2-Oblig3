@@ -2,13 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blog.Models.Entities;
+using Blog.Models.ViewModels;
 
 namespace Blog.Models
 {
     public interface IBlogRepository
     {
-        IEnumerable<Entities.Blogg> GetAllBlogs();
+        IEnumerable<Blogg> GetAllBlogs();
 
-        void Save(Entities.Blogg blog);
+        Blogg GetBlog(int blogIdToGet);
+
+        //BloggViewModel GetAllPosts(int? blogId);
+
+        IEnumerable<Post> GetAllPosts(int blogId);
+
+        CreateBloggViewModel GetCreateBlogViewModel();
+
+        CreateBloggViewModel GetCreateBlogViewModel(int? id);
+
+        void Save(Blogg blog);
     }
 }

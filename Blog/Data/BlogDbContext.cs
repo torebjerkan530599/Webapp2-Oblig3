@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Blog.Models.Entities;
+using Blog.Models.ViewModels;
 
 namespace Blog.Data
 {
@@ -20,16 +21,22 @@ namespace Blog.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Blogg>().ToTable("Blogg");
 
-            modelBuilder.Entity<Post>()
+            //fluent API...is this necessary when I also have nav. properties configured in entities?
+            modelBuilder.Entity<Blogg>().ToTable("Blogg")
+                .HasMany(p => p.Posts);
+
+            modelBuilder.Entity<Post>().ToTable("Post")
                 .HasOne(p => p.Blog)
-                .WithMany(b => b.Posts);
+                .WithMany(b=>b.Posts)
+                .HasForeignKey(k=>k.BlogId);
 
-            modelBuilder.Entity<Comment>()
+            modelBuilder.Entity<Comment>().ToTable("Comment")
                 .HasOne(p => p.Post)
-                .WithMany(c => c.Comments);
+                .WithMany(c => c.Comments)
+                .HasForeignKey(k => k.PostId);
 
+            modelBuilder.Entity<BloggViewModel>().HasNoKey();
 
             modelBuilder.Entity<Blogg>()
                 .HasData(new Blogg{BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor"});
@@ -41,7 +48,7 @@ namespace Blog.Data
                 .HasData(new Blogg{BlogId = 4, ClosedForPosts = false, Created = DateTime.Now, Name = "Mauris mi velit"});
 
             modelBuilder.Entity<Post>()
-                .HasData(new Post{PostId = 1, BlogId = 1, Title = "To be or not to be",Created = DateTime.Now, 
+                .HasData(new Post{PostId = 1, BlogId = 1, Title = "First post",Created = DateTime.Now, 
                      Content = "Etiam vulputate massa id ante malesuada " +
                                "elementum. Nulla tellus purus, hendrerit rhoncus " +
                                "justo quis, " +
@@ -56,7 +63,7 @@ namespace Blog.Data
                 .HasData(new Comment{CommentId = 2, PostId = 1, Created = DateTime.Now, Text = "Yes, of course it is"});
 
             modelBuilder.Entity<Post>()
-                .HasData(new Post{PostId = 2, BlogId = 2, Title = "To be or not to be",Created = DateTime.Now, 
+                .HasData(new Post{PostId = 2, BlogId = 2, Title = "Second post",Created = DateTime.Now, 
                     Content = "Praesent non massa a nisl euismod efficitur. Ut laoreet nisi " +
                               "vel eleifend laoreet. Curabitur vel orci semper, auctor erat vel, " +
                               "dapibus nunc. Integer eget tortor nunc. Fusce ac euismod nibh. " +
@@ -67,6 +74,10 @@ namespace Blog.Data
                 .HasData(new Comment{CommentId = 3, PostId = 2, Created = DateTime.Now, Text = "I really like the blog, but Quisque?"});
 
         }
+        
+
+
+        public DbSet<Blog.Models.ViewModels.BloggViewModel> BloggViewModel { get; set; }
     }
 
 

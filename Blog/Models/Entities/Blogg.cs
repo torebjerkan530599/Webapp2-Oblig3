@@ -17,7 +17,7 @@ namespace Blog.Models.Entities
         [Column("Name")]
         [Display(Name = "Blogg")]
         public string Name { get; set; }
-        public bool ClosedForPosts { get; set; }
+        public bool? ClosedForPosts { get; set; }
 
         //Datoer og tid:
         [Column(TypeName = "datetime2")]
@@ -28,6 +28,10 @@ namespace Blog.Models.Entities
 
 
         //Navigational Properties
+        //public int PostId { get; set; }
+
+        //public virtual Post Post { get; set; }
+        
         public virtual List<Post> Posts { get; set; }
         //foreign key: FK_dbo.Blog_dbo.AspNetUsers_owner_Id (id)
         //[JsonIgnore]
