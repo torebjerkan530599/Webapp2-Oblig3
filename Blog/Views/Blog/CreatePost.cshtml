@@ -1,0 +1,49 @@
+﻿@model Blog.Models.Entities.Post
+
+@{
+    ViewData["Title"] = "CreatePost";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style type="text/css">    .form-control-textbox {
+        text-align: start;
+        width: 100%;
+        height: 150px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        resize: none;
+    }</style>
+
+<h1>Nytt innlegg</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreatePost">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">Tittel</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label">Innhold</label>
+                <input asp-for="Content" class="form-control-textbox" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+    @*<p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.PostId })</p>*@
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

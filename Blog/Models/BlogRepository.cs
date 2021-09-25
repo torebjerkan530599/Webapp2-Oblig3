@@ -35,11 +35,11 @@ namespace Blog.Models
         }
 
 
-        public Blogg GetBlog(int blogIdToGet)
+        public Blogg GetBlog(int blogId)
         {
             IEnumerable<Blogg> blogs = _db.Blogs;
             var singleBlogQuery = from blog in blogs
-                where blog.BlogId == blogIdToGet
+                where blog.BlogId == blogId
                 select blog;
             return singleBlogQuery.FirstOrDefault();
         }
@@ -72,6 +72,22 @@ namespace Blog.Models
             var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);
             blog.Owner = currentUser;
             _db.Blogs.Add(blog);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task SavePost(Post post, ClaimsPrincipal user)
+        {
+            var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);
+            post.Owner = currentUser;
+            _db.Posts.Add(post);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task SaveComment(Comment comment, ClaimsPrincipal user)
+        {
+            var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);
+            comment.Owner = currentUser;
+            _db.Comments.Add(comment);
             await _db.SaveChangesAsync();
         }
 
@@ -123,6 +139,23 @@ namespace Blog.Models
                     ).FirstOrDefault());
             }
             return p;
+        }
+
+  
+
+        //marks the blog as either closed or open in db
+        public void SetBlogStatus(Blogg blog, bool status)
+        {
+            blog.ClosedForPosts = status;
+            var entry = _db.Entry(blog);
+            entry.Property(e => e.ClosedForPosts).IsModified = true;
+            _db.SaveChanges();
+        }
+
+        public bool? IsActive(Blogg blog)
+        {
+            return blog.ClosedForPosts;
+
         }
     }
 }

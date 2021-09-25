@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Blog.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models.ViewModels
 {
@@ -18,6 +19,8 @@ namespace Blog.Models.ViewModels
         //public string Description { get; set; } not a requirement
 
         public DateTime Created { get; internal set; }
+
+        public IdentityUser Owner { get; set;}
 
 
 

@@ -14,8 +14,6 @@ namespace Blog.Models
 
         Blogg GetBlog(int blogIdToGet);
 
-        //BloggViewModel GetAllPosts(int? blogId);
-
         IEnumerable<Post> GetAllPosts(int blogId);
 
         //CreateBloggViewModel GetCreateBlogViewModel();
@@ -24,6 +22,15 @@ namespace Blog.Models
 
         Task SaveBlog(Blogg blog,  ClaimsPrincipal user); 
 
+        Task SavePost(Post post,  ClaimsPrincipal user); 
+
+        Task SaveComment(Comment newComment, ClaimsPrincipal user);
+
         PostViewModel GetPostViewModel(int? id);
+
+        public void SetBlogStatus(Blogg blog, bool status);
+
+        public bool? IsActive(Blogg blog);
+
     }
 }

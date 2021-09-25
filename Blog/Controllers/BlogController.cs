@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blog.Authorization;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
@@ -14,10 +15,12 @@ namespace Blog.Controllers
     public class BlogController : Controller
     {
         private readonly IBlogRepository _blogRepository;
+        IAuthorizationService _authorizationService;
 
-        public BlogController(IBlogRepository blogRepository)
+        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService = null)
         {
             _blogRepository = blogRepository;
+            _authorizationService = authorizationService;
         }
 
         // GET: BlogController
@@ -54,11 +57,6 @@ namespace Blog.Controllers
             return View(postViewModel);
         }
 
-        // GET: BlogController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
         // GET: Blogg/Create
         [Authorize]
@@ -74,7 +72,7 @@ namespace Blog.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind("Name, ClosedForPosts, Created")]CreateBloggViewModel newBlog) //Bind owner også senere.
+        public ActionResult Create([Bind("Name, ClosedForPosts, Created, Owner")]CreateBloggViewModel newBlog) //Bind owner også senere.
         {
             try
             {
@@ -83,7 +81,8 @@ namespace Blog.Controllers
                 {
                     Name = newBlog.Name,
                     Created = newBlog.Created,
-                    ClosedForPosts = newBlog.ClosedForPosts
+                    ClosedForPosts = newBlog.ClosedForPosts,
+                    Owner = newBlog.Owner
 
                 };
                     _blogRepository.SaveBlog(blog,User).Wait();
@@ -96,19 +95,25 @@ namespace Blog.Controllers
             }
         }
 
-        // GET: BlogController/Edit/5
-        public ActionResult Edit(int id)
+        [Authorize]
+        [HttpGet]
+        public ActionResult CreatePost()
         {
             return View();
         }
 
-        // POST: BlogController/Edit/5
+        // POST: Blog/Create
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult CreatePost(/*[Bind("Title, Content, Created, Modified, NumberOfComments")]*/Post newPost) //trenger å lagre Blogg tilhørighet, må jeg sende med id her?
         {
             try
             {
+                if (!ModelState.IsValid) return View();
+                
+                _blogRepository.SavePost(newPost,User).Wait();
+                TempData["message"] = $"{newPost.Title} har blitt opprettet";
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -116,6 +121,97 @@ namespace Blog.Controllers
                 return View();
             }
         }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult CreateComment()
+        {
+            //var newBlog = new CreateBloggViewModel();//blogRepository.GetCreateBlogViewModel();
+            //return View(newBlog);
+            return View();
+        }
+
+        // POST: Blog/Create
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateComment(/*[Bind(...)]*/Comment newComment) //add Bind later
+        {
+            try
+            {
+                if (!ModelState.IsValid) return View();
+                
+                _blogRepository.SaveComment(newComment,User).Wait();
+                TempData["message"] = $"{newComment.Text} har blitt opprettet";
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Contact/Edit/#
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+         
+            /*Post ppst = (from c in _db.Contact
+                where c.ContactId == id
+                select c).FirstOrDefault();*/
+
+            var postEditViewModel = _blogRepository.GetBlog(id);//GetPostEditViewModel(id);
+
+                
+            // requires using ContactManager.Authorization;
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User, postEditViewModel, BlogOperations.Update);
+            if (!isAuthorized.Succeeded)
+            {
+                return new ChallengeResult();
+            }
+            //return RedirectToAction(nameof(Index));
+
+            return View(postEditViewModel);
+        }
+
+
+        // POST: Contact/Edit/#
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPost(/*[Bind(...")]*/int? id, Post post)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            
+            // requires using ContactManager.Authorization;
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User, post, BlogOperations.Update);
+            if (!isAuthorized.Succeeded)
+            {
+                return View("Ingentilgang");
+            }
+            try 
+            {
+                if (ModelState.IsValid)
+                {
+                    _blogRepository.SavePost(post,User).Wait();
+                    TempData["message"] = $"{post.Title} er oppdatert";
+                    return RedirectToAction("Index");
+                } else return new ChallengeResult();
+            } catch {
+                return View(post);
+            }
+        }
+
+
 
         // GET: BlogController/Delete/5
         public ActionResult Delete(int id)
