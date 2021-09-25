@@ -14,6 +14,7 @@ namespace Blog.Models.ViewModels
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
 
+        public bool? ClosedForPosts { get; set; }
         //public string Description { get; set; } not a requirement
 
         public DateTime Created { get; internal set; }

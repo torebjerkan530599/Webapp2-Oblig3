@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blog.Data;
 using Blog.Models;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blog
@@ -29,6 +30,7 @@ namespace Blog
             services.AddControllersWithViews();
             services.AddTransient<IBlogRepository, BlogRepository>();
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

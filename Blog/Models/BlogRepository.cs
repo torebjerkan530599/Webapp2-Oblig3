@@ -53,12 +53,12 @@ namespace Blog.Models
 
         }
 
-        public void Save(Blogg blog)
+        public async Task SaveBlog(Blogg blog)
         {
-            //Merk at entitet er endret
-            blog.Modified = DateTime.Now;
-            _db.Entry(blog).State = EntityState.Modified;
-            _db.SaveChanges();
+            //var currentUser = await manager.FindByNameAsync(user.Identity?.Name);
+            //product.Owner = currentUser;
+            _db.Blogs.Add(blog);
+            await _db.SaveChangesAsync();
         }
 
 
@@ -85,9 +85,5 @@ namespace Blog.Models
             return p;
         }
 
-        public CreateBloggViewModel GetCreateBlogViewModel()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -17,10 +17,10 @@ namespace Blog.Models
 
         IEnumerable<Post> GetAllPosts(int blogId);
 
-        CreateBloggViewModel GetCreateBlogViewModel();
+        //CreateBloggViewModel GetCreateBlogViewModel();
 
         CreateBloggViewModel GetCreateBlogViewModel(int? id);
 
-        void Save(Blogg blog);
+        Task SaveBlog(Blogg blog); // Task Save(Product product, ClaimsPrincipal user);
     }
 }

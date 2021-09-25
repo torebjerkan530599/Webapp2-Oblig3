@@ -58,35 +58,30 @@ namespace Blog.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            var newBlog = blogRepository.GetCreateBlogViewModel();
+            //var newBlog = new CreateBloggViewModel();//blogRepository.GetCreateBlogViewModel();
             //return View(newBlog);
-            return View(newBlog);
+            return View();
         }
 
         // POST: Blog/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind("Name")]Blogg newBlog)
+        public ActionResult Create([Bind("Name, ClosedForPosts, Created")]CreateBloggViewModel newBlog) //Bind owner også senere.
         {
             try
             {
                 if (!ModelState.IsValid) return View();
-                var p = new Blogg()
+                var blog = new Blogg()
                 {
                     Name = newBlog.Name,
-                    Created = DateTime.Now
-                    
-                    //Description = newBlog.Description,
-                    
+                    Created = newBlog.Created,
+                    ClosedForPosts = newBlog.ClosedForPosts
+
                 };
-
-
-                    blogRepository.Save(newBlog);
-                    //TempData["message"] = string.Format("{0} har blitt opprettet", newBlog.Name);
+                    blogRepository.SaveBlog(blog).Wait();
+                    TempData["message"] = $"{blog.Name} har blitt opprettet";
                     return RedirectToAction(nameof(Index));
-                    
             }
-
             catch
             {
                 return View();
