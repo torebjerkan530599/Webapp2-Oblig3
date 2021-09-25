@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="Example_Testing_Tempdata.cs" />
+    <Compile Remove="Example_Testing_Tempdata_with_delete_create.cs" />
   </ItemGroup>
 
   <ItemGroup>

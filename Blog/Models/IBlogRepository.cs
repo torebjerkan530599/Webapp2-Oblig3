@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
@@ -21,6 +22,6 @@ namespace Blog.Models
 
         CreateBloggViewModel GetCreateBlogViewModel(int? id);
 
-        Task SaveBlog(Blogg blog); // Task Save(Product product, ClaimsPrincipal user);
+        Task SaveBlog(Blogg blog,  ClaimsPrincipal user); 
     }
 }

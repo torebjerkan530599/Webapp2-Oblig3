@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers
 {
@@ -54,7 +55,7 @@ namespace Blog.Controllers
         }
 
         // GET: Blogg/Create
-        //[Authorize]
+        [Authorize]
         [HttpGet]
         public ActionResult Create()
         {
@@ -65,6 +66,7 @@ namespace Blog.Controllers
 
         // POST: Blog/Create
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind("Name, ClosedForPosts, Created")]CreateBloggViewModel newBlog) //Bind owner også senere.
         {
@@ -78,7 +80,7 @@ namespace Blog.Controllers
                     ClosedForPosts = newBlog.ClosedForPosts
 
                 };
-                    blogRepository.SaveBlog(blog).Wait();
+                    blogRepository.SaveBlog(blog,User).Wait();
                     TempData["message"] = $"{blog.Name} har blitt opprettet";
                     return RedirectToAction(nameof(Index));
             }

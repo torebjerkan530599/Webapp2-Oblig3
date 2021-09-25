@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Blog.Data;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Models
@@ -12,8 +14,10 @@ namespace Blog.Models
     public class BlogRepository : IBlogRepository
     {
         private readonly BlogDbContext _db;
-        public BlogRepository(BlogDbContext db)
+        private UserManager<IdentityUser> _manager;
+        public BlogRepository(UserManager<IdentityUser> userManager, BlogDbContext db)
         {
+            _manager = userManager;
             _db = db;
         }
 
@@ -53,10 +57,10 @@ namespace Blog.Models
 
         }
 
-        public async Task SaveBlog(Blogg blog)
+        public async Task SaveBlog(Blogg blog,  ClaimsPrincipal user)
         {
-            //var currentUser = await manager.FindByNameAsync(user.Identity?.Name);
-            //product.Owner = currentUser;
+            var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);
+            blog.Owner = currentUser;
             _db.Blogs.Add(blog);
             await _db.SaveChangesAsync();
         }

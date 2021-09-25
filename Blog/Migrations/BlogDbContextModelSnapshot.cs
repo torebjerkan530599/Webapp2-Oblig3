@@ -41,7 +41,12 @@ namespace Blog.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("Name");
 
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("BlogId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Blogg");
 
@@ -50,7 +55,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 1,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 838, DateTimeKind.Local).AddTicks(4741),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 733, DateTimeKind.Local).AddTicks(9989),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Lorem ipsum dolor"
                         },
@@ -58,7 +63,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 2,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(180),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 740, DateTimeKind.Local).AddTicks(9762),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Quisque convallis est"
                         },
@@ -66,7 +71,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 3,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(412),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 741, DateTimeKind.Local).AddTicks(1),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Interdum et malesuada"
                         },
@@ -74,7 +79,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 4,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(460),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 741, DateTimeKind.Local).AddTicks(55),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Mauris mi velit"
                         });
@@ -111,7 +116,7 @@ namespace Blog.Migrations
                         new
                         {
                             CommentId = 1,
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(6382),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 741, DateTimeKind.Local).AddTicks(5897),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PostId = 1,
                             Text = "Is this latin?"
@@ -119,7 +124,7 @@ namespace Blog.Migrations
                         new
                         {
                             CommentId = 2,
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(7881),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 741, DateTimeKind.Local).AddTicks(7245),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PostId = 1,
                             Text = "Yes, of course it is"
@@ -127,7 +132,7 @@ namespace Blog.Migrations
                         new
                         {
                             CommentId = 3,
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(8485),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 741, DateTimeKind.Local).AddTicks(7478),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PostId = 2,
                             Text = "I really like the blog, but Quisque?"
@@ -175,7 +180,7 @@ namespace Blog.Migrations
                             PostId = 1,
                             BlogId = 1,
                             Content = "Etiam vulputate massa id ante malesuada elementum. Nulla tellus purus, hendrerit rhoncus justo quis, accumsan ultrices nisi. Integer tristique, ligula in convallis aliquam, massa ligula vehicula odio, in eleifend dolor eros ut nunc",
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(2858),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 741, DateTimeKind.Local).AddTicks(2423),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfComments = 2,
                             Title = "First post"
@@ -185,7 +190,7 @@ namespace Blog.Migrations
                             PostId = 2,
                             BlogId = 2,
                             Content = "Praesent non massa a nisl euismod efficitur. Ut laoreet nisi vel eleifend laoreet. Curabitur vel orci semper, auctor erat vel, dapibus nunc. Integer eget tortor nunc. Fusce ac euismod nibh. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae",
-                            Created = new DateTime(2021, 9, 24, 21, 56, 57, 845, DateTimeKind.Local).AddTicks(8288),
+                            Created = new DateTime(2021, 9, 25, 16, 45, 10, 741, DateTimeKind.Local).AddTicks(7317),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfComments = 1,
                             Title = "Second post"
@@ -209,6 +214,215 @@ namespace Blog.Migrations
                     b.ToTable("BloggViewModel");
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Blog.Models.Entities.Blogg", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("Blog.Models.Entities.Comment", b =>
                 {
                     b.HasOne("Blog.Models.Entities.Post", "Post")
@@ -229,6 +443,57 @@ namespace Blog.Migrations
                         .IsRequired();
 
                     b.Navigation("Blog");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Blog.Models.Entities.Blogg", b =>

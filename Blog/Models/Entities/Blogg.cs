@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models.Entities
 {
@@ -35,7 +36,6 @@ namespace Blog.Models.Entities
         public virtual List<Post> Posts { get; set; }
         //foreign key: FK_dbo.Blog_dbo.AspNetUsers_owner_Id (id)
         //[JsonIgnore]
-        //public virtual ApplicationUser owner { get; set; }
-        //public virtual IdentityUser Owner { get; set;}
+        public virtual IdentityUser Owner { get; set;}
     }
 }

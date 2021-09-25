@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blog.Data;
 using Blog.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +32,8 @@ namespace Blog
             services.AddTransient<IBlogRepository, BlogRepository>();
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddEntityFrameworkStores<BlogDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +54,7 @@ namespace Blog
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -58,6 +62,7 @@ namespace Blog
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Blog}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

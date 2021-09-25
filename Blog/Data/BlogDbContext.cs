@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Blog.Data
 {
-    public class BlogDbContext : DbContext
+    public class BlogDbContext : IdentityDbContext<IdentityUser>
     {
         public BlogDbContext(DbContextOptions<BlogDbContext> options)
             : base(options)
@@ -18,9 +20,9 @@ namespace Blog.Data
         public DbSet<Comment> Comments { get; set; }
         
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
 
             //fluent API...is this necessary when I also have nav. properties configured in entities?
             modelBuilder.Entity<Blogg>().ToTable("Blogg")
@@ -77,7 +79,7 @@ namespace Blog.Data
         
 
 
-        public DbSet<Blog.Models.ViewModels.BloggViewModel> BloggViewModel { get; set; }
+        public DbSet<BloggViewModel> BloggViewModel { get; set; }
     }
 
 
