@@ -1,12 +1,12 @@
-﻿@model Blog.Models.Entities.Post
+﻿@model Blog.Models.ViewModels.PostViewModel
 
 @{
     ViewData["Title"] = "CreatePost";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Nytt innlegg</h1>
+<h1>CreatePost</h1>
 
+<h4>Post</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -23,6 +23,12 @@
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <input asp-for="BlogId" type="hidden" class="form-control" />
+                <span asp-validation-for="BlogId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -31,9 +37,54 @@
 
 <div>
     <a asp-action="Index">Back to List</a>
-    @*<p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.PostId })</p>*@
+    @*<a asp-action="ReadBlog">&#8592 Blogg oversikt<br></a>
+        <p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.BlogId })</p>*@
+
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+@*@model Blog.Models.ViewModels.PostViewModel
+    @{
+        ViewData["Title"] = "CreatePost";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <h1>Nytt innlegg</h1>
+
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="CreatePost">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label">Tittel</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Content" class="control-label">Innhold</label>
+                    <input asp-for="Content" class="form-control" />
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input asp-for="BlogId" type="hidden" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+        @*<p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.PostId })</p>
+    </div>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+*@

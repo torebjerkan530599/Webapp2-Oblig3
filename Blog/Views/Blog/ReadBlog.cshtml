@@ -5,57 +5,55 @@
 }
 
 <h1>@Model.Name</h1>
-<p>
-    @*<a asp-action="CreatePost">Opprett nytt innlegg</a>*@
-    @Html.ActionLink("Opprett nytt innlegg", "CreatePost", new { BlogId = @Model.BlogId })
-</p>
-@*
 <hr />
 <p>
     Created: @Model.Created, Modified: @Model.Modified,
-    @if (@Model.Owner == null)
+    @if (@Model.Owner.UserName == null)
     {<a>No user</a> }
     else
     {@Model.Owner.UserName}
 </p>
 <hr />
-<h4> @Model.Description</h4>
+<p>@Html.ActionLink("Create new post", "CreatePost", new { blogId = @Model.BlogId })</p>
 <hr />
-<p>Comments:....</p>
+<p>Posts:....</p>
 <hr />
-    *@
 
-        <table class="table table-hover">
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.Name) </th>
+<table class="table table-hover">
+    <tr>
+        <th >Bruker </th>
+        <th>@Html.DisplayNameFor(model => model.Name) </th>
 
-                <th>@Html.DisplayNameFor(model => model.Content)</th>
-            </tr>
+        <th>@Html.DisplayNameFor(model => model.Content)</th>
+    </tr>
 
-            @foreach (var item in Model.Posts)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Title)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Content)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Read comments", "ReadPost", new { id = item.PostId }) |
+    @foreach (var item in Model.Posts)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Owner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
+            </td>
+            <td>
+                @Html.ActionLink("Read comments", "ReadPost", new { id = item.PostId }) |
 
-                        @Html.ActionLink("Edit", "Edit", new { id = item.BlogId }) |
+                @Html.ActionLink("Edit", "EditPost", new { id = item.PostId }) |
 
-                        @Html.ActionLink("Delete", "Delete", new { id = item.BlogId })
-                    </td>
-                </tr>
-            }
-
-        </table>
-<div>
-        <a asp-action="Index">Back to List</a>
-    </div>
-
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+                @Html.ActionLink("Delete", "Delete", new { id = item.PostId })
+            </td>
+        </tr>
     }
+
+</table>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -11,9 +11,6 @@
     <dl class="row">
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Content)
-            <aside>
-                <a asp-action="EditPost" asp-route-id="@Model.PostId">Edit</a>
-            </aside>
         </dd>
 
         @*<dt class="col-sm-2">
@@ -40,21 +37,28 @@
             <th>Opprettet</th>
         </tr>
 
-
-        @foreach (var item in Model.Comments)
+        @try
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Text)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Owner)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Created)
-                </td>
-            </tr>
+            @foreach (var item in Model.Comments)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Text)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Owner)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Created)
+                    </td>
+                </tr>
+            }
         }
+        catch (NullReferenceException e)
+        {
+
+        }
+        
 
     </table>
 
@@ -68,5 +72,5 @@
 </div>
 <div>
     <a asp-action="Index">&#8592 Blogg oversikt<br></a>
-    <p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.PostId })</p>
+    <p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.BlogId })</p>
 </div>

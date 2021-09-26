@@ -17,7 +17,7 @@ namespace Blog.Controllers
         private readonly IBlogRepository _blogRepository;
         IAuthorizationService _authorizationService;
 
-        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService = null)
+        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService) //=null
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
@@ -100,7 +100,7 @@ namespace Blog.Controllers
 
         [Authorize]
         [HttpGet]
-        public ActionResult CreatePost(int BlogId)
+        public ActionResult CreatePost(int blogId)
         {
             return View();
         }
@@ -109,22 +109,39 @@ namespace Blog.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult CreatePost(int BlogId,/*[Bind("Title, Content, Created, Modified, NumberOfComments")]*/Post newPost) //trenger å lagre Blogg tilhørighet, må jeg sende med id her?
+        public ActionResult CreatePost(int blogId,[Bind("Title, Content, Created, BlogId, Owner")]PostViewModel  newPost)
         {
             try
             {
-                if (!ModelState.IsValid) {return View();}
+                if (ModelState.IsValid)
+                {
+                    var post = new Post()
+                    {
+                        Title = newPost.Title,
+                        Content = newPost.Content,
+                        Created = DateTime.Now,
+                        BlogId = blogId,
+                        Owner = newPost.Owner
+                    };
 
-                newPost.BlogId = BlogId;
-
-                _blogRepository.SavePost(newPost,User).Wait();
-                TempData["message"] = $"{newPost.Title} har blitt opprettet";
-                return RedirectToAction(nameof(Index));
+                    _blogRepository.SavePost(post, User).Wait();
+                    TempData["message"] = $"{newPost.Title} har blitt opprettet";
+                    return RedirectToAction("ReadBlog", new {id= blogId});
+                }
+                else
+                {
+                    var errors = ModelState.Select(x => x.Value.Errors)
+                        .Where(y=>y.Count>0)
+                        .ToList();
+                }
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e); 
                 return View();
             }
+
+            return View();
         }
 
         [Authorize]

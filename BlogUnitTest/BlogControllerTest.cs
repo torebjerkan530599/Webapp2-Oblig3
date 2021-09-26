@@ -15,6 +15,7 @@ using ProductUnitTest;
 
 namespace BlogUnitTest
 {
+    
     [TestClass]
     public class BlogControllerTest
     {
@@ -32,7 +33,7 @@ namespace BlogUnitTest
                 new Blogg {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
             };
         }
-
+        /*
         [TestMethod]
         public void BlogIndexReturnsNotNullResult()
         {
@@ -151,6 +152,7 @@ namespace BlogUnitTest
             Assert.IsNull(result.ViewName);
 
         }
+        */
 
 
     }

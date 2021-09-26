@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Blog.Models.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models.ViewModels
 {
@@ -23,12 +24,14 @@ namespace Blog.Models.ViewModels
         //public bool? ClosedForPosts { get; set; }
 
         //Datoer og tid:
-        //[Column(TypeName = "datetime2")]
-        //public DateTime Created { get; set; }
+        [Column(TypeName = "datetime2")]
+        public DateTime Created { get; set; }
 
-        //[Column(TypeName = "datetime2")]
-        //public DateTime Modified { get; set; }
+        [Column(TypeName = "datetime2")]
+        public DateTime Modified { get; set; }
 
         public virtual List<Post> Posts { get; set; }
+
+        public virtual IdentityUser Owner { get; set;}
     }
 }
