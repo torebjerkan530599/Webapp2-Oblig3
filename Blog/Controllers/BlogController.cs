@@ -23,6 +23,7 @@ namespace Blog.Controllers
             _authorizationService = authorizationService;
         }
 
+        [AllowAnonymous]
         // GET: BlogController
         public ActionResult Index()
         {
@@ -31,6 +32,7 @@ namespace Blog.Controllers
             return View(blogs);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult ReadBlog(int id)
         {
@@ -51,6 +53,7 @@ namespace Blog.Controllers
             return View(bv);
         }
 
+        [AllowAnonymous]
         public ActionResult ReadPost(int id)
         {
             var postViewModel = _blogRepository.GetPostViewModel(id);
@@ -97,7 +100,7 @@ namespace Blog.Controllers
 
         [Authorize]
         [HttpGet]
-        public ActionResult CreatePost()
+        public ActionResult CreatePost(int BlogId)
         {
             return View();
         }
@@ -106,12 +109,14 @@ namespace Blog.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult CreatePost(/*[Bind("Title, Content, Created, Modified, NumberOfComments")]*/Post newPost) //trenger å lagre Blogg tilhørighet, må jeg sende med id her?
+        public ActionResult CreatePost(int BlogId,/*[Bind("Title, Content, Created, Modified, NumberOfComments")]*/Post newPost) //trenger å lagre Blogg tilhørighet, må jeg sende med id her?
         {
             try
             {
-                if (!ModelState.IsValid) return View();
-                
+                if (!ModelState.IsValid) {return View();}
+
+                newPost.BlogId = BlogId;
+
                 _blogRepository.SavePost(newPost,User).Wait();
                 TempData["message"] = $"{newPost.Title} har blitt opprettet";
                 return RedirectToAction(nameof(Index));
@@ -153,30 +158,26 @@ namespace Blog.Controllers
 
         // GET: Contact/Edit/#
         [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> EditPost(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return NotFound("Bad parameter");
             }
          
-            /*Post ppst = (from c in _db.Contact
-                where c.ContactId == id
-                select c).FirstOrDefault();*/
-
-            var postEditViewModel = _blogRepository.GetBlog(id);//GetPostEditViewModel(id);
+            //Get the post to edit 
+            var post = _blogRepository.GetPost(id);
 
                 
             // requires using ContactManager.Authorization;
             var isAuthorized = await _authorizationService.AuthorizeAsync(
-                User, postEditViewModel, BlogOperations.Update);
+                User, post, BlogOperations.Update);
             if (!isAuthorized.Succeeded)
             {
                 return new ChallengeResult();
             }
-            //return RedirectToAction(nameof(Index));
 
-            return View(postEditViewModel);
+            return View(post);
         }
 
 
@@ -202,6 +203,7 @@ namespace Blog.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    _blogRepository.Update(post);
                     _blogRepository.SavePost(post,User).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
                     return RedirectToAction("Index");
@@ -214,9 +216,21 @@ namespace Blog.Controllers
 
 
         // GET: BlogController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if( id == null)
+            {
+                return NotFound();
+            }
+
+            var post = _blogRepository.GetPost(id);
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return View(post);
         }
 
         // POST: BlogController/Delete/5

@@ -44,6 +44,13 @@ namespace Blog.Models
             return singleBlogQuery.FirstOrDefault();
         }
 
+        public Post GetPost(int? id)
+        {
+            return (from p in _db.Posts
+                where p.PostId == id
+                select p).FirstOrDefault();
+        }
+
         public IEnumerable<Post> GetAllPosts(int blogId) //presents all posts to user
         {
 
@@ -156,6 +163,12 @@ namespace Blog.Models
         {
             return blog.ClosedForPosts;
 
+        }
+
+        public void Update(Post post)
+        {
+            _db.Entry(post).State = EntityState.Modified;
+            _db.SaveChanges();
         }
     }
 }

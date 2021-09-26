@@ -6,7 +6,8 @@
 
 <h1>@Model.Name</h1>
 <p>
-<a asp-action="CreatePost">Opprett nytt innlegg</a>
+    @*<a asp-action="CreatePost">Opprett nytt innlegg</a>*@
+    @Html.ActionLink("Opprett nytt innlegg", "CreatePost", new { BlogId = @Model.BlogId })
 </p>
 @*
 <hr />

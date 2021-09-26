@@ -14,6 +14,8 @@ namespace Blog.Models
 
         Blogg GetBlog(int blogIdToGet);
 
+        Post GetPost(int? id);
+
         IEnumerable<Post> GetAllPosts(int blogId);
 
         //CreateBloggViewModel GetCreateBlogViewModel();
@@ -31,6 +33,6 @@ namespace Blog.Models
         public void SetBlogStatus(Blogg blog, bool status);
 
         public bool? IsActive(Blogg blog);
-
+        void Update(Post post);
     }
 }
