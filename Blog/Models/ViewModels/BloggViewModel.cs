@@ -21,7 +21,7 @@ namespace Blog.Models.ViewModels
 
         //
         public string Content { get; set; }
-        //public bool? ClosedForPosts { get; set; }
+        public bool? ClosedForPosts { get; set; }
 
         //Datoer og tid:
         [Column(TypeName = "datetime2")]

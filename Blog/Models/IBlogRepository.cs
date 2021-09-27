@@ -13,26 +13,26 @@ namespace Blog.Models
         IEnumerable<Blogg> GetAllBlogs();
 
         Blogg GetBlog(int blogIdToGet);
-
-        Post GetPost(int? id);
-
-        IEnumerable<Post> GetAllPosts(int blogId);
-
-        //CreateBloggViewModel GetCreateBlogViewModel();
-
-        CreateBloggViewModel GetCreateBlogViewModel(int? id);
-
         Task SaveBlog(Blogg blog,  ClaimsPrincipal user); 
 
-        Task SavePost(Post post,  ClaimsPrincipal user); 
+        IEnumerable<Post> GetAllPosts(int blogId);
+        PostViewModel GetPostViewModel(int? id);
+        Post GetPost(int? id);
+        Task SavePost(Post post,  ClaimsPrincipal user);
+
+        Task UpdatePost(Post post);
+        Task DeletePost(Post post);
+        CreateBloggViewModel GetCreateBlogViewModel(int? id);
 
         Task SaveComment(Comment newComment, ClaimsPrincipal user);
 
-        PostViewModel GetPostViewModel(int? id);
+        Task UpdateComment(Comment comment);
+        Task DeleteComment(Comment comment);
+
 
         public void SetBlogStatus(Blogg blog, bool status);
 
         public bool? IsActive(Blogg blog);
-        void Update(Post post);
+        Comment GetComment(int commentIdToGet);
     }
 }

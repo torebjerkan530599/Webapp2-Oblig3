@@ -4,34 +4,33 @@
     ViewData["Title"] = "ReadBlog";
 }
 
-<h1>@Model.Name</h1>
-<hr />
-<p>
-    Created: @Model.Created, Modified: @Model.Modified,
-    @if (@Model.Owner.UserName == null)
-    {<a>No user</a> }
-    else
-    {@Model.Owner.UserName}
-</p>
-<hr />
-<p>@Html.ActionLink("Create new post", "CreatePost", new { blogId = @Model.BlogId })</p>
-<hr />
-<p>Posts:....</p>
-<hr />
+<h1>Innlegg</h1>
+<br />
+
+@*<p>
+
+            Created: @Model.Created, Modified: @Model.Modified,
+            @if (@Model.Owner.UserName == null)
+            {<a>No user</a>
+            }
+            else
+            {@Model.Owner.UserName
+            }
+    </p>   *@
+
 
 <table class="table table-hover">
     <tr>
-        <th >Bruker </th>
-        <th>@Html.DisplayNameFor(model => model.Name) </th>
-
-        <th>@Html.DisplayNameFor(model => model.Content)</th>
+        <th>Eier </th>
+        <th>Tittel</th>
+        <th>Innhold</th>
     </tr>
 
     @foreach (var item in Model.Posts)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Owner)
+                @Html.DisplayFor(modelItem => item.Owner.UserName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
@@ -44,14 +43,15 @@
 
                 @Html.ActionLink("Edit", "EditPost", new { id = item.PostId }) |
 
-                @Html.ActionLink("Delete", "Delete", new { id = item.PostId })
+                @Html.ActionLink("Delete", "DeletePost", new { id = item.PostId })
             </td>
         </tr>
     }
 
 </table>
+<p>@Html.ActionLink("Opprett nytt innlegg", "CreatePost", new { blogId = @Model.BlogId })</p>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">&#8592 Tilbake til alle blogger</a>
 </div>
 
 @section Scripts {

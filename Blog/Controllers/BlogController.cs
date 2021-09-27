@@ -17,10 +17,10 @@ namespace Blog.Controllers
         private readonly IBlogRepository _blogRepository;
         IAuthorizationService _authorizationService;
 
-        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService) //=null
+        public BlogController(IBlogRepository blogRepository /*, IAuthorizationService authorizationService*/) //=null
         {
             _blogRepository = blogRepository;
-            _authorizationService = authorizationService;
+            //_authorizationService = authorizationService;
         }
 
         [AllowAnonymous]
@@ -47,7 +47,8 @@ namespace Blog.Controllers
                 BlogId = id,
                 Name = blog.Name,
                 Title = (from p in posts where p.BlogId==id select p.Title).ToString(),
-                Posts = posts.ToList()
+                Posts = posts.ToList(),
+                Owner = blog.Owner
             };
             
             return View(bv);
@@ -62,18 +63,16 @@ namespace Blog.Controllers
 
 
         // GET: Blogg/Create
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public ActionResult Create()
         {
-            //var newBlog = new CreateBloggViewModel();//blogRepository.GetCreateBlogViewModel();
-            //return View(newBlog);
             return View();
         }
 
         // POST: Blog/Create
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind("Name, ClosedForPosts, Created, Owner")]CreateBloggViewModel newBlog) //Bind owner også senere.
         {
@@ -83,7 +82,7 @@ namespace Blog.Controllers
                 var blog = new Blogg()
                 {
                     Name = newBlog.Name,
-                    Created = newBlog.Created,
+                    Created = DateTime.Now,
                     ClosedForPosts = newBlog.ClosedForPosts,
                     Owner = newBlog.Owner
 
@@ -98,42 +97,49 @@ namespace Blog.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public ActionResult CreatePost(int blogId)
         {
-            return View();
+            var closed = _blogRepository.GetBlog(blogId).ClosedForPosts;
+            
+            if (!closed.GetValueOrDefault(false)) //hvis ikke stengt, gå til opprett post
+            {
+                return View();
+            }
+
+            //hvis bloggen er stengt, gi beskjed.
+            TempData["message"] = "Bloggen er stengt for innlegg";
+            return RedirectToAction("ReadBlog", new {id= blogId});
         }
 
         // POST: Blog/Create
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult CreatePost(int blogId,[Bind("Title, Content, Created, BlogId, Owner")]PostViewModel  newPost)
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    var post = new Post()
+                //var closed = _blogRepository.GetBlog(blogId).ClosedForPosts;
+                //if (!closed.GetValueOrDefault(false)) //hvis ikke stengt, gå til opprett post {
+            
+                    if (ModelState.IsValid)
                     {
-                        Title = newPost.Title,
-                        Content = newPost.Content,
-                        Created = DateTime.Now,
-                        BlogId = blogId,
-                        Owner = newPost.Owner
-                    };
+                        var post = new Post()
+                        {
+                            Title = newPost.Title,
+                            Content = newPost.Content,
+                            Created = DateTime.Now,
+                            BlogId = blogId,
+                            Owner = newPost.Owner
+                        };
 
-                    _blogRepository.SavePost(post, User).Wait();
-                    TempData["message"] = $"{newPost.Title} har blitt opprettet";
-                    return RedirectToAction("ReadBlog", new {id= blogId});
-                }
-                else
-                {
-                    var errors = ModelState.Select(x => x.Value.Errors)
-                        .Where(y=>y.Count>0)
-                        .ToList();
-                }
+                        _blogRepository.SavePost(post, User).Wait();
+                        TempData["message"] = $"{newPost.Title} har blitt opprettet";
+                        return RedirectToAction("ReadBlog", new {id= blogId});
+                    }
+                //}
             }
             catch (Exception e)
             {
@@ -141,12 +147,13 @@ namespace Blog.Controllers
                 return View();
             }
 
-            return View();
+            TempData["message"] = "Fikk ikke opprettet ny post";
+            return RedirectToAction("ReadBlog", new {id= blogId});
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
-        public ActionResult CreateComment()
+        public ActionResult CreateComment(int PostId)
         {
             //var newBlog = new CreateBloggViewModel();//blogRepository.GetCreateBlogViewModel();
             //return View(newBlog);
@@ -155,19 +162,27 @@ namespace Blog.Controllers
 
         // POST: Blog/Create
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateComment(/*[Bind(...)]*/Comment newComment) //add Bind later
+        public ActionResult CreateComment(int PostId, [Bind("CommentId, Text, Created, PostId, Owner")]CommentViewModel newCommentViewModel)
         {
             try
             {
                 if (!ModelState.IsValid) return View();
+
+                var comment = new Comment()
+                {
+                    Text = newCommentViewModel.Text,
+                    Created = DateTime.Now,
+                    PostId = PostId,
+                };
                 
-                _blogRepository.SaveComment(newComment,User).Wait();
-                TempData["message"] = $"{newComment.Text} har blitt opprettet";
-                return RedirectToAction(nameof(Index));
+                
+                _blogRepository.SaveComment(comment, User).Wait();
+                TempData["message"] = "kommentaren har blitt opprettet";
+                return RedirectToAction("ReadPost", new { id = PostId });
             }
-            catch
+            catch 
             {
                 return View();
             }
@@ -175,7 +190,7 @@ namespace Blog.Controllers
 
         // GET: Contact/Edit/#
         [HttpGet]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<ActionResult> EditPost(int? id)
         {
             if (id == null)
             {
@@ -187,13 +202,12 @@ namespace Blog.Controllers
 
                 
             // requires using ContactManager.Authorization;
-            var isAuthorized = await _authorizationService.AuthorizeAsync(
+            /*var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, post, BlogOperations.Update);
             if (!isAuthorized.Succeeded)
             {
                 return new ChallengeResult();
-            }
-
+            }*/
             return View(post);
         }
 
@@ -201,7 +215,7 @@ namespace Blog.Controllers
         // POST: Contact/Edit/#
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(/*[Bind(...")]*/int? id, Post post)
+        public async Task<ActionResult> EditPost(int? id, [Bind("PostId, Title, Content, Modified, BlogId, Owner")]Post post)
         {
             if(id == null)
             {
@@ -210,58 +224,147 @@ namespace Blog.Controllers
 
             
             // requires using ContactManager.Authorization;
-            var isAuthorized = await _authorizationService.AuthorizeAsync(
+            /*var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, post, BlogOperations.Update);
             if (!isAuthorized.Succeeded)
             {
                 return View("Ingentilgang");
-            }
+            }*/
+            var blogId = post.BlogId;
+
             try 
             {
                 if (ModelState.IsValid)
                 {
-                    _blogRepository.Update(post);
-                    _blogRepository.SavePost(post,User).Wait();
+                    //var owner = post.Owner.UserName;
+
+                    //if (owner == User.Identity.Name.ToString())
+                    //{
+                    post.Modified = DateTime.Now;
+                    _blogRepository.UpdatePost(post).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
-                    return RedirectToAction("Index");
-                } else return new ChallengeResult();
+                    return RedirectToAction("ReadBlog", new { id = blogId });
+                    //}
+                    //else
+                    // {
+                    //return View("Kan ikke endre andre sine post");
+                    //}
+                } 
+                else return new ChallengeResult();
             } catch {
                 return View(post);
             }
+
         }
 
 
-
-        // GET: BlogController/Delete/5
-        public ActionResult Delete(int? id)
+                // GET:
+        // Post/Delete/5
+        [HttpGet]
+        public ActionResult DeletePost(int id)
         {
-            if( id == null)
-            {
-                return NotFound();
-            }
-
-            var post = _blogRepository.GetPost(id);
-
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            return View(post);
+            var postToDelete = _blogRepository.GetPost(id);
+            return View(postToDelete);
         }
 
-        // POST: BlogController/Delete/5
+        // POST:
+        // Post/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeletePost(int id, IFormCollection collection)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    //var owner = User;
+                    var postToDelete = _blogRepository.GetPost(id);
+                    var blogId = postToDelete.BlogId;
+                    _blogRepository.DeletePost(postToDelete).Wait();
+                        TempData["message"] = $"{postToDelete.Title} has been updated";
+
+                        return RedirectToAction("ReadBlog", new { id = blogId });
+                        
+                }
+                return new ChallengeResult();
             }
             catch
             {
-                return View();
+                return ViewBag("Exception thrown");
+            }
+        }
+
+        // GET:
+        // Post/Comment/Delete/5
+        [HttpGet]
+        public ActionResult DeleteComment(int CommentId)
+        {
+            var commentToDelete = _blogRepository.GetComment(CommentId);
+            return View(commentToDelete);
+        }
+        // POST:
+        // Post/Comment/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteComment(int CommentId, IFormCollection collection)
+        {
+            try
+            {
+                if (!ModelState.IsValid) return new ChallengeResult();
+                //var owner = User;
+                var commentToDelete = _blogRepository.GetComment(CommentId);
+                var postId = commentToDelete.PostId;
+
+                _blogRepository.DeleteComment(commentToDelete).Wait();
+                TempData["message"] = "Kommentaren er slettet";
+
+                return RedirectToAction("ReadPost", new { id = postId });
+
+            } catch {
+                return ViewBag("Fikk ikke slettet kommentar");
+            }
+        }
+
+        // GET:
+        // Post/Coomment/Edit/5
+        //[Authorize]
+        [HttpGet]
+        public ActionResult EditComment(int CommentId)
+        {
+            var commentToEdit = _blogRepository.GetComment(CommentId);
+
+            //var isAutorized = await _authorizationService.AuthorizeAsync(User, postToEdit, BlogOperations.Update);
+            //if (!isAutorized.Succeeded)
+            //{
+            //return View("Ingen tilgang");
+            //}
+
+            return View(commentToEdit);
+        }
+
+        // POST:
+        // Post/Coomment/Edit/5
+        //[Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditComment(int? CommentId, int PostId,[Bind("CommentId, Text, Created, Modified, PostId, Post, Owner")] Comment comment)
+        {
+            if (CommentId == null) {
+                return NotFound();
+            }
+            var postId = comment.PostId;
+            try
+            {
+                if (!ModelState.IsValid) return new ChallengeResult();
+
+                comment.Modified = DateTime.Now;
+                _blogRepository.UpdateComment(comment).Wait();
+                TempData["message"] = $"{comment.Text} has been updated";
+
+                return RedirectToAction("ReadPost", new { id = PostId });
+
+            } catch {
+                return View("Fikk ikke endret commentar");
             }
         }
     }

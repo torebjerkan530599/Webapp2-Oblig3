@@ -98,6 +98,38 @@ namespace Blog.Models
             await _db.SaveChangesAsync();
         }
 
+        //UPDATE POST
+        public async Task UpdatePost(Post post)
+        {
+
+            _db.Entry(post).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+        }
+
+        //UPDATE COMMENT
+        public async Task UpdateComment(Comment comment)
+        {
+
+            _db.Entry(comment).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+        }
+
+
+        //DELETE POST
+        public async Task DeletePost(Post post)
+        {
+            _db.Posts.Remove(post);
+            await _db.SaveChangesAsync();
+        }
+
+    
+        //DELETE COMMENT
+        public async Task DeleteComment(Comment comment)
+        {
+            _db.Comments.Remove(comment);
+            await _db.SaveChangesAsync();
+
+        }
 
         public CreateBloggViewModel GetCreateBlogViewModel(int? id)
         {
@@ -165,10 +197,14 @@ namespace Blog.Models
 
         }
 
-        public void Update(Post post)
+        //GET COMMENT
+        public Comment GetComment(int commentIdToGet)
         {
-            _db.Entry(post).State = EntityState.Modified;
-            _db.SaveChanges();
+            IEnumerable<Comment> comments = _db.Comments;
+            var singleCommentQuery = from comment in comments
+                where comment.CommentId == commentIdToGet
+                select comment;
+            return singleCommentQuery.FirstOrDefault();
         }
     }
 }

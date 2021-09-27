@@ -4,37 +4,21 @@
     ViewData["Title"] = "Innlegg";
 }
 
-<h1>Innlegg</h1>
+<h1>Kommentarer</h1>
+<br/>
+
 
 <div>
-    <hr />
-    <dl class="row">
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
 
-        @*<dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Created)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Created)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Modified)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Modified)
-            </dd>*@
-    </dl>
-    
     <table class="table table-hover">
         <tr>
             @*<th>@Html.DisplayNameFor(model => model.Content) </th>
                 <th>@Html.DisplayNameFor(model => model.Content) </th>*@
 
-            <th>Kommentar</th>
             <th>Eier</th>
+            <th>Kommentar</th>
             <th>Opprettet</th>
+            <th>Valg</th>
         </tr>
 
         @try
@@ -43,13 +27,20 @@
             {
                 <tr>
                     <td>
+                        @Html.DisplayFor(modelItem => item.Owner.UserName)
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.Text)
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Owner)
-                    </td>
+
                     <td>
                         @Html.DisplayFor(modelItem => item.Created)
+                    </td>
+
+                    <td>
+                        @Html.ActionLink("Edit", "EditComment", new { CommentId = item.CommentId }) |
+
+                        @Html.ActionLink("Delete", "DeleteComment", new { CommentId = item.CommentId })
                     </td>
                 </tr>
             }
@@ -58,10 +49,10 @@
         {
 
         }
-        
+
 
     </table>
-
+    <p>@Html.ActionLink("Opprett ny kommentar", "CreateComment", new { PostId = @Model.PostId, id = @Model.PostId })</p>
     @*<dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Blog)
         </dt>
@@ -71,6 +62,7 @@
 
 </div>
 <div>
-    <a asp-action="Index">&#8592 Blogg oversikt<br></a>
-    <p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.BlogId })</p>
+    
+    <a asp-action="Index">&#8592 Tilbake til alle blogger<br></a>
+    <p>&#8592 @Html.ActionLink("Tilbake til innlegg", "ReadBlog", new { id = Model.BlogId })</p>
 </div>
