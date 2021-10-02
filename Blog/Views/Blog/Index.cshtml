@@ -14,7 +14,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.BlogId)
+                @Html.DisplayNameFor(model => model.Owner)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
@@ -36,7 +36,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.BlogId)
+                    @Html.DisplayFor(modelItem => item.Owner.UserName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)

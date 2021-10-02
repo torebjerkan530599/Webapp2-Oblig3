@@ -30,14 +30,14 @@ namespace Blog.Models
             //    new Blogg {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
             //};
 
-            IEnumerable<Blogg> blogs = _db.Blogs;//.Include(e=> e.Posts);
+            IEnumerable<Blogg> blogs = _db.Blogs.Include(o => o.Owner);
             return blogs;
         }
 
 
         public Blogg GetBlog(int blogId)
         {
-            IEnumerable<Blogg> blogs = _db.Blogs;
+            IEnumerable<Blogg> blogs = _db.Blogs.Include(o=>o.Owner);
             var singleBlogQuery = from blog in blogs
                 where blog.BlogId == blogId
                 select blog;
@@ -46,9 +46,9 @@ namespace Blog.Models
 
         public Post GetPost(int? id)
         {
-            return (from p in _db.Posts
+            return ((from p in _db.Posts
                 where p.PostId == id
-                select p).FirstOrDefault();
+                select p)).Include(o=>o.Owner).FirstOrDefault();
         }
 
         public IEnumerable<Post> GetAllPosts(int blogId) //presents all posts to user

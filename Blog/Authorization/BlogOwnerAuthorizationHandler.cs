@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Blog.Authorization
 {
     public class BlogOwnerAuthorizationHandler
-        : AuthorizationHandler<OperationAuthorizationRequirement, Blogg>
+        : AuthorizationHandler<OperationAuthorizationRequirement, Post>
     {
         private readonly UserManager<IdentityUser> _userManager;
 
@@ -23,7 +23,7 @@ namespace Blog.Authorization
         protected override Task
             HandleRequirementAsync(AuthorizationHandlerContext context,
                 OperationAuthorizationRequirement requirement,
-                Blogg resource)
+                Post resource)
         {
             if (context.User == null || resource == null)
             {

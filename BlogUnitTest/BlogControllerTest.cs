@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Blog.Controllers;
+using Blog.Data;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using ProductUnitTest;
 
@@ -23,10 +25,33 @@ namespace BlogUnitTest
 
         private List<Blogg> _blogs;
 
+
+        #region Seeding
+
+        protected BlogControllerTest(DbContextOptions<BlogDbContext> contextOptions)
+        {
+            ContextOptions = contextOptions;
+
+            SetupContext();
+        }
+
+        protected DbContextOptions<BlogDbContext> ContextOptions { get; }
+
         [TestInitialize]
         public void SetupContext()
         {
             _repository = new Mock<IBlogRepository>();
+
+            using var context = new BlogDbContext(ContextOptions);
+            context.Database.EnsureDeleted(); //må være sikker på at database er tom
+            context.Database.EnsureDeleted(); //må være sikker på at den eksisterer
+
+            context.Blogs.AddRange(
+                    
+                //TODO: kopier inn seeding fra BlogDBContext
+
+            );
+                
 
             _blogs = new List<Blogg>{
                 new Blogg {BlogId = 1, Name = "First in line", ClosedForPosts = false},
@@ -34,6 +59,7 @@ namespace BlogUnitTest
             };
         }
         
+        #endregion
         [TestMethod]
         public void BlogIndexReturnsNotNullResult()
         {
@@ -62,19 +88,21 @@ namespace BlogUnitTest
             //Assert.AreEqual(5, products.Count, "Got wrong number of products");
         }
 
-        //[TestMethod]
-        //public void SaveIsCalledWhenBlogIsCreated()
-        //{ 
-        //    // Arrange
-        //    _repository.Setup(x => x.SaveBlog(It.IsAny<Blogg>(), ));
-        //    var controller = new BlogController(_repository.Object);
-        //    // Act
-        //    var result = controller.Create(new CreateBloggViewModel());
-        //    // Assert
-        //    _repository.VerifyAll();
-        //    // test på at save er kalt et bestemt antall ganger
-        //    _repository.Verify(x => x.SaveBlog(It.IsAny<Blogg>()), Times.Exactly(1));
-        //}
+        [TestMethod]
+        public void SaveIsCalledWhenBlogIsCreated()
+        { 
+            // Arrange
+            var mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
+            _repository.Setup(x => x.SaveBlog(It.IsAny<Blogg>(), );
+            var controller = new BlogController(_repository.Object,mockUserManager.Object);
+            controller.ControllerContext = MockHelpers.FakeControllerContext(false);
+            // Act
+            var result = controller.Create(new CreateBloggViewModel());
+            // Assert
+            _repository.VerifyAll();
+            // test på at save er kalt et bestemt antall ganger
+            _repository.Verify(x => x.SaveBlog(It.IsAny<Blogg>()), Times.Exactly(1));
+        }
 
         [TestMethod]
         public void CreateViewIsReturnedWhenInputIsNotValid() 

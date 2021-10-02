@@ -9,18 +9,19 @@ using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Controllers
 {
     public class BlogController : Controller
     {
         private readonly IBlogRepository _blogRepository;
-        IAuthorizationService _authorizationService;
+        readonly IAuthorizationService _authorizationService;
 
-        public BlogController(IBlogRepository blogRepository /*, IAuthorizationService authorizationService*/) //=null
+        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService=null) 
         {
             _blogRepository = blogRepository;
-            //_authorizationService = authorizationService;
+            _authorizationService = authorizationService;
         }
 
         [AllowAnonymous]
@@ -74,7 +75,7 @@ namespace Blog.Controllers
         [HttpPost]
         //[Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind("Name, ClosedForPosts, Created, Owner")]CreateBloggViewModel newBlog) //Bind owner også senere.
+        public ActionResult Create([Bind("Name, ClosedForPosts, Created, Owner")]CreateBloggViewModel newBlog)
         {
             try
             {
@@ -102,6 +103,8 @@ namespace Blog.Controllers
         public ActionResult CreatePost(int blogId)
         {
             var closed = _blogRepository.GetBlog(blogId).ClosedForPosts;
+
+           
             
             if (!closed.GetValueOrDefault(false)) //hvis ikke stengt, gå til opprett post
             {
@@ -199,15 +202,19 @@ namespace Blog.Controllers
          
             //Get the post to edit 
             var post = _blogRepository.GetPost(id);
+            //var ownerOfPost = post.Owner.Id;
+           
 
                 
             // requires using ContactManager.Authorization;
-            /*var isAuthorized = await _authorizationService.AuthorizeAsync(
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, post, BlogOperations.Update);
+
             if (!isAuthorized.Succeeded)
             {
-                return new ChallengeResult();
-            }*/
+                //return new ChallengeResult();
+                return Forbid();
+            }
             return View(post);
         }
 
@@ -222,14 +229,14 @@ namespace Blog.Controllers
                 return NotFound();
             }
 
-            
             // requires using ContactManager.Authorization;
-            /*var isAuthorized = await _authorizationService.AuthorizeAsync(
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, post, BlogOperations.Update);
+
             if (!isAuthorized.Succeeded)
             {
                 return View("Ingentilgang");
-            }*/
+            }
             var blogId = post.BlogId;
 
             try 
