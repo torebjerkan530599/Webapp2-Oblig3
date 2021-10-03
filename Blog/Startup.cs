@@ -81,6 +81,12 @@ namespace Blog
                     pattern: "{controller=Blog}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            //if multiple endpoints
+            //endpoints.MapControllerRoute("page", "Page{productPage:int}",
+            //    new { Controller = "Home", action = "Index", productPage = 1 });
+            //endpoints.MapControllerRoute("category", "{category}",
+            //    new { Controller = "Home", action = "Index", productPage = 1 });
         }
     }
 }

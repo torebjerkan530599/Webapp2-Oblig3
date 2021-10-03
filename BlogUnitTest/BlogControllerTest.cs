@@ -1,17 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
+using Blog.Authorization;
 using Blog.Controllers;
 using Blog.Data;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using ProductUnitTest;
 
@@ -22,8 +28,10 @@ namespace BlogUnitTest
     public class BlogControllerTest
     {
         private Mock<IBlogRepository> _repository;
-
+        Mock<UserManager<IdentityUser>> _mockUserManager;
         private List<Blogg> _blogs;
+        private readonly IAuthorizationService _authService;
+        
 
 
         #region Seeding
@@ -31,26 +39,64 @@ namespace BlogUnitTest
         protected BlogControllerTest(DbContextOptions<BlogDbContext> contextOptions)
         {
             ContextOptions = contextOptions;
+            
 
+            //se også startup.cs, samme?
+            _authService = BuildAuthorizationService(services =>
+            {
+                services.AddScoped(_ => _repository?.Object);
+                
+
+                services.AddMvc(config =>
+                {
+                    // using Microsoft.AspNetCore.Mvc.Authorization;
+                    // using Microsoft.AspNetCore.Authorization;
+                    var policy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                    config.Filters.Add(new AuthorizeFilter(policy));
+                });
+
+                services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
+
+                /*services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("PolicyName", policy => policy.Requirements.Add(new MyCustomRequirement()));
+                });*/ //Feiler på new MyCustomRequirement()
+            });
             SetupContext();
+        }
+
+        //https://codingblast.com/asp-net-core-unit-testing-authorizationservice-inside-controller/
+        private IAuthorizationService BuildAuthorizationService(Action<IServiceCollection> setupServices = null)
+        {
+            var services = new ServiceCollection();
+            services.AddAuthorization();
+            services.AddLogging();
+            services.AddOptions();
+            setupServices?.Invoke(services);
+            return services.BuildServiceProvider().GetRequiredService<IAuthorizationService>();
         }
 
         protected DbContextOptions<BlogDbContext> ContextOptions { get; }
 
         [TestInitialize]
         public void SetupContext()
-        {
+        {   //Testing av kode som benytter UserManager
+            _mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
             _repository = new Mock<IBlogRepository>();
 
             using var context = new BlogDbContext(ContextOptions);
-            context.Database.EnsureDeleted(); //må være sikker på at database er tom
-            context.Database.EnsureDeleted(); //må være sikker på at den eksisterer
 
-            context.Blogs.AddRange(
-                    
-                //TODO: kopier inn seeding fra BlogDBContext
+    
+            //context.Database.EnsureDeleted(); //må være sikker på at database er tom
+            //context.Database.EnsureCreated(); //må være sikker på at den eksisterer
 
-            );
+            //context.Blogs.AddRange(
+            //        
+            //    //TODO: kopier inn seeding fra BlogDBContext
+            //
+            //);
                 
 
             _blogs = new List<Blogg>{
@@ -64,8 +110,7 @@ namespace BlogUnitTest
         public void BlogIndexReturnsNotNullResult()
         {
             // Arrange
-           
-            var controller = new BlogController(_repository.Object);
+            var controller = new BlogController(_repository.Object, _authService);
             // Act
             var result = controller.Index() as ViewResult;
             // Assert
@@ -78,7 +123,7 @@ namespace BlogUnitTest
         {
             // Arrange
             _repository.Setup(x => x.GetAllBlogs()).Returns(_blogs);
-            var controller = new BlogController(_repository.Object);
+            var controller = new BlogController(_repository.Object,  _authService);
             // Act
             var result = controller.Index() as ViewResult;
             // Assert
@@ -92,16 +137,18 @@ namespace BlogUnitTest
         public void SaveIsCalledWhenBlogIsCreated()
         { 
             // Arrange
-            var mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
-            _repository.Setup(x => x.SaveBlog(It.IsAny<Blogg>(), );
-            var controller = new BlogController(_repository.Object,mockUserManager.Object);
-            controller.ControllerContext = MockHelpers.FakeControllerContext(false);
+          
+            var controller = new BlogController(_repository.Object, _authService);
+            controller.ControllerContext = MockHelpers.FakeControllerContext(true); //true = is logged in
+            _repository.Setup(x => x.SaveBlog(It.IsAny<Blogg>(), It.IsAny<ClaimsPrincipal>()));
+            
             // Act
             var result = controller.Create(new CreateBloggViewModel());
             // Assert
             _repository.VerifyAll();
+            Assert.IsNotNull(result, "Result is null");
             // test på at save er kalt et bestemt antall ganger
-            _repository.Verify(x => x.SaveBlog(It.IsAny<Blogg>()), Times.Exactly(1));
+            _repository.Verify(x => x.SaveBlog(It.IsAny<Blogg>(), It.IsAny<ClaimsPrincipal>()), Times.Exactly(1));
         }
 
         [TestMethod]
@@ -112,7 +159,7 @@ namespace BlogUnitTest
             {
                 Name = ""
             };
-            var controller = new BlogController(_repository.Object);
+            var controller = new BlogController(_repository.Object,  _authService);
 
             // Act
             var validationContext = new ValidationContext(viewModel, null, null);
@@ -132,7 +179,7 @@ namespace BlogUnitTest
         [TestMethod]
         public void CreateRedirectActionRedirectsToIndexAction() {
             // Arrange
-            var controller = new BlogController(_repository.Object) {
+            var controller = new BlogController(_repository.Object,  _authService) {
                 ControllerContext = MockHelpers.FakeControllerContext(false)
             };
             var tempData =
@@ -154,7 +201,7 @@ namespace BlogUnitTest
         [TestMethod]
         public void CreateReturnsNotNullResult() {
             // Arrange
-            var controller = new BlogController(_repository.Object);
+            var controller = new BlogController(_repository.Object,  _authService);
 
             // Act
             var result = (ViewResult)controller.Create();
@@ -167,9 +214,7 @@ namespace BlogUnitTest
         public void CreateShouldShowLoginViewFor_Non_AuthorizedUser()
         {
             // Arrange
-            var mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
-            var mockRepo = new Mock<IBlogRepository>();
-            var controller = new BlogController(mockRepo.Object); //,mockUserManager.Object
+            var controller = new BlogController(_repository.Object,  _authService); 
             controller.ControllerContext = MockHelpers.FakeControllerContext(false);
 
             // Act
