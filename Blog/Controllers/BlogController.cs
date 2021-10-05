@@ -21,7 +21,7 @@ namespace Blog.Controllers
         public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService=null) 
         {
             _blogRepository = blogRepository;
-            //_authorizationService = authorizationService;
+            _authorizationService = authorizationService;
         }
 
         [AllowAnonymous]

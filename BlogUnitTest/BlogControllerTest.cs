@@ -30,42 +30,8 @@ namespace BlogUnitTest
         private Mock<IBlogRepository> _repository;
         Mock<UserManager<IdentityUser>> _mockUserManager;
         private List<Blogg> _blogs;
-        private readonly IAuthorizationService _authService;
-        
+        private IAuthorizationService _authService;
 
-
-        #region Seeding
-
-        protected BlogControllerTest(DbContextOptions<BlogDbContext> contextOptions)
-        {
-            ContextOptions = contextOptions;
-            
-
-            //se også startup.cs, samme?
-            _authService = BuildAuthorizationService(services =>
-            {
-                services.AddScoped(_ => _repository?.Object);
-                
-
-                services.AddMvc(config =>
-                {
-                    // using Microsoft.AspNetCore.Mvc.Authorization;
-                    // using Microsoft.AspNetCore.Authorization;
-                    var policy = new AuthorizationPolicyBuilder()
-                        .RequireAuthenticatedUser()
-                        .Build();
-                    config.Filters.Add(new AuthorizeFilter(policy));
-                });
-
-                services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
-
-                /*services.AddAuthorization(options =>
-                {
-                    options.AddPolicy("PolicyName", policy => policy.Requirements.Add(new MyCustomRequirement()));
-                });*/ //Feiler på new MyCustomRequirement()
-            });
-            SetupContext();
-        }
 
         //https://codingblast.com/asp-net-core-unit-testing-authorizationservice-inside-controller/
         private IAuthorizationService BuildAuthorizationService(Action<IServiceCollection> setupServices = null)
@@ -78,34 +44,31 @@ namespace BlogUnitTest
             return services.BuildServiceProvider().GetRequiredService<IAuthorizationService>();
         }
 
-        protected DbContextOptions<BlogDbContext> ContextOptions { get; }
-
         [TestInitialize]
         public void SetupContext()
-        {   //Testing av kode som benytter UserManager
+        {
+            _authService = BuildAuthorizationService(services =>
+            {
+                services.AddScoped(_ => _repository?.Object);
+                services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
+
+                services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("PolicyName", policy => policy.Requirements.Add(new MyCustomRequirement()));
+                }); //Feiler på new MyCustomRequirement() fordi jeg ikke har den.
+            });
+
+            //Testing av kode som benytter UserManager
             _mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
             _repository = new Mock<IBlogRepository>();
 
-            using var context = new BlogDbContext(ContextOptions);
-
-    
-            //context.Database.EnsureDeleted(); //må være sikker på at database er tom
-            //context.Database.EnsureCreated(); //må være sikker på at den eksisterer
-
-            //context.Blogs.AddRange(
-            //        
-            //    //TODO: kopier inn seeding fra BlogDBContext
-            //
-            //);
-                
 
             _blogs = new List<Blogg>{
-                new Blogg {BlogId = 1, Name = "First in line", ClosedForPosts = false},
-                new Blogg {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
+                new() {BlogId = 1, Name = "First in line", ClosedForPosts = false},
+                new() {BlogId = 2, Name = "Everything was great", ClosedForPosts = false}
             };
         }
         
-        #endregion
         [TestMethod]
         public void BlogIndexReturnsNotNullResult()
         {

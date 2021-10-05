@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 
-
+/*
 namespace BlogUnitTest
 {
     public class SqliteInMemoryItemsControllerTest : BlogControllerTest, IDisposable
@@ -35,3 +35,4 @@ namespace BlogUnitTest
         
     }
 }
+*/
