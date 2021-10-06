@@ -35,6 +35,7 @@ namespace Blog
             services.AddTransient<IBlogRepository, BlogRepository>();
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
+            //services.AddSingleton<IAuthorizationHandler,BlogOwnerAuthorizationHandler>();
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<BlogDbContext>();
 

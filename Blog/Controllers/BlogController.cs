@@ -235,7 +235,7 @@ namespace Blog.Controllers
 
             if (!isAuthorized.Succeeded)
             {
-                return View("Ingentilgang");
+                return Forbid();
             }
             var blogId = post.BlogId;
 

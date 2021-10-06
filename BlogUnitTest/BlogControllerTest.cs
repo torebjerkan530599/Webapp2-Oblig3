@@ -33,7 +33,7 @@ namespace BlogUnitTest
         private IAuthorizationService _authService;
 
 
-        //https://codingblast.com/asp-net-core-unit-testing-authorizationservice-inside-controller/
+        //https://codingblast.com/asp-net-core-unit-testing-authorizationservice-inside-controller/*
         private IAuthorizationService BuildAuthorizationService(Action<IServiceCollection> setupServices = null)
         {
             var services = new ServiceCollection();
@@ -47,20 +47,34 @@ namespace BlogUnitTest
         [TestInitialize]
         public void SetupContext()
         {
+            _repository = new Mock<IBlogRepository>();
+            _mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
             _authService = BuildAuthorizationService(services =>
             {
+
                 services.AddScoped(_ => _repository?.Object);
                 services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
 
                 services.AddAuthorization(options =>
                 {
-                    options.AddPolicy("PolicyName", policy => policy.Requirements.Add(new MyCustomRequirement()));
-                }); //Feiler på new MyCustomRequirement() fordi jeg ikke har den.
+                    //*
+                    //options.AddPolicy("PolicyName", policy => policy.Requirements.Add(new MyCustomRequirement()));
+                    //Feiler på new MyCustomRequirement() fordi jeg ikke har den.
+
+                    options.AddPolicy("Basic", policy =>
+                    {
+                        policy.AddAuthenticationSchemes("Basic");
+                        policy.RequireClaim("Permission", "CanViewPage");
+                    });
+                }); 
+
+                
+
             });
 
-            //Testing av kode som benytter UserManager
-            _mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
-            _repository = new Mock<IBlogRepository>();
+            
+     
+     
 
 
             _blogs = new List<Blogg>{
@@ -73,6 +87,7 @@ namespace BlogUnitTest
         public void BlogIndexReturnsNotNullResult()
         {
             // Arrange
+            //var mockBlogOwnerAuthHandler = new BlogOwnerAuthorizationHandler(_mockUserManager.Object);
             var controller = new BlogController(_repository.Object, _authService);
             // Act
             var result = controller.Index() as ViewResult;
