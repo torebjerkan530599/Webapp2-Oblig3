@@ -10,7 +10,7 @@ namespace Blog.Models
 {
     public interface IBlogRepository
     {
-        IEnumerable<Blogg> GetAllBlogs();
+        Task<IEnumerable<Blogg>> GetAllBlogs();
 
         Blogg GetBlog(int blogIdToGet);
         Task SaveBlog(Blogg blog,  ClaimsPrincipal user); 

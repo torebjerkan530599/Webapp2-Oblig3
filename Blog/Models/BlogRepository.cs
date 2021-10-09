@@ -21,7 +21,7 @@ namespace Blog.Models
             _db = db;
         }
 
-        public IEnumerable<Blogg> GetAllBlogs()
+        public async Task<IEnumerable<Blogg>> GetAllBlogs()
         {
             //************Just for testing******************
             //List<Blogg> blogs = new()
@@ -30,7 +30,7 @@ namespace Blog.Models
             //    new Blogg {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
             //};
 
-            IEnumerable<Blogg> blogs = _db.Blogs.Include(o => o.Owner);
+            IEnumerable<Blogg> blogs = await _db.Blogs.Include(o => o.Owner).ToListAsync();;
             return blogs;
         }
 

@@ -17,19 +17,21 @@ namespace Blog.Controllers
     {
         private readonly IBlogRepository _blogRepository;
         readonly IAuthorizationService _authorizationService;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService=null) 
+        public BlogController(IBlogRepository blogRepository, UserManager<IdentityUser> userManager = null, IAuthorizationService authorizationService=null) 
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
+            _userManager = userManager;
         }
 
         [AllowAnonymous]
         // GET: BlogController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
          
-            var blogs = _blogRepository.GetAllBlogs();//.ToList(); ;
+            var blogs = await _blogRepository.GetAllBlogs();//.ToList(); ;
             return View(blogs);
         }
 
@@ -102,9 +104,17 @@ namespace Blog.Controllers
         [HttpGet]
         public ActionResult CreatePost(int blogId)
         {
-            var closed = _blogRepository.GetBlog(blogId).ClosedForPosts;
 
-           
+            var blog = _blogRepository.GetBlog(blogId);
+
+            //if (User.Identity != null && blog.Owner.UserName != User.Identity.Name)
+            if (User.Identity != null && blog.Owner.Id != _userManager.GetUserId(User))
+            {
+                return View("Ingentilgang");
+            }
+
+
+            var closed = blog.ClosedForPosts;
             
             if (!closed.GetValueOrDefault(false)) //hvis ikke stengt, gå til opprett post
             {
@@ -135,7 +145,7 @@ namespace Blog.Controllers
                             Content = newPost.Content,
                             Created = DateTime.Now,
                             BlogId = blogId,
-                            Owner = newPost.Owner
+                            // owner blir satt i SavePost på repository...se neste kodelinje
                         };
 
                         _blogRepository.SavePost(post, User).Wait();
@@ -212,8 +222,9 @@ namespace Blog.Controllers
 
             if (!isAuthorized.Succeeded)
             {
-                //return new ChallengeResult();
-                return Forbid();
+                //return new ChallengeResult(); //blir bare bedt om å logge inn
+                //return Forbid(); //for ikke innloggede brukere
+                return View("Ingentilgang");
             }
             return View(post);
         }
@@ -229,35 +240,32 @@ namespace Blog.Controllers
                 return NotFound();
             }
 
-            // requires using ContactManager.Authorization;
-            var isAuthorized = await _authorizationService.AuthorizeAsync(
-                User, post, BlogOperations.Update);
+            
+            /*post = _blogRepository.GetPost(id);
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Update);
 
             if (!isAuthorized.Succeeded)
             {
-                return Forbid();
-            }
+                return View("IngenTilgang");
+            }*/
             var blogId = post.BlogId;
 
             try 
             {
                 if (ModelState.IsValid)
                 {
-                    //var owner = post.Owner.UserName;
-
-                    //if (owner == User.Identity.Name.ToString())
-                    //{
+             
                     post.Modified = DateTime.Now;
                     _blogRepository.UpdatePost(post).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
                     return RedirectToAction("ReadBlog", new { id = blogId });
-                    //}
-                    //else
-                    // {
-                    //return View("Kan ikke endre andre sine post");
-                    //}
-                } 
-                else return new ChallengeResult();
+          
+                }
+                else
+                {
+                    return View("Index");
+                }
+            
             } catch {
                 return View(post);
             }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Blog.Authorization;
 using Blog.Controllers;
 using Blog.Data;
@@ -19,7 +20,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using ProductUnitTest;
+using BlogUnitTest;
 
 namespace BlogUnitTest
 {
@@ -84,13 +85,18 @@ namespace BlogUnitTest
         }
         
         [TestMethod]
-        public void BlogIndexReturnsNotNullResult()
+        public async Task BlogIndexReturnsNotNullResult()
         {
             // Arrange
-            //var mockBlogOwnerAuthHandler = new BlogOwnerAuthorizationHandler(_mockUserManager.Object);
+            //var mock = new Mock<BlogOwnerAuthorizationHandler>(_mockUserManager.Object);
+            var mockBlogOwnerAuthHandler = new BlogOwnerAuthorizationHandler(_mockUserManager.Object);
             var controller = new BlogController(_repository.Object, _authService);
+            //var mock = new Mock<ControllerContext>();
+            //mock.SetupGet(x => x.HttpContext.User.Identity.Name).Returns("SOMEUSER");
+            //mock.SetupGet(x => x.HttpContext.User.Identity.IsAuthenticated).Returns(true);
+            //controller.ControllerContext = mock.Object;
             // Act
-            var result = controller.Index() as ViewResult;
+            var result = (ViewResult)await controller.Index();
             // Assert
             Assert.IsNotNull(result, "View Result is null");
         }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ProductUnitTest
+namespace BlogUnitTest
 {
 
     public static class MockHelpers

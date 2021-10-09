@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 
-/*
+
 namespace BlogUnitTest
 {
-    public class SqliteInMemoryItemsControllerTest : BlogControllerTest, IDisposable
+    public class SqliteInMemoryItemsControllerTest : BlogRepositoryTest, IDisposable
     {
             private readonly DbConnection _connection;
 
@@ -35,4 +35,3 @@ namespace BlogUnitTest
         
     }
 }
-*/
