@@ -17,13 +17,13 @@ namespace Blog.Controllers
     {
         private readonly IBlogRepository _blogRepository;
         readonly IAuthorizationService _authorizationService;
-        private readonly UserManager<IdentityUser> _userManager;
+        //private readonly UserManager<IdentityUser> _userManager;
 
-        public BlogController(IBlogRepository blogRepository, UserManager<IdentityUser> userManager = null, IAuthorizationService authorizationService=null) 
+        public BlogController(IBlogRepository blogRepository, /*UserManager<IdentityUser> userManager = null,*/ IAuthorizationService authorizationService=null) 
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
-            _userManager = userManager;
+            /*_userManager = userManager;*/
         }
 
         [AllowAnonymous]
@@ -37,7 +37,7 @@ namespace Blog.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public ActionResult ReadBlog(int id)
+        public ActionResult ReadBlog(int id) //shows all posts on blog
         {
 
             var blog = _blogRepository.GetBlog(id);
@@ -58,7 +58,7 @@ namespace Blog.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult ReadPost(int id)
+        public ActionResult ReadPost(int id) //shows all comments on blog
         {
             var postViewModel = _blogRepository.GetPostViewModel(id);
             return View(postViewModel);
@@ -73,7 +73,7 @@ namespace Blog.Controllers
             return View();
         }
 
-        // POST: Blog/Create
+        // POST: Blogg/Create
         [HttpPost]
         //[Authorize]
         [ValidateAntiForgeryToken]
@@ -99,7 +99,7 @@ namespace Blog.Controllers
                 return View();
             }
         }
-
+        /*
         //[Authorize]
         [HttpGet]
         public ActionResult CreatePost(int blogId)
@@ -108,10 +108,10 @@ namespace Blog.Controllers
             var blog = _blogRepository.GetBlog(blogId);
 
             //if (User.Identity != null && blog.Owner.UserName != User.Identity.Name)
-            if (User.Identity != null && blog.Owner.Id != _userManager.GetUserId(User))
-            {
-                return View("Ingentilgang");
-            }
+            //if (User.Identity != null && blog.Owner.Id != _userManager.GetUserId(User))
+            //{
+            //    return View("Ingentilgang");
+            //}
 
 
             var closed = blog.ClosedForPosts;
@@ -163,6 +163,7 @@ namespace Blog.Controllers
             TempData["message"] = "Fikk ikke opprettet ny post";
             return RedirectToAction("ReadBlog", new {id= blogId});
         }
+        */
 
         //[Authorize]
         [HttpGet]
@@ -200,7 +201,7 @@ namespace Blog.Controllers
                 return View();
             }
         }
-
+        /*
         // GET: Contact/Edit/#
         [HttpGet]
         public async Task<ActionResult> EditPost(int? id)
@@ -241,13 +242,13 @@ namespace Blog.Controllers
             }
 
             
-            /*post = _blogRepository.GetPost(id);
+            post = _blogRepository.GetPost(id);
             var isAuthorized = await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Update);
 
             if (!isAuthorized.Succeeded)
             {
                 return View("IngenTilgang");
-            }*/
+            }
             var blogId = post.BlogId;
 
             try 
@@ -255,7 +256,7 @@ namespace Blog.Controllers
                 if (ModelState.IsValid)
                 {
              
-                    post.Modified = DateTime.Now;
+                    //post.Modified = DateTime.Now;
                     _blogRepository.UpdatePost(post).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
                     return RedirectToAction("ReadBlog", new { id = blogId });
@@ -272,7 +273,7 @@ namespace Blog.Controllers
 
         }
 
-
+        */
                 // GET:
         // Post/Delete/5
         [HttpGet]

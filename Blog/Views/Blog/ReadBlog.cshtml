@@ -41,7 +41,7 @@
             <td>
                 @Html.ActionLink("Read comments", "ReadPost", new { id = item.PostId }) |
 
-                @Html.ActionLink("Edit", "EditPost", new { id = item.PostId }) |
+                @Html.ActionLink("Edit", "EditPost", "Post" ,new { id = item.PostId }) |
 
                 @Html.ActionLink("Delete", "DeletePost", new { id = item.PostId })
             </td>
@@ -49,7 +49,7 @@
     }
 
 </table>
-<p>@Html.ActionLink("Opprett nytt innlegg", "CreatePost", new { blogId = @Model.BlogId })</p>
+<p>@Html.ActionLink("Opprett nytt innlegg", "CreatePost", "Post", new { blogId = @Model.BlogId })</p>
 <div>
     <a asp-action="Index">&#8592 Tilbake til alle blogger</a>
 </div>
