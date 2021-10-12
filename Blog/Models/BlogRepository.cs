@@ -23,32 +23,9 @@ namespace Blog.Models
 
         public async Task<IEnumerable<Blogg>> GetAllBlogs()
         {
-            //************Just for testing******************
-            //List<Blogg> blogs = new()
-            //{
-            //    new Blogg {BlogId = 1, Name = "First in line", ClosedForPosts = false},
-            //    new Blogg {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
-            //};
 
             IEnumerable<Blogg> blogs = await _db.Blogs.Include(o => o.Owner).ToListAsync();;
             return blogs;
-        }
-
-
-        public Blogg GetBlog(int blogId)
-        {
-            IEnumerable<Blogg> blogs = _db.Blogs.Include(o=>o.Owner);
-            var singleBlogQuery = from blog in blogs
-                where blog.BlogId == blogId
-                select blog;
-            return singleBlogQuery.FirstOrDefault();
-        }
-
-        public Post GetPost(int? id)
-        {
-            return ((from p in _db.Posts
-                where p.PostId == id
-                select p)).Include(o=>o.Owner).FirstOrDefault();
         }
 
         public IEnumerable<Post> GetAllPosts(int blogId) //presents all posts to user
@@ -72,6 +49,34 @@ namespace Blog.Models
                 orderby comment.Created descending 
                 select comment;
             return commentsQuery;
+        }
+
+
+        public Blogg GetBlog(int blogId)
+        {
+            IEnumerable<Blogg> blogs = _db.Blogs.Include(o=>o.Owner);
+            var singleBlogQuery = from blog in blogs
+                where blog.BlogId == blogId
+                select blog;
+            return singleBlogQuery.FirstOrDefault();
+        }
+
+        public Post GetPost(int? id)
+        {
+            return ((from p in _db.Posts
+                where p.PostId == id
+                select p)).Include(o=>o.Owner).FirstOrDefault();
+        }
+
+        //GET COMMENT
+        public Comment GetComment(int commentIdToGet)
+        {
+
+            IEnumerable<Comment> comments = _db.Comments.Include(o=>o.Owner);
+            var singleCommentQuery = from comment in comments
+                where comment.CommentId == commentIdToGet
+                select comment;
+            return singleCommentQuery.FirstOrDefault();
         }
 
         public async Task SaveBlog(Blogg blog,  ClaimsPrincipal user)
@@ -197,14 +202,6 @@ namespace Blog.Models
 
         }
 
-        //GET COMMENT
-        public Comment GetComment(int commentIdToGet)
-        {
-            IEnumerable<Comment> comments = _db.Comments;
-            var singleCommentQuery = from comment in comments
-                where comment.CommentId == commentIdToGet
-                select comment;
-            return singleCommentQuery.FirstOrDefault();
-        }
+     
     }
 }

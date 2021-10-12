@@ -29,9 +29,11 @@ namespace BlogUnitTest
     public class BlogControllerTest
     {
         private Mock<IBlogRepository> _repository;
-        Mock<UserManager<IdentityUser>> _mockUserManager;
+        private Mock<UserManager<IdentityUser>> _mockUserManager;
         private List<Blogg> _blogs;
         private IAuthorizationService _authService;
+        private ClaimsPrincipal _user;
+        private PostController controller;
 
 
         //https://codingblast.com/asp-net-core-unit-testing-authorizationservice-inside-controller/*
@@ -50,17 +52,17 @@ namespace BlogUnitTest
         {
             _repository = new Mock<IBlogRepository>();
             _mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
+            _mockUserManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1234"); //mock userid
+            var authHandler = new BlogOwnerAuthorizationHandler(_mockUserManager.Object);
+
             _authService = BuildAuthorizationService(services =>
             {
-
                 services.AddScoped(_ => _repository?.Object);
-                services.AddScoped<IAuthorizationHandler, BlogOwnerAuthorizationHandler>();
+                services.AddScoped<IAuthorizationHandler>(_=> authHandler);
 
                 services.AddAuthorization(options =>
                 {
-                    //*
                     //options.AddPolicy("PolicyName", policy => policy.Requirements.Add(new MyCustomRequirement()));
-                    //Feiler på new MyCustomRequirement() fordi jeg ikke har den.
 
                     options.AddPolicy("Basic", policy =>
                     {
@@ -73,24 +75,61 @@ namespace BlogUnitTest
 
             });
 
-            
-     
-     
-
+            controller = new PostController(_repository.Object, _authService);
 
             _blogs = new List<Blogg>{
                 new() {BlogId = 1, Name = "First in line", ClosedForPosts = false},
                 new() {BlogId = 2, Name = "Everything was great", ClosedForPosts = false}
             };
         }
-        
+
         [TestMethod]
+        public void DeltePost_RedirectsToNotAllowed()
+        {
+
+            //Arrange
+            var owner = new IdentityUser("test")
+            {
+                Id = "12345"
+            };
+            var fakePost = new Post
+            {
+                BlogId = 3,
+                PostId = 6,
+                Title = "Dette er en tittel",
+                Content = "Dette er litt innhold",
+                Owner = owner,
+                Blog = new Blogg()
+                {
+                    Name = "Navnet på bloggen",
+                    ClosedForPosts = false
+                }
+            };
+
+            _repository.Setup(x => x.GetPost(fakePost.PostId)).Returns(fakePost);
+            //var user = new IdentityUser("testuser");
+            //user.Id = "1";
+            controller.ControllerContext = MockHelpers.FakeControllerContext(/*true, user.Id, user.UserName*/);
+            TempDataDictionary tempData = new TempDataDictionary(
+                controller.ControllerContext.HttpContext,
+                Mock.Of<ITempDataProvider>()
+            );
+
+            controller.TempData = tempData;
+
+            var result = controller.DeletePost(fakePost.PostId).Result as RedirectToActionResult;
+            Assert.IsNotNull(result, "Should not be null");
+            Assert.AreEqual("NotAllowed", result.ActionName);
+        }
+
+
+       /*     [TestMethod]
         public async Task BlogIndexReturnsNotNullResult()
         {
             // Arrange
             //var mock = new Mock<BlogOwnerAuthorizationHandler>(_mockUserManager.Object);
             var mockBlogOwnerAuthHandler = new BlogOwnerAuthorizationHandler(_mockUserManager.Object);
-            var controller = new BlogController(_repository.Object, _authService);
+            var controller = new BlogController(_repository.Object, authHandler);
             //var mock = new Mock<ControllerContext>();
             //mock.SetupGet(x => x.HttpContext.User.Identity.Name).Returns("SOMEUSER");
             //mock.SetupGet(x => x.HttpContext.User.Identity.IsAuthenticated).Returns(true);
@@ -116,7 +155,7 @@ namespace BlogUnitTest
             var products = result.ViewData.Model as List<Blogg>;
             //Assert.AreEqual(5, products.Count, "Got wrong number of products");
         }
-
+       */
         [TestMethod]
         public void SaveIsCalledWhenBlogIsCreated()
         { 

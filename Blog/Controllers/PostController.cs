@@ -31,10 +31,17 @@ namespace Blog.Controllers
 
 
         [HttpGet]
-        public ActionResult CreatePost(int blogId)
+        public async Task<ActionResult> CreatePost(int blogId)
         {
-
             var blog = _blogRepository.GetBlog(blogId);
+
+            // requires using AuthorizationHandler
+            var isAuthorized = await _authorizationService.AuthorizeAsync(
+                User, blog, BlogOperations.Update);
+
+            if (!isAuthorized.Succeeded)
+                return View("Ingentilgang");
+
 
             var closed = blog.ClosedForPosts;
             
@@ -50,10 +57,17 @@ namespace Blog.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreatePost(int blogId,[Bind("Title, Content, Created, BlogId, Owner")]PostViewModel  newPost)
+        public async Task<ActionResult> CreatePost(int blogId,[Bind("Title, Content, Created, BlogId, Owner")]PostViewModel  newPost)
         {
+            var blog = _blogRepository.GetBlog(blogId);
+
             try
             {
+                var isAuthorized = await _authorizationService.AuthorizeAsync(
+                    User, blog, BlogOperations.Update);
+
+                if (!isAuthorized.Succeeded)
+                    return View("Ingentilgang");
 
                 if (ModelState.IsValid)
                 {
@@ -104,24 +118,39 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditPost(int? id, [Bind("PostId, Title, Content, Modified, BlogId, Owner")]Post post)
         {
-            if(id == null)
-            {
-                return NotFound();
-            }
-
-            
-            /*var postForTestingOwner = _blogRepository.GetPost(id);
-            var isAuthorized = await _authorizationService.AuthorizeAsync(User, postForTestingOwner, BlogOperations.Update);
-
-            if (!isAuthorized.Succeeded)
-            {
-                //return View("IngenTilgang");
-                return new ChallengeResult();
-            }*/
-            var blogId = post.BlogId;
-
             try 
             {
+
+                if(id == null)
+                {
+                    return NotFound();
+                }
+
+                //se mail fra Knut...henger ikke på greip detta
+                //var postForTestingOwner = new Post()
+                //{
+                //    Title = post.Title,
+                //    Content = post.Content,
+                //    Created = DateTime.Now,
+                //    BlogId = post.BlogId,
+                //    Blog = post.Blog,
+                //    Owner = post.Owner,
+                //    Comments = post.Comments,
+                //    Modified = post.Modified,
+                //    NumberOfComments = post.NumberOfComments
+                //};
+
+                //var postForTestingOwner = _blogRepository.GetPost(id);
+                //var isAuthorized = await _authorizationService.AuthorizeAsync(User, postForTestingOwner, BlogOperations.Update);
+                //
+                //if (!isAuthorized.Succeeded)
+                //{
+                //    return View("IngenTilgang");
+                //}
+                
+                var blogId = post.BlogId;
+
+           
                 if (ModelState.IsValid)
                 {
              
@@ -138,13 +167,24 @@ namespace Blog.Controllers
             } catch (Exception e){
                 Console.WriteLine(e.ToString());
                 return View(post);
+                //return RedirectToAction("ReadBlog","Blog", new { id = blogId });
             }
 
         }
 
         [HttpGet]
-        public ActionResult DeletePost(int id)
+        public async Task<ActionResult> DeletePost(int id)
         {
+            var post = _blogRepository.GetPost(id);
+            var isAuthorized =  await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Delete);
+            
+            if (!isAuthorized.Succeeded)
+            {
+                //return View("IngenTilgang");
+                return RedirectToAction("NotAllowed", "Post");
+            }
+
+
             var postToDelete = _blogRepository.GetPost(id);
             return View(postToDelete);
         }
@@ -153,8 +193,19 @@ namespace Blog.Controllers
         // Post/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeletePost(int id, IFormCollection collection)
+        public async Task<ActionResult> DeletePost(int id, IFormCollection collection)
         {
+            
+            var post = _blogRepository.GetPost(id);
+            var isAuthorized =  await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Delete);
+            
+            if (!isAuthorized.Succeeded)
+            {
+                //return View("IngenTilgang");
+                return RedirectToAction("NotAllowed", "Post");
+            }
+
+
             try
             {
                 if (ModelState.IsValid)
@@ -174,6 +225,11 @@ namespace Blog.Controllers
             {
                 return ViewBag("Exception thrown");
             }
+        }
+
+        public IActionResult NotAllowed()
+        {
+            return View("IngenTilgang");
         }
     }
 }

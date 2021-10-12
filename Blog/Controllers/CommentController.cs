@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
+using Blog.Authorization;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
@@ -40,6 +42,7 @@ namespace Blog.Controllers
                     Text = newCommentViewModel.Text,
                     Created = DateTime.Now,
                     PostId = PostId,
+                    Owner = newCommentViewModel.Owner
                 };
                 
                 
@@ -56,15 +59,15 @@ namespace Blog.Controllers
         // GET:
         // Post/Comment/EditComment/5
         [HttpGet]
-        public ActionResult EditComment(int CommentId)
+        public async Task<ActionResult> EditComment(int CommentId)
         {
             var commentToEdit = _blogRepository.GetComment(CommentId);
 
-            //var isAutorized = await _authorizationService.AuthorizeAsync(User, postToEdit, BlogOperations.Update);
-            //if (!isAutorized.Succeeded)
-            //{
-            //return View("Ingen tilgang");
-            //}
+            var isAutorized = await _authorizationService.AuthorizeAsync(User, commentToEdit, BlogOperations.Update);
+            if (!isAutorized.Succeeded)
+            {
+                return View("Ingentilgang");
+            }
 
             return View(commentToEdit);
         }
@@ -78,7 +81,7 @@ namespace Blog.Controllers
             if (CommentId == null) {
                 return NotFound();
             }
-            var postId = comment.PostId;
+            //var postId = comment.PostId;
             try
             {
                 if (!ModelState.IsValid) return new ChallengeResult();
@@ -98,22 +101,38 @@ namespace Blog.Controllers
         // GET:
         // Post/Comment/DeleteComment/5
         [HttpGet]
-        public ActionResult DeleteComment(int CommentId)
+        public async Task<ActionResult> DeleteComment(int CommentId)
         {
             var commentToDelete = _blogRepository.GetComment(CommentId);
+
+            var isAutorized = await _authorizationService.AuthorizeAsync(User, commentToDelete, BlogOperations.Update);
+            if (!isAutorized.Succeeded)
+            {
+                return View("Ingentilgang");
+            }
+
             return View(commentToDelete);
         }
         // POST:
         // Post/Comment/DeleteComment/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteComment(int CommentId, IFormCollection collection)
+        public async Task<ActionResult> DeleteComment(int CommentId, IFormCollection collection)
         {
+
+            var commentToDelete = _blogRepository.GetComment(CommentId);
+
+            var isAutorized = await _authorizationService.AuthorizeAsync(User, commentToDelete, BlogOperations.Update);
+            if (!isAutorized.Succeeded)
+            {
+                return View("Ingentilgang");
+            }
+
             try
             {
                 if (!ModelState.IsValid) return new ChallengeResult();
                 //var owner = User;
-                var commentToDelete = _blogRepository.GetComment(CommentId);
+                //var commentToDelete = _blogRepository.GetComment(CommentId);
                 var postId = commentToDelete.PostId;
 
                 _blogRepository.DeleteComment(commentToDelete).Wait();
