@@ -15,8 +15,6 @@ namespace Blog.Models.ViewModels
 
         public string Title { get; set; }
 
-        /*[Required]
-        [StringLength(1000)]*/
         public string Content { get; set; }
 
         [Column(TypeName = "datetime2")]

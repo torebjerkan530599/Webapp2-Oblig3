@@ -39,11 +39,11 @@
                 @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
-                @Html.ActionLink("Read comments", "ReadPost", new { id = item.PostId }) |
+                @Html.ActionLink("Read comments", "ReadPost", "Post", new { id = item.PostId }) |
 
                 @Html.ActionLink("Edit", "EditPost", "Post" ,new { id = item.PostId }) |
 
-                @Html.ActionLink("Delete", "DeletePost", new { id = item.PostId })
+                @Html.ActionLink("Delete", "DeletePost", "Post", new { id = item.PostId })
             </td>
         </tr>
     }

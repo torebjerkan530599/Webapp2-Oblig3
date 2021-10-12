@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models.Entities
 {
-    public class Comment
+    public class Comment : IAuthorizationEntity
     {
         [Key]
         public int CommentId { get; set; }

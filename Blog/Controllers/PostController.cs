@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Blog.Authorization;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Controllers
 {
@@ -23,6 +20,15 @@ namespace Blog.Controllers
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
         }
+
+        
+        [AllowAnonymous]
+        public ActionResult ReadPost(int id) //show all comments on post
+        {
+            var postViewModel = _blogRepository.GetPostViewModel(id);
+            return View(postViewModel);
+        }
+
 
         [HttpGet]
         public ActionResult CreatePost(int blogId)
@@ -90,13 +96,7 @@ namespace Blog.Controllers
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, post, BlogOperations.Update);
 
-            if (!isAuthorized.Succeeded)
-            {
-                //return new ChallengeResult(); //blir bare bedt om å logge inn
-                //return Forbid(); //for ikke innloggede brukere
-                return View("Ingentilgang");
-            }
-            return View(post);
+            return !isAuthorized.Succeeded ? View("Ingentilgang") : View(post);
         }
 
         // POST: Contact/Edit/#
@@ -110,13 +110,14 @@ namespace Blog.Controllers
             }
 
             
-            post = _blogRepository.GetPost(id);
-            var isAuthorized = await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Update);
+            /*var postForTestingOwner = _blogRepository.GetPost(id);
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, postForTestingOwner, BlogOperations.Update);
 
             if (!isAuthorized.Succeeded)
             {
-                return View("IngenTilgang");
-            }
+                //return View("IngenTilgang");
+                return new ChallengeResult();
+            }*/
             var blogId = post.BlogId;
 
             try 
@@ -130,16 +131,49 @@ namespace Blog.Controllers
                     return RedirectToAction("ReadBlog","Blog", new { id = blogId });
           
                 }
-                else
-                {
-                    return RedirectToAction("Index","Blog");
+
+                return RedirectToAction("Index","Blog");
                     //return View("Index");
-                }
-            
-            } catch {
+
+            } catch (Exception e){
+                Console.WriteLine(e.ToString());
                 return View(post);
             }
 
+        }
+
+        [HttpGet]
+        public ActionResult DeletePost(int id)
+        {
+            var postToDelete = _blogRepository.GetPost(id);
+            return View(postToDelete);
+        }
+
+        // POST:
+        // Post/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeletePost(int id, IFormCollection collection)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    //var owner = User;
+                    var postToDelete = _blogRepository.GetPost(id);
+                    var blogId = postToDelete.BlogId;
+                    _blogRepository.DeletePost(postToDelete).Wait();
+                    TempData["message"] = $"{postToDelete.Title} er slettet";
+
+                    return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
+                        
+                }
+                return new ChallengeResult();
+            }
+            catch
+            {
+                return ViewBag("Exception thrown");
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Blog
             services.AddTransient<IBlogRepository, BlogRepository>();
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-            //services.AddSingleton<IAuthorizationHandler,BlogOwnerAuthorizationHandler>();
+            //services.AddSingleton<IAuthorizationHandler,BlogOwnerAuthorizationHandler>(); //blir FUBAR hvis denne brukes!
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<BlogDbContext>();
 
@@ -52,6 +52,10 @@ namespace Blog
             // Authorization handlers.
             services.AddScoped<IAuthorizationHandler,
                 BlogOwnerAuthorizationHandler>();
+
+            // Authorization handlers.
+            //services.AddTransient<IAuthorizationHandler,
+            //    BlogOwnerAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

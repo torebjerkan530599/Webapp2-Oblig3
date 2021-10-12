@@ -19,6 +19,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Blog\CreateComment.cshtml" />
+    <Content Remove="Views\Blog\CreatePost.cshtml" />
+    <Content Remove="Views\Blog\DeleteComment.cshtml" />
+    <Content Remove="Views\Blog\DeletePost.cshtml" />
+    <Content Remove="Views\Blog\EditComment.cshtml" />
+    <Content Remove="Views\Blog\EditPost.cshtml" />
+    <Content Remove="Views\Blog\ReadPost.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.10" />

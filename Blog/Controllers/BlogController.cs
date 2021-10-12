@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Blog.Authorization;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Controllers
 {
@@ -27,7 +23,7 @@ namespace Blog.Controllers
         }
 
         [AllowAnonymous]
-        // GET: BlogController
+        // GET: Blog
         public async Task<ActionResult> Index()
         {
          
@@ -35,6 +31,7 @@ namespace Blog.Controllers
             return View(blogs);
         }
 
+        // GET: Blog/ReadBlog/5
         [AllowAnonymous]
         [HttpGet]
         public ActionResult ReadBlog(int id) //shows all posts on blog
@@ -45,24 +42,24 @@ namespace Blog.Controllers
 
             if (!ModelState.IsValid) return View();
 
-            BloggViewModel bv = new BloggViewModel()
+            var bv = new BloggViewModel
             {
                 BlogId = id,
                 Name = blog.Name,
                 Title = (from p in posts where p.BlogId==id select p.Title).ToString(),
-                Posts = posts.ToList(),
-                Owner = blog.Owner
+                Posts = posts.ToList(), //hvorfor "possible multiple enumeration"?
+                Owner = blog.Owner //another way of including owner
             };
             
             return View(bv);
         }
 
-        [AllowAnonymous]
-        public ActionResult ReadPost(int id) //shows all comments on blog
+        /*[AllowAnonymous]
+        public ActionResult ReadPost(int id) //show all comments on post
         {
             var postViewModel = _blogRepository.GetPostViewModel(id);
             return View(postViewModel);
-        }
+        }*/
 
 
         // GET: Blogg/Create
@@ -166,7 +163,7 @@ namespace Blog.Controllers
         */
 
         //[Authorize]
-        [HttpGet]
+       /* [HttpGet]
         public ActionResult CreateComment(int PostId)
         {
             //var newBlog = new CreateBloggViewModel();//blogRepository.GetCreateBlogViewModel();
@@ -276,7 +273,7 @@ namespace Blog.Controllers
         */
                 // GET:
         // Post/Delete/5
-        [HttpGet]
+        /*[HttpGet]
         public ActionResult DeletePost(int id)
         {
             var postToDelete = _blogRepository.GetPost(id);
@@ -308,9 +305,9 @@ namespace Blog.Controllers
             {
                 return ViewBag("Exception thrown");
             }
-        }
+        }*/
 
-        // GET:
+        /*// GET:
         // Post/Comment/Delete/5
         [HttpGet]
         public ActionResult DeleteComment(int CommentId)
@@ -339,12 +336,12 @@ namespace Blog.Controllers
             } catch {
                 return ViewBag("Fikk ikke slettet kommentar");
             }
-        }
+        }*/
 
         // GET:
         // Post/Coomment/Edit/5
         //[Authorize]
-        [HttpGet]
+        /*[HttpGet]
         public ActionResult EditComment(int CommentId)
         {
             var commentToEdit = _blogRepository.GetComment(CommentId);
@@ -382,6 +379,6 @@ namespace Blog.Controllers
             } catch {
                 return View("Fikk ikke endret commentar");
             }
-        }
+        }*/
     }
 }

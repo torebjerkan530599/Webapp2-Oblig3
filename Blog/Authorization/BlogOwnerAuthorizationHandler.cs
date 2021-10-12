@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Blog.Authorization
 {
     public class BlogOwnerAuthorizationHandler
-        : AuthorizationHandler<OperationAuthorizationRequirement, Post>
+        : AuthorizationHandler<OperationAuthorizationRequirement, IAuthorizationEntity>
     {
         private readonly UserManager<IdentityUser> _userManager;
 
@@ -23,7 +23,7 @@ namespace Blog.Authorization
         protected override Task
             HandleRequirementAsync(AuthorizationHandlerContext context,
                 OperationAuthorizationRequirement requirement,
-                Post resource)
+                IAuthorizationEntity resource)
         {
             if (context.User == null || resource == null)
             {
@@ -42,7 +42,7 @@ namespace Blog.Authorization
                 return Task.CompletedTask;
             }
 
-            if (resource.Owner.Id == _userManager.GetUserId(context.User))
+            if (resource.Owner.Id == _userManager.GetUserId(context.User) ||  context.User.IsInRole("Admin") )
             {
                 context.Succeed(requirement);
             }
