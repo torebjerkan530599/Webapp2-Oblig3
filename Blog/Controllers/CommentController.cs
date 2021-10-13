@@ -42,7 +42,7 @@ namespace Blog.Controllers
                     Text = newCommentViewModel.Text,
                     Created = DateTime.Now,
                     PostId = PostId,
-                    Owner = newCommentViewModel.Owner
+                    //Owner = newCommentViewModel.Owner
                 };
                 
                 

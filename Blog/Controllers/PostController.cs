@@ -126,36 +126,26 @@ namespace Blog.Controllers
                     return NotFound();
                 }
 
-                //se mail fra Knut...henger ikke på greip detta
-                //var postForTestingOwner = new Post()
-                //{
-                //    Title = post.Title,
-                //    Content = post.Content,
-                //    Created = DateTime.Now,
-                //    BlogId = post.BlogId,
-                //    Blog = post.Blog,
-                //    Owner = post.Owner,
-                //    Comments = post.Comments,
-                //    Modified = post.Modified,
-                //    NumberOfComments = post.NumberOfComments
-                //};
+                var content = post.Content;
+                var title = post.Title;
 
-                //var postForTestingOwner = _blogRepository.GetPost(id);
-                //var isAuthorized = await _authorizationService.AuthorizeAsync(User, postForTestingOwner, BlogOperations.Update);
-                //
-                //if (!isAuthorized.Succeeded)
-                //{
-                //    return View("IngenTilgang");
-                //}
+                var updatePost = _blogRepository.GetPost(id);
+                updatePost.Content = content;
+                updatePost.Title = title;
+
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, updatePost, BlogOperations.Update);
+                if (!isAuthorized.Succeeded)
+                {
+                    return View("IngenTilgang");
+                }
                 
                 var blogId = post.BlogId;
 
-           
                 if (ModelState.IsValid)
                 {
              
                     //post.Modified = DateTime.Now;
-                    _blogRepository.UpdatePost(post).Wait();
+                    _blogRepository.UpdatePost(updatePost).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
                     return RedirectToAction("ReadBlog","Blog", new { id = blogId });
           
