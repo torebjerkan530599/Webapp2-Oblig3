@@ -5,8 +5,8 @@
 }
 
 <h1>Kommentarer: </h1>
-<br/>
-<h5>Test om jeg får tak i eier etter 'create comment' via ViewBag: @ViewBag.Message</h5>
+<br />
+<!--h5>Test om jeg får tak i eier etter 'create comment' via ViewBag: @*ViewBag.Message*@</h5-->
 
 <br />
 
@@ -23,33 +23,33 @@
 
 
         @try
+        {
+            @foreach (var item in Model.Comments)
             {
-                @foreach (var item in Model.Comments)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Owner.UserName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Text)
-                        </td>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Owner.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Text)
+                    </td>
 
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Created)
-                        </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Created)
+                    </td>
 
-                        <td>
-                            @Html.ActionLink("Edit", "EditComment", "Comment", new { CommentId = item.CommentId }) |
+                    <td>
+                        @Html.ActionLink("Edit", "EditComment", "Comment", new { CommentId = item.CommentId }) |
 
-                            @Html.ActionLink("Delete", "DeleteComment", "Comment", new { CommentId = item.CommentId })
-                        </td>
-                    </tr>
-                }
+                        @Html.ActionLink("Delete", "DeleteComment", "Comment", new { CommentId = item.CommentId })
+                    </td>
+                </tr>
             }
-            catch (NullReferenceException e)
-            {
-
-            }
+        }
+        catch (NullReferenceException e)
+        {
+            Console.WriteLine(e.ToString());
+        }
 
 
     </table>
@@ -65,5 +65,6 @@
 <div>
 
     <a asp-controller="Blog" asp-action="Index">&#8592 Tilbake til alle blogger<br></a>
+    <!--a asp-controller="Blog" asp-route-id=Model.BlogId asp-action="ReadBlog">&#8592 Tilbake til innlegg<br></a--> <!--Must study WebApi before this is possible-->
     <p>&#8592 @Html.ActionLink("Tilbake til innlegg", "ReadBlog", "Blog", new { id = Model.BlogId })</p>
 </div>

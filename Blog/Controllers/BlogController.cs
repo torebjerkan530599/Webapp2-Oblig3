@@ -53,13 +53,6 @@ namespace Blog.Controllers
             return View(bv);
         }
 
-        /*[AllowAnonymous]
-        public ActionResult ReadPost(int id) //show all comments on post
-        {
-            var postViewModel = _blogRepository.GetPostViewModel(id);
-            return View(postViewModel);
-        }*/
-
 
         // GET: Blogg/Create
         //[Authorize]

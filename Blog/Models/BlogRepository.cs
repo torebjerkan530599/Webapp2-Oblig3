@@ -43,7 +43,7 @@ namespace Blog.Models
 
         public IEnumerable<Comment> GetAllComments(int? postIdToGet)
         {
-            IEnumerable<Comment> comments = _db.Comments;
+            IEnumerable<Comment> comments = _db.Comments.Include(o => o.Owner);
             var commentsQuery = from comment in comments
                 where comment.PostId == postIdToGet
                 orderby comment.Created descending 
@@ -146,7 +146,7 @@ namespace Blog.Models
 
             else
             {
-                p = (_db.Blogs.Include(p=>p.Posts)
+                p = _db.Blogs.Include(blogg=>blogg.Posts)
                         .Where(b => b.BlogId == id)
                         .Select(k => new CreateBloggViewModel()
                             {
@@ -154,7 +154,7 @@ namespace Blog.Models
                                 Name = k.Name,
                                 Created = DateTime.Now
                             }
-                        ).FirstOrDefault());
+                        ).FirstOrDefault();
             }
             return p;
         }
@@ -168,20 +168,19 @@ namespace Blog.Models
             }
             else
             {
-                p = (_db.Posts.Include(o=>o.Comments)
+                p = _db.Posts.Include(o=>o.Comments).Include(o=>o.Owner)
                     .Where(o => o.PostId == id)
-                    .Select(o => new PostViewModel() 
-                        {
-                            PostId = o.PostId,
-                            Content = o.Content,
-                            Created = o.Created,
-                            Modified = o.Modified,
-                            Blog = o.Blog,
-                            BlogId = o.BlogId,
-                            Comments = GetAllComments(id).ToList(),
-                            Owner = o.Owner
-                        }
-                    ).FirstOrDefault());
+                    .Select(o => new PostViewModel 
+                    {
+                        PostId = o.PostId,
+                        Content = o.Content,
+                        Created = o.Created,
+                        Modified = o.Modified,
+                        Blog = o.Blog,
+                        BlogId = o.BlogId,
+                        Comments = GetAllComments(id).ToList(),
+                        Owner = o.Owner
+                    }).FirstOrDefault();
             }
             return p;
         }

@@ -26,8 +26,8 @@ namespace Blog.Controllers
         public ActionResult ReadPost(int id) //show all comments on post
         {
             var postViewModel = _blogRepository.GetPostViewModel(id);
-            var nickname =TempData["username"]; //for testing purposes
-            ViewBag.Message = nickname; //testing if I can show nickname in view
+            //var nickname =TempData["username"]; //for testing purposes
+            //ViewBag.Message = nickname; //testing if I transfer nickname to view
             return View(postViewModel);
         }
 

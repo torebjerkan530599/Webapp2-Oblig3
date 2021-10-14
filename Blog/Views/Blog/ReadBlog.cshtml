@@ -4,36 +4,35 @@
     ViewData["Title"] = "ReadBlog";
 }
 
-<h1>Innlegg</h1>
-<br />
-
-@*<p>
-
-            Created: @Model.Created, Modified: @Model.Modified,
-            @if (@Model.Owner.UserName == null)
-            {<a>No user</a>
-            }
-            else
-            {@Model.Owner.UserName
-            }
-    </p>   *@
+<h1>Innlegg for blogg "@Model.Name"</h1>
+<hr />
+<p>
+    @*Created: @Model.Created,*@
+    @if (@Model.Owner == null)
+        {<a> Bruker er ikke registrert</a> }
+    else
+        {<a> Laget av: @Model.Owner.UserName</a> }
+</p>
 
 
 <table class="table table-hover">
     <tr>
-        <th>Eier </th>
+        <!--th>Eier </th-->
         <th>Tittel</th>
+        <th>Opprettet</th>
         <th>Innhold</th>
+        <th>Valg</th>
     </tr>
 
     @foreach (var item in Model.Posts)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Owner.UserName)
+                @*Html.DisplayFor(modelItem => item.Owner.UserName)*@
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @Html.DisplayFor(modelItem => item.Created)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Content)
