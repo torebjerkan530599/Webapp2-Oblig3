@@ -173,6 +173,7 @@ namespace Blog.Models
                     .Select(o => new PostViewModel 
                     {
                         PostId = o.PostId,
+                        Title = o.Title,
                         Content = o.Content,
                         Created = o.Created,
                         Modified = o.Modified,

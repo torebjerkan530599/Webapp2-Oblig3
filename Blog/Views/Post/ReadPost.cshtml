@@ -4,11 +4,17 @@
     ViewData["Title"] = "Innlegg";
 }
 
-<h1>Kommentarer: </h1>
-<br />
-<!--h5>Test om jeg får tak i eier etter 'create comment' via ViewBag: @*ViewBag.Message*@</h5-->
+<h1>Kommenarer for innlegget "@Model.Title"</h1>
+<hr />
+<p>
+    @*Created: @Model.Created,*@
+    @if (@Model.Owner == null)
+    {<a> Bruker er ikke registrert</a> }
+    else
+    {<a> Eier av innlegg: @Model.Owner.UserName</a> }
+</p>
 
-<br />
+<!--h5>Test om jeg får tak i eier etter 'create comment' via ViewBag: @*ViewBag.Message*@</h5-->
 
 
 <div>
