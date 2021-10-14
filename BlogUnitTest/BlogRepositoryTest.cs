@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using BlogUnitTest;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlogUnitTest
 {
@@ -86,7 +88,7 @@ namespace BlogUnitTest
         }
 
         [TestMethod]
-        public async Task CanGetAllProducts()//does test have to be syncronous?
+        public async Task CanGetAllBlogs()//does test have to be syncronous?
         {
             await using var context = new BlogDbContext(ContextOptions);
             //Arrange
@@ -101,6 +103,21 @@ namespace BlogUnitTest
             //Assert.AreEqual("Quisque convallis est", blogs[1].Name);
             //Assert.AreEqual("Interdum et malesuada", blogs[2].Name);
         }
+
+        /*[TestMethod]
+        public async Task IndexReturnsAllBlogsAndIsOfCorrectType()
+        {
+            // Arrange
+            _repository.Setup(x => x.GetAllBlogs()).Returns(_fakeBloggs);
+            // Act
+            var result =  await _blogController.Index() as ViewResult;
+            // Assert
+            Assert.IsNotNull(result, "View Result is null");
+            CollectionAssert.AllItemsAreInstancesOfType((ICollection)result.ViewData.Model, typeof(Blogg));
+            //
+            var blogs = result.ViewData.Model as List<Blogg>;
+            Assert.AreNotEqual(_fakeBloggs.Count, blogs.Count, "Forskjellig antall blogger");
+        }*/
 
     }
 }
