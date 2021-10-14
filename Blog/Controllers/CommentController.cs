@@ -42,12 +42,14 @@ namespace Blog.Controllers
                     Text = newCommentViewModel.Text,
                     Created = DateTime.Now,
                     PostId = PostId,
-                    //Owner = newCommentViewModel.Owner
                 };
-                
-                
+
+                //fordi at det går an å kommentere på andre sine poster må man oppdatere PostViewModel som brukes i ReadPost
+
                 _blogRepository.SaveComment(comment, User).Wait();
-                TempData["message"] = "kommentaren har blitt opprettet";
+
+                TempData["message"] = $"kommentaren har blitt opprettet";
+                TempData["username"] = comment.Owner.UserName; //just for testing purposes. Used in ReadPost action methon in PostController.
                 return RedirectToAction("ReadPost", "Post", new { id = PostId });
             }
             catch 

@@ -15,11 +15,10 @@ namespace Blog.Controllers
         readonly IAuthorizationService _authorizationService;
         //private readonly UserManager<IdentityUser> _userManager;
 
-        public BlogController(IBlogRepository blogRepository, /*UserManager<IdentityUser> userManager = null,*/ IAuthorizationService authorizationService=null) 
+        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService=null) 
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
-            /*_userManager = userManager;*/
         }
 
         [AllowAnonymous]

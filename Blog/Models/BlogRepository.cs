@@ -176,6 +176,7 @@ namespace Blog.Models
                             Content = o.Content,
                             Created = o.Created,
                             Modified = o.Modified,
+                            Blog = o.Blog,
                             BlogId = o.BlogId,
                             Comments = GetAllComments(id).ToList(),
                             Owner = o.Owner

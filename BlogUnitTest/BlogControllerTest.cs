@@ -33,7 +33,7 @@ namespace BlogUnitTest
         private List<Blogg> _blogs;
         private IAuthorizationService _authService;
         private ClaimsPrincipal _user;
-        private PostController controller;
+        private PostController postController;
 
 
         //https://codingblast.com/asp-net-core-unit-testing-authorizationservice-inside-controller/*
@@ -75,7 +75,7 @@ namespace BlogUnitTest
 
             });
 
-            controller = new PostController(_repository.Object, _authService);
+            postController = new PostController(_repository.Object, _authService);
 
             _blogs = new List<Blogg>{
                 new() {BlogId = 1, Name = "First in line", ClosedForPosts = false},
@@ -109,53 +109,49 @@ namespace BlogUnitTest
             _repository.Setup(x => x.GetPost(fakePost.PostId)).Returns(fakePost);
             //var user = new IdentityUser("testuser");
             //user.Id = "1";
-            controller.ControllerContext = MockHelpers.FakeControllerContext(/*true, user.Id, user.UserName*/);
+            postController.ControllerContext = MockHelpers.FakeControllerContext(/*true, user.Id, user.UserName*/);
             TempDataDictionary tempData = new TempDataDictionary(
-                controller.ControllerContext.HttpContext,
+                postController.ControllerContext.HttpContext,
                 Mock.Of<ITempDataProvider>()
             );
 
-            controller.TempData = tempData;
+            postController.TempData = tempData;
 
-            var result = controller.DeletePost(fakePost.PostId).Result as RedirectToActionResult;
+            var result = postController.DeletePost(fakePost.PostId).Result as RedirectToActionResult;
             Assert.IsNotNull(result, "Should not be null");
             Assert.AreEqual("NotAllowed", result.ActionName);
         }
 
 
-       /*     [TestMethod]
+           [TestMethod]
         public async Task BlogIndexReturnsNotNullResult()
         {
             // Arrange
-            //var mock = new Mock<BlogOwnerAuthorizationHandler>(_mockUserManager.Object);
-            var mockBlogOwnerAuthHandler = new BlogOwnerAuthorizationHandler(_mockUserManager.Object);
-            var controller = new BlogController(_repository.Object, authHandler);
-            //var mock = new Mock<ControllerContext>();
-            //mock.SetupGet(x => x.HttpContext.User.Identity.Name).Returns("SOMEUSER");
-            //mock.SetupGet(x => x.HttpContext.User.Identity.IsAuthenticated).Returns(true);
-            //controller.ControllerContext = mock.Object;
+            var blogController= new BlogController(_repository.Object, _authService);
+
             // Act
-            var result = (ViewResult)await controller.Index();
+            var result = (ViewResult)await blogController.Index();
+
             // Assert
             Assert.IsNotNull(result, "View Result is null");
         }
 
         
         [TestMethod]
-        public void BlogIndexReturnsAllBlogs()
+        public async Task BlogIndexReturnsAllBlogs()
         {
             // Arrange
             _repository.Setup(x => x.GetAllBlogs()).Returns(_blogs);
             var controller = new BlogController(_repository.Object,  _authService);
             // Act
-            var result = controller.Index() as ViewResult;
+            var result = await controller.Index() as ViewResult;
             // Assert
             CollectionAssert.AllItemsAreInstancesOfType((ICollection)result.ViewData.Model, typeof(Blogg));
             Assert.IsNotNull(result, "View Result is null");
             var products = result.ViewData.Model as List<Blogg>;
             //Assert.AreEqual(5, products.Count, "Got wrong number of products");
         }
-       */
+       
         [TestMethod]
         public void SaveIsCalledWhenBlogIsCreated()
         { 

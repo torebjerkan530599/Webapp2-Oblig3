@@ -26,6 +26,8 @@ namespace Blog.Controllers
         public ActionResult ReadPost(int id) //show all comments on post
         {
             var postViewModel = _blogRepository.GetPostViewModel(id);
+            var nickname =TempData["username"]; //for testing purposes
+            ViewBag.Message = nickname; //testing if I can show nickname in view
             return View(postViewModel);
         }
 
@@ -129,11 +131,11 @@ namespace Blog.Controllers
                 var content = post.Content;
                 var title = post.Title;
 
-                var updatePost = _blogRepository.GetPost(id);
-                updatePost.Content = content;
-                updatePost.Title = title;
+                var editedPost = _blogRepository.GetPost(id);
+                editedPost.Content = content;
+                editedPost.Title = title;
 
-                var isAuthorized = await _authorizationService.AuthorizeAsync(User, updatePost, BlogOperations.Update);
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, editedPost, BlogOperations.Update);
                 if (!isAuthorized.Succeeded)
                 {
                     return View("IngenTilgang");
@@ -145,19 +147,17 @@ namespace Blog.Controllers
                 {
              
                     //post.Modified = DateTime.Now;
-                    _blogRepository.UpdatePost(updatePost).Wait();
+                    _blogRepository.UpdatePost(editedPost).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
                     return RedirectToAction("ReadBlog","Blog", new { id = blogId });
           
                 }
 
                 return RedirectToAction("Index","Blog");
-                    //return View("Index");
 
             } catch (Exception e){
                 Console.WriteLine(e.ToString());
                 return View(post);
-                //return RedirectToAction("ReadBlog","Blog", new { id = blogId });
             }
 
         }
