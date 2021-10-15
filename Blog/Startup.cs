@@ -35,7 +35,6 @@ namespace Blog
             services.AddTransient<IBlogRepository, BlogRepository>();
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-            //services.AddSingleton<IAuthorizationHandler,BlogOwnerAuthorizationHandler>(); //blir FUBAR hvis denne brukes!
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<BlogDbContext>();
 
@@ -52,10 +51,6 @@ namespace Blog
             // Authorization handlers.
             services.AddScoped<IAuthorizationHandler,
                 BlogOwnerAuthorizationHandler>();
-
-            // Authorization handlers.
-            //services.AddTransient<IAuthorizationHandler,
-            //    BlogOwnerAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +59,8 @@ namespace Blog
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //app.UseSwagger();
+                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoApi v1"));
             }
             else
             {
@@ -85,6 +82,7 @@ namespace Blog
                     name: "default",
                     pattern: "{controller=Blog}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapControllers(); //this will be used for attribute routing in WebApi
             });
 
             //if multiple endpoints

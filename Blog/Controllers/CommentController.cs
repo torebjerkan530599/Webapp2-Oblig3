@@ -117,7 +117,7 @@ namespace Blog.Controllers
         }
         // POST:
         // Post/Comment/DeleteComment/5
-        [HttpPost]
+        [HttpPost/*, ActionName("DeleteComment")*/]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteComment(int CommentId, IFormCollection collection)
         {
