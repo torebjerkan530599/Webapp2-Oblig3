@@ -11,11 +11,13 @@ namespace Blog.Models
     public interface IBlogRepository
     {
         Task<IEnumerable<Blogg>> GetAllBlogs();
+        //Task<IEnumerable<Comment>> GetAllComments(); //Called from WebApi 
+        //IEnumerable<Comment> GetAllComments(); //Called from WebApi 
+        IEnumerable<Post> GetAllPosts(int blogId);
 
         Blogg GetBlog(int blogIdToGet);
         Task SaveBlog(Blogg blog,  ClaimsPrincipal user); 
 
-        IEnumerable<Post> GetAllPosts(int blogId);
         PostViewModel GetPostViewModel(int? id);
         Post GetPost(int? id);
         Task SavePost(Post post,  ClaimsPrincipal user);

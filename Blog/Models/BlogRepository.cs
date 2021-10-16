@@ -41,7 +41,19 @@ namespace Blog.Models
 
         }
 
-        public IEnumerable<Comment> GetAllComments(int? postIdToGet)
+
+        //Not in use
+        //public async Task<IEnumerable<Comment>> GetAllComments()
+        /*public IEnumerable<Comment> GetAllComments()
+        {
+
+            //IEnumerable<Comment> comments = await _db.Comments.Include(p=>p.Post).Include(o => o.Owner).ToListAsync();;
+            IEnumerable<Comment> comments = _db.Comments.Include(p=>p.Post).Include(o => o.Owner);
+            return comments;
+        }*/
+
+        //for internal use
+        private IEnumerable<Comment> GetAllComments(int? postIdToGet)
         {
             IEnumerable<Comment> comments = _db.Comments.Include(o => o.Owner);
             var commentsQuery = from comment in comments
@@ -203,6 +215,6 @@ namespace Blog.Models
 
         }
 
-     
+      
     }
 }

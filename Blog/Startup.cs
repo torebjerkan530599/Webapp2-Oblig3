@@ -83,6 +83,7 @@ namespace Blog
                     pattern: "{controller=Blog}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
                 endpoints.MapControllers(); //this will be used for attribute routing in WebApi
+                
             });
 
             //if multiple endpoints

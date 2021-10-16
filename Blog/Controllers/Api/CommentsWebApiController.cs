@@ -1,38 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http.Description;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Blog.Data;
 using Blog.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Web.Http;
+using Blog.Models;
 
-namespace Blog.Controllers
+namespace Blog.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsWebApiController : ControllerBase
     {
         private readonly BlogDbContext _context;
+        private readonly IBlogRepository _repo;
 
-        public CommentsWebApiController(BlogDbContext context)
+        public CommentsWebApiController(BlogDbContext context,IBlogRepository repo) //hvordan gjøre DI med WebApi for å bruke repo?
         {
             _context = context;
+            _repo = repo;
         }
 
+
+        //NB: Gets all comments, not just the comments on a certain post. Post is null on all Comments
         // GET: api/CommentsWebApi
-        [HttpGet]
+        [HttpGet] //Shows a list of all comments, not including Post. No idea how to include Post in request.
         public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
         {
-            return await _context.Comments.ToListAsync();
+            return await _context.Comments/*.Include(o=>o.Owner)*/.ToListAsync(); //include(c=>c.Post) virker ikke.
         }
+        
+        // GET: api/CommentsWebApi
+        /*[HttpGet]
+        public IEnumerable<Comment> GetComments()
+        {
+            return _repo.GetAllComments();
+        }*/
 
-
+        //Gets just a single comment identified by it's id
         // GET: api/CommentsWebApi/5
-        [ResponseType(typeof(Comment))]
+        /*[Produces(typeof(Comment))]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Comment>> GetComment(int id, [FromServices] 
             ILogger<CommentsWebApiController> logger) //se appsettings.json for loglevel
@@ -47,6 +57,39 @@ namespace Blog.Controllers
 
             //return comment;
             return Ok(comment);
+        }*/
+
+        [Produces(typeof(IEnumerable<Comment>))]
+        [HttpGet("{postIdToGet:int}")]
+        public async Task<ActionResult<IEnumerable <Comment>>> GetComment(int postIdToGet, [FromServices] //this wont run asyncronously at the current moment
+            ILogger<CommentsWebApiController> logger) //se appsettings.json for loglevel
+        {
+            logger.LogDebug("GetProduct Action Invoked"); //burde skrive til output vinduet ved debugging
+
+            IEnumerable<Comment> comments = _context.Comments.Include(o => o.Owner);
+
+            /*var commentsQuery = from comment in comments
+                where comment.PostId == postIdToGet
+                orderby comment.Created descending 
+                select comment;*/
+
+            var commentsQuery = _context.Comments.Include(c => c.Post)
+                .Where(c => c.PostId == postIdToGet)
+                .Select(c => new Comment
+                {
+                    CommentId = c.CommentId,
+                    Created = c.Created,
+                    Modified = c.Modified,
+                    Owner = c.Owner,
+                    Post = c.Post,
+                    PostId = c.PostId,
+                    Text = c.Text
+                }).FirstOrDefault();
+
+            //var thePost = await _context.Posts.FindAsync(postIdToGet);
+
+            //return comment;
+            return Ok(commentsQuery);
         }
 
         // PUT: api/CommentsWebApi/5
