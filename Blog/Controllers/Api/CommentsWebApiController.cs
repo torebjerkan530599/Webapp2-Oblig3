@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Blog.Data;
@@ -11,9 +12,9 @@ using Blog.Models;
 
 namespace Blog.Controllers.Api
 {
-    [Route("api/[controller]")]
+    [Route("api/CommentsWebApi")]//[Route("api/[controller]")]
     [ApiController]
-    public class CommentsWebApiController : ControllerBase
+    public class CommentsWebApiController : ControllerBase //or just Controller?
     {
         private readonly BlogDbContext _context;
         private readonly IBlogRepository _repo;
@@ -24,21 +25,14 @@ namespace Blog.Controllers.Api
             _repo = repo;
         }
 
+        //public CommentsWebApiController(IBlogRepository repo) => _repo = repo;//hvordan får jeg alle metodene til å bruke repo?
 
-        //NB: Gets all comments, not just the comments on a certain post. Post is null on all Comments
         // GET: api/CommentsWebApi
-        [HttpGet] //Shows a list of all comments, not including Post. No idea how to include Post in request.
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
+        [HttpGet]
+        public async Task<IEnumerable<Comment>> GetComments()
         {
-            return await _context.Comments/*.Include(o=>o.Owner)*/.ToListAsync(); //include(c=>c.Post) virker ikke.
+            return await _repo.GetAllComments();
         }
-        
-        // GET: api/CommentsWebApi
-        /*[HttpGet]
-        public IEnumerable<Comment> GetComments()
-        {
-            return _repo.GetAllComments();
-        }*/
 
         //Gets just a single comment identified by it's id
         // GET: api/CommentsWebApi/5
@@ -59,43 +53,30 @@ namespace Blog.Controllers.Api
             return Ok(comment);
         }*/
 
-        [Produces(typeof(IEnumerable<Comment>))]
+        //[Produces(typeof(IEnumerable<Comment>))] //no idea what this produces
         [HttpGet("{postIdToGet:int}")]
-        public async Task<ActionResult<IEnumerable <Comment>>> GetComment(int postIdToGet, [FromServices] //this wont run asyncronously at the current moment
+        public async Task<IEnumerable <Comment>> GetComments(int postIdToGet)  //preferrably it should be IHttpActionResult....
+        {
+            var commentsOnPost = await _repo.GetAllCommentsOnPost(postIdToGet);
+            return commentsOnPost; //....so it could return Ok(commentsOnPost)...also simplifies unit testing.
+        }
+
+
+        /*[Produces(typeof(IEnumerable<Comment>))]
+        [HttpGet("{postIdToGet:int}")]
+        public ActionResult<IEnumerable <Comment>> GetComment(int postIdToGet, [FromServices] //this wont run asyncronously at the current moment
             ILogger<CommentsWebApiController> logger) //se appsettings.json for loglevel
         {
             logger.LogDebug("GetProduct Action Invoked"); //burde skrive til output vinduet ved debugging
 
-            IEnumerable<Comment> comments = _context.Comments.Include(o => o.Owner);
-
-            /*var commentsQuery = from comment in comments
-                where comment.PostId == postIdToGet
-                orderby comment.Created descending 
-                select comment;*/
-
-            var commentsQuery = _context.Comments.Include(c => c.Post)
-                .Where(c => c.PostId == postIdToGet)
-                .Select(c => new Comment
-                {
-                    CommentId = c.CommentId,
-                    Created = c.Created,
-                    Modified = c.Modified,
-                    Owner = c.Owner,
-                    Post = c.Post,
-                    PostId = c.PostId,
-                    Text = c.Text
-                }).FirstOrDefault();
-
-            //var thePost = await _context.Posts.FindAsync(postIdToGet);
-
-            //return comment;
+            var commentsQuery = _context.Comments.Include(c => c.Post).Include(o=>o.Owner).Where(c => c.PostId == postIdToGet);
             return Ok(commentsQuery);
-        }
+        }*/
 
         // PUT: api/CommentsWebApi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment(int id, Comment comment)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> PutComment([FromRoute] int id, [FromBody] Comment comment)
         {
             if (id != comment.CommentId)
             {
@@ -103,6 +84,7 @@ namespace Blog.Controllers.Api
             }
 
             _context.Entry(comment).State = EntityState.Modified;
+            //_repo.UpdateComment(comment).Wait();
 
             try
             {
@@ -120,7 +102,7 @@ namespace Blog.Controllers.Api
                 }
             }
 
-            return NoContent();
+            return NoContent(); //StatusCode 204
         }
 
         // POST: api/CommentsWebApi
@@ -129,14 +111,15 @@ namespace Blog.Controllers.Api
         public async Task<ActionResult<Comment>> PostComment(Comment comment)
         {
             _context.Comments.Add(comment);
+            //_repo.SaveComment(comment, User).Wait();
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComment", new { id = comment.CommentId }, comment);
+            return CreatedAtAction("GetComment", new { id = comment.CommentId }, comment); //Må det være en link til oprrettet produkt?, ikke en redirect til Oversikten over alle kommentarer på en gitt post?
         }
 
         // DELETE: api/CommentsWebApi/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteComment(int id)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteComment([FromRoute] int id)
         {
             var comment = await _context.Comments.FindAsync(id);
             if (comment == null)

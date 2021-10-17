@@ -11,7 +11,9 @@ namespace Blog.Models
     public interface IBlogRepository
     {
         Task<IEnumerable<Blogg>> GetAllBlogs();
-        //Task<IEnumerable<Comment>> GetAllComments(); //Called from WebApi 
+        Task<IEnumerable<Comment>> GetAllComments(); //Returns all comments. Called from WebApi 
+
+        Task<IEnumerable<Comment>> GetAllCommentsOnPost(int postId); //returns all comments on a post. Called from WebApi
         //IEnumerable<Comment> GetAllComments(); //Called from WebApi 
         IEnumerable<Post> GetAllPosts(int blogId);
 

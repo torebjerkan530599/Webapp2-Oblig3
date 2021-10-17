@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Innlegg";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Kommenarer for innlegget "@Model.Title"</h1>
@@ -11,7 +12,7 @@
     @if (@Model.Owner == null)
     {<a> Bruker er ikke registrert</a> }
     else
-    {<a> Eier av innlegg: @Model.Owner.UserName</a> }
+    {<a> Eier av innlegg: @Model.Owner.UserName</a>}
 </p>
 
 <!--h5>Test om jeg får tak i eier etter 'create comment' via ViewBag: @*ViewBag.Message*@</h5-->
@@ -60,14 +61,12 @@
 
     </table>
     <p>@Html.ActionLink("Opprett ny kommentar", "CreateComment", "Comment", new { PostId = @Model.PostId, id = @Model.PostId })</p>
-    @*<dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Blog)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Blog.Name)
-        </dd>*@
+
 
 </div>
+
+
+
 <div>
 
     <a asp-controller="Blog" asp-action="Index">&#8592 Tilbake til alle blogger<br></a>

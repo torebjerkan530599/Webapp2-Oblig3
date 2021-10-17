@@ -1,13 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Blog.Authorization;
 using Blog.Data;
 using Blog.Models;
@@ -16,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace Blog
 {
@@ -31,8 +27,10 @@ namespace Blog
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddTransient<IBlogRepository, BlogRepository>();
+            //services.AddSingleton<IBlogRepository, BlogRepository>();
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddDefaultIdentity<IdentityUser>()
@@ -40,6 +38,7 @@ namespace Blog
 
             services.AddMvc(config =>
             {
+                
                 // using Microsoft.AspNetCore.Mvc.Authorization;
                 // using Microsoft.AspNetCore.Authorization;
                 var policy = new AuthorizationPolicyBuilder()
@@ -51,6 +50,11 @@ namespace Blog
             // Authorization handlers.
             services.AddScoped<IAuthorizationHandler,
                 BlogOwnerAuthorizationHandler>();
+
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoApi", Version = "v1" });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +73,9 @@ namespace Blog
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+            
+            //for javascript
+            app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -78,6 +85,7 @@ namespace Blog
 
             app.UseEndpoints(endpoints =>
             {
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Blog}/{action=Index}/{id?}");

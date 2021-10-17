@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ASP.NET Web API</title>
+    <link rel="stylesheet" href="~/css/site.css"/>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+                $.getJSON("api/CommentsWebApi",
+                    function(data) {
+                        $.each(data,
+                            function(key, val) {
+                                const str = val.name + ': $' + val.cost;
+                                $('<li/>', { text: str })
+                                    .appendTo($('#items'));
+                            });
+                    });
+            });
+
+            function show() {
+                const id = $('#itId').val();
+                $.getJSON(`api/CommentsWebApi/${id}`,
+                        function(data) {
+                            const str = data.name + ': $' + data.cost;
+                            window.$('#items').text(str);
+                        })
+                    .fail(
+                        function(jqXhr, textStatus, err) {
+                            window.$('#items').text(`Error: ${err}`);
+                        });
+            }
+    </script>
+</head>
+<body id="body">
+<div class="main-content">
+    <div>
+        <h1>Showing All Items </h1>
+        <ul id="items"></ul>
+    </div>
+    <div>
+        <label for="itId">ID:</label>
+        <input type="text" id="itId" size="5"/>
+        <input type="button" value="Search" onclick="show();"/>
+        <p id="item"/>
+    </div>
+</div>
+</body>
+</html>
+
+<span id="spanMsg"></span>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+@*section Scripts
+{
+
+    <script>
+        $(document).ready(function() {
+
+            var val1 = 5;
+            var val2 = 2;
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Add", "CommentsWebApi")",
+                data: { number1: val1, number2: val2 },
+                datatype: "text",
+                success: function(msg) {
+                    document.getElementById("spanMsg").textContent = "Sum " + msg;
+                },
+                error: function(req, status, error) {
+                    document.getElementById("spanMsg").textContent = error;
+                }
+            });
+        });
+    </script>
+}*@

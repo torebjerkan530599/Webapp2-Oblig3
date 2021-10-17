@@ -23,7 +23,6 @@ namespace Blog.Models
 
         public async Task<IEnumerable<Blogg>> GetAllBlogs()
         {
-
             IEnumerable<Blogg> blogs = await _db.Blogs.Include(o => o.Owner).ToListAsync();;
             return blogs;
         }
@@ -42,15 +41,18 @@ namespace Blog.Models
         }
 
 
-        //Not in use
-        //public async Task<IEnumerable<Comment>> GetAllComments()
-        /*public IEnumerable<Comment> GetAllComments()
+        public async Task<IEnumerable<Comment>> GetAllComments()
         {
+            IEnumerable<Comment> comments = await _db.Comments.AsNoTracking().Include(p=>p.Post).Include(o => o.Owner).ToListAsync();;
+            return comments; //AsNoTracking() :https://www.c-sharpcorner.com/UploadFile/ff2f08/entity-framework-and-asnotracking/
+        }
 
-            //IEnumerable<Comment> comments = await _db.Comments.Include(p=>p.Post).Include(o => o.Owner).ToListAsync();;
-            IEnumerable<Comment> comments = _db.Comments.Include(p=>p.Post).Include(o => o.Owner);
-            return comments;
-        }*/
+        public async Task<IEnumerable<Comment>> GetAllCommentsOnPost(int postIdToGet)
+        {
+            var post = await _db.Posts.AsNoTracking().Include(c=>c.Comments).FirstAsync(x=>x.PostId==postIdToGet);
+            var commentList = post.Comments.Where(c => c.PostId == postIdToGet);
+            return commentList;
+        }
 
         //for internal use
         private IEnumerable<Comment> GetAllComments(int? postIdToGet)

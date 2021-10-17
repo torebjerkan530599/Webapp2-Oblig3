@@ -22,6 +22,13 @@ namespace Blog.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
+        public ActionResult Privacy()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         // GET: Blog
         public async Task<ActionResult> Index()
         {

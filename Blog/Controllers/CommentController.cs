@@ -21,6 +21,12 @@ namespace Blog.Controllers
             _authorizationService = authorizationService;
         }
 
+        //https://localhost:44366/Comment/ShowComments
+        public ActionResult ShowComments()
+        {
+            return View();
+        }
+
         // GET: Comment/CreateComment/5
         [HttpGet]
         public ActionResult CreateComment(int PostId)

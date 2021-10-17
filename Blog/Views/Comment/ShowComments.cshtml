@@ -1,0 +1,27 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "Just testing JQuery";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div id="commentData"></div>
+
+<!--Adding a arbitray javascript-->
+@section scripts
+{
+    <script>
+        $.ajax({
+            url: '@Url.Action("GetComments","CommentsWebApi")',
+            type: "GET", //Put,Post,Delete
+            success: function(data) {
+                for (let i = 0; i < data.length; i++) {
+                    $("#commentData").append(`<p>Comments: ${data[i].Text}</p>`);
+                }
+            },
+            error: function(msg) { alert(msg); }
+        });
+    </script>
+}
