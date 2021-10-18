@@ -41,9 +41,9 @@ namespace Blog.Models
         }
 
 
-        public async Task<IEnumerable<Comment>> GetAllComments()
+        public async Task<IEnumerable<Comment>> GetAllComments() //gets all comments, not just the comments on a specific post
         {
-            IEnumerable<Comment> comments = await _db.Comments.AsNoTracking().Include(p=>p.Post)/*.Include(o => o.Owner)*/.ToListAsync();;
+            IEnumerable<Comment> comments = await _db.Comments/*.AsNoTracking()/*.Include(p=>p.Post)/*.Include(o => o.Owner)*/.ToListAsync();;
             return comments; //AsNoTracking() :https://www.c-sharpcorner.com/UploadFile/ff2f08/entity-framework-and-asnotracking/
         }
 

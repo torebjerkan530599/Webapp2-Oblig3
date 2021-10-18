@@ -21,7 +21,7 @@ namespace Blog.Controllers
             _authorizationService = authorizationService;
         }
 
-        //https://localhost:44366/Comment/ShowComments
+        //Just for testing purposes https://localhost:44366/Comment/ShowComments
         public ActionResult ShowComments()
         {
             return View();

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Web.Http;
 using Blog.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace Blog.Controllers.Api
 {
@@ -87,12 +88,13 @@ namespace Blog.Controllers.Api
                 return BadRequest();
             }
 
-            _context.Entry(comment).State = EntityState.Modified;
-            //_repo.UpdateComment(comment).Wait();
+            //_context.Entry(comment).State = EntityState.Modified;
+            
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _repo.UpdateComment(comment)/*.Wait()*/;
+                //await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -112,13 +114,14 @@ namespace Blog.Controllers.Api
         // POST: api/CommentsWebApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<Comment>> PostComment(Comment comment)
         {
-            _context.Comments.Add(comment);
-            //_repo.SaveComment(comment, User).Wait();
-            await _context.SaveChangesAsync();
+            //_context.Comments.Add(comment);
+            await _repo.SaveComment(comment, User)/*.Wait()*/;
+            //await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetComment", new { id = comment.CommentId }, comment); //Må det være en link til oprrettet produkt?, ikke en redirect til Oversikten over alle kommentarer på en gitt post?
+            return CreatedAtAction(nameof(GetComments), new { id = comment.CommentId }/*, comment*/); //Hvordan virker redirectAtACtion
         }
 
         // DELETE: api/CommentsWebApi/5

@@ -1,80 +1,92 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>ASP.NET Web API</title>
-    <link rel="stylesheet" href="~/css/site.css"/>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-                $.getJSON("api/CommentsWebApi",
-                    function(data) {
-                        $.each(data,
-                            function(key, val) {
-                                const str = val.name + ': $' + val.cost;
-                                $('<li/>', { text: str })
-                                    .appendTo($('#items'));
-                            });
-                    });
-            });
+﻿@{
+    ViewBag.Title = "Testing JQuery and Ajax";
+}
 
-            function show() {
-                const id = $('#itId').val();
-                $.getJSON(`api/CommentsWebApi/${id}`,
-                        function(data) {
-                            const str = data.name + ': $' + data.cost;
-                            window.$('#items').text(str);
-                        })
-                    .fail(
-                        function(jqXhr, textStatus, err) {
-                            window.$('#items').text(`Error: ${err}`);
-                        });
-            }
-    </script>
-</head>
-<body id="body">
-<div class="main-content">
-    <div>
-        <h1>Showing All Items </h1>
-        <ul id="items"></ul>
-    </div>
-    <div>
-        <label for="itId">ID:</label>
-        <input type="text" id="itId" size="5"/>
-        <input type="button" value="Search" onclick="show();"/>
-        <p id="item"/>
-    </div>
-</div>
-</body>
-</html>
-
-<span id="spanMsg"></span>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<h2>@ViewBag.Title</h2>
+<hr />
 
 
-@*section Scripts
-{
-
+@section scripts{
     <script>
+
+        setInterval("Update()", 10000);
+
+//-------------------------View all comments-----------------------------------------------//
+        function showAll() {
+            listComments(function(comments) {
+
+                var strComments = "";
+                $.each(comments,
+                    function(index, comment) {
+                        strComments += `<tr><td>${comment.commentId} ${comment.text}</td></tr>`;
+                    });
+                $("#comments").html(strComments);
+
+            });
+
+
+            function listComments(callback) {
+                $.ajax({
+                    url: "/Api/CommentsWebApi/",
+                    data: {},
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                }).then(function(comments) {
+                    callback(comments);
+                });
+            }
+        }
+
+//---------------------------View all comments on post-------------------------------------//
+        function get(id) {
+
+            //contact = { "Name": "Petter Smart", "Address": "Narvik", "Mobile": "999999", "Email": "test1@gmail.com" };
+            listCommentOnPost(function(products) {
+
+                var strProducts = "";
+                $.each(products,
+                    function(index, comment) {
+                        strProducts += `<tr><td>${comment.commentId} ${comment.text}</td></tr>`;
+                    });
+                $("#commentsOnPost").html(strProducts);
+
+            });
+
+            function listCommentOnPost(callback) {
+                $.ajax({
+                    url: "/Api/CommentsWebApi/" + id,
+                    data: {},
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                }).then(function(comments) {
+                    callback(comments);
+                });
+            }
+
+        }
+
         $(document).ready(function() {
 
-            var val1 = 5;
-            var val2 = 2;
-
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("Add", "CommentsWebApi")",
-                data: { number1: val1, number2: val2 },
-                datatype: "text",
-                success: function(msg) {
-                    document.getElementById("spanMsg").textContent = "Sum " + msg;
-                },
-                error: function(req, status, error) {
-                    document.getElementById("spanMsg").textContent = error;
-                }
-            });
+            $("#comments").html("<p>Venter på data fra server" + "</p>");
+            $("#commentsOnPost").html("<p>Venter på data fra innlegg..." + "</p>");
+            showAll();
+            //add();
+            get(57);
         });
     </script>
-}*@
+}
+
+<div></div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            ID Kommentarer på alle poster
+        </th>
+    </tr>
+    </thead>
+    <tbody id="comments"></tbody>
+</table>
+<hr />
+<div id="commentsOnPost"></div>
