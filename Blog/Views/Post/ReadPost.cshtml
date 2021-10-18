@@ -169,9 +169,47 @@
 </table>
 
 -->
+
 <hr />
-<form action="javascript:void(0);" method="POST" onsubmit="addItem()">
-    <!--<input type="text" id="add-name" placeholder="legg inn Ny kommentar...">-->
-    <textarea type="text" id="add-name" rows="4" cols="50" placeholder="legg inn Ny kommentar..."></textarea>
-    <input type="submit" value="Add">
-</form>
+<div class="row">
+    <div class="col-md-4">
+        <form action="javascript:void(0);" method="POST" onsubmit="addItem()">
+            <input asp-for="PostId" type="hidden" class="form-control" />
+            <span asp-validation-for="PostId" class="text-danger"></span>
+            <!--<input type="text" id="add-name" placeholder="legg inn Ny kommentar...">-->
+            <textarea type="text" id="add-name" rows="4" cols="50" placeholder="legg inn Ny kommentar..."></textarea>
+            <input type="submit" value="Add">
+        </form>
+    </div>
+</div>
+
+<!--script>
+    var comment = { "Name": "Spikerpistol2", "Description": "God spikerpistol", "Price": 2550.00, "CategoryId": 1, "ManufacturerId": 1, "OwnerId": "" };
+
+    function addItem() {
+        const addNameTextbox = document.getElementById("add-name");
+
+        const item = {
+            isComplete: false,
+            name: addNameTextbox.value.trim()
+        };
+
+        fetch(uri,
+                {
+                    method: "POST",
+                    url: "/Api/CommentsWebApi/",
+                    data: JSON.stringify(product),
+                    headers: {
+                        'Accept': "application/json",
+                        'Content-Type': "application/json"
+                    },
+                    body: JSON.stringify(item)
+                })
+            .then(response => response.json())
+            .then(() => {
+                getItems();
+                addNameTextbox.value = "";
+            })
+            .catch(error => console.error("Unable to add item.", error));
+    }
+</script-->
