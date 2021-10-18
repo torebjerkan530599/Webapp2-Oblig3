@@ -57,7 +57,7 @@ namespace Blog.Controllers.Api
             return Ok(comment);
         }*/
 
-        [Produces(typeof(IEnumerable<Comment>))] //no idea what this produces
+        [Produces(typeof(IEnumerable<Comment>))]
         [HttpGet("{postIdToGet:int}")]
         [AllowAnonymous]
         public async Task<IEnumerable <Comment>> GetComments(int postIdToGet)  //preferrably it should be IHttpActionResult....

@@ -73,3 +73,99 @@
     <!--a asp-controller="Blog" asp-route-id=Model.BlogId asp-action="ReadBlog">&#8592 Tilbake til innlegg<br></a--> <!--Must study WebApi before this is possible-->
     <p>&#8592 @Html.ActionLink("Tilbake til innlegg", "ReadBlog", "Blog", new { id = Model.BlogId })</p>
 </div>
+
+
+@{
+    ViewBag.Title2 = "Testing JQuery and Ajax";
+}
+
+<h2>@ViewBag.Title2</h2>
+<hr />
+
+
+@section scripts{
+    <script>
+
+        setInterval("Update()", 10000);
+
+        //-------------------------View all comments-----------------------------------------------//
+        function showAll() {
+            listComments(function (comments) {
+
+                var strComments = "";
+                $.each(comments,
+                    function (index, comment) {
+                        strComments += `<tr><td>${comment.commentId} ${comment.text}</td></tr>`;
+                    });
+                $("#comments").html(strComments);
+
+            });
+
+
+            function listComments(callback) {
+                $.ajax({
+                    url: "/Api/CommentsWebApi/",
+                    data: {},
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                }).then(function (comments) {
+                    callback(comments);
+                });
+            }
+        }
+
+        //---------------------------View all comments on post-------------------------------------//
+        function get(id) {
+
+            listCommentOnPost(function (products) {
+
+                var strProducts = "";
+                $.each(products,
+                    function (index, comment) {
+                        strProducts += `<tr><td>${comment.commentId} ${comment.text}</td></tr>`;
+                    });
+                $("#commentsOnPost").html(strProducts);
+
+            });
+
+            function listCommentOnPost(callback) {
+                $.ajax({
+                    url: "/Api/CommentsWebApi/" + id,
+                    data: {},
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                }).then(function (comments) {
+                    callback(comments);
+                });
+            }
+
+        }
+
+        $(document).ready(function () {
+
+            $("#commentsOnPost").html("<p>Venter på data fra innlegg..." + "</p>");
+            $("#comments").html("<p>Venter på data fra server" + "</p>");
+
+            showAll();
+            //add();
+            get(@TempData["chosenId"]);
+        });
+    </script>
+}
+
+<div></div>
+<div id="commentsOnPost"></div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                ID Kommentarer på alle poster
+            </th>
+        </tr>
+    </thead>
+    <tbody id="comments"></tbody>
+</table>
+<label>Total Students:</label>  
+<hr />
