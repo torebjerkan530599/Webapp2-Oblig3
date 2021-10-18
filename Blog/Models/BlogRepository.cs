@@ -49,12 +49,12 @@ namespace Blog.Models
 
         public async Task<IEnumerable<Comment>> GetAllCommentsOnPost(int postIdToGet)
         {
-            var post = await _db.Posts.Include(c=>c.Comments).FirstAsync(x=>x.PostId==postIdToGet);
-            var commentList = post.Comments;//.Where(c => c.PostId == postIdToGet);
-            return commentList;
+            var post = await _db.Posts.Include(c => c.Comments).FirstAsync(x => x.PostId == postIdToGet);
+            //var commentList = post.Comments;//.Where(c => c.PostId == postIdToGet);
+            return post.Comments;
         }
 
-        //for internal use
+        //internal use for MVC model
         private IEnumerable<Comment> GetAllComments(int? postIdToGet)
         {
             IEnumerable<Comment> comments = _db.Comments.Include(o => o.Owner);

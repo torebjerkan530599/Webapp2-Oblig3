@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Web.Http;
 using Blog.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog.Controllers.Api
 {
@@ -19,6 +20,7 @@ namespace Blog.Controllers.Api
         private readonly BlogDbContext _context;
         private readonly IBlogRepository _repo;
 
+        
         public CommentsWebApiController(BlogDbContext context,IBlogRepository repo) //hvordan gjøre DI med WebApi for å bruke repo?
         {
             _context = context;
@@ -29,6 +31,7 @@ namespace Blog.Controllers.Api
 
         // GET: api/CommentsWebApi
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IEnumerable<Comment>> GetComments()
         {
             return await _repo.GetAllComments();
@@ -53,8 +56,9 @@ namespace Blog.Controllers.Api
             return Ok(comment);
         }*/
 
-        //[Produces(typeof(IEnumerable<Comment>))] //no idea what this produces
+        [Produces(typeof(IEnumerable<Comment>))] //no idea what this produces
         [HttpGet("{postIdToGet:int}")]
+        [AllowAnonymous]
         public async Task<IEnumerable <Comment>> GetComments(int postIdToGet)  //preferrably it should be IHttpActionResult....
         {
             var commentsOnPost = await _repo.GetAllCommentsOnPost(postIdToGet);
