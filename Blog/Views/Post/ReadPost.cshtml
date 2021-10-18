@@ -76,7 +76,7 @@
 
 
 @{
-    ViewBag.Title2 = "Testing JQuery and Ajax";
+    ViewBag.Title2 = "Testing JQuery and Ajax with WebApi";
 }
 
 <h2>@ViewBag.Title2</h2>
@@ -144,28 +144,34 @@
         $(document).ready(function () {
 
             $("#commentsOnPost").html("<p>Venter på data fra innlegg..." + "</p>");
-            $("#comments").html("<p>Venter på data fra server" + "</p>");
+            //$("#comments").html("<p>Venter på data fra server" + "</p>");
 
-            showAll();
+            //showAll(); //viser absolutt alle kommentarer, uavhengig av hvilken post/innlegg de tilhører
             //add();
             get(@TempData["chosenId"]);
         });
     </script>
 }
 
-<div></div>
+<div>Kommentarer på innlegg via WebApi: </div>
 <div id="commentsOnPost"></div>
 
-
+<!--
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                ID Kommentarer på alle poster
-            </th>
-        </tr>
+    <tr>
+        <th>
+            ID Kommentarer på alle poster
+        </th>
+    </tr>
     </thead>
     <tbody id="comments"></tbody>
 </table>
-<label>Total Students:</label>  
+
+-->
 <hr />
+<form action="javascript:void(0);" method="POST" onsubmit="addItem()">
+    <!--<input type="text" id="add-name" placeholder="legg inn Ny kommentar...">-->
+    <textarea type="text" id="add-name" rows="4" cols="50" placeholder="legg inn Ny kommentar..."></textarea>
+    <input type="submit" value="Add">
+</form>
