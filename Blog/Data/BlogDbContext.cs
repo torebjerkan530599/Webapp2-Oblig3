@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blog.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Blog.Data
 {
@@ -18,14 +21,17 @@ namespace Blog.Data
         public DbSet<Blogg> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        
+        public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            //modelBuilder.Ignore<Tag>();
+            //modelBuilder.Ignore<PostsAndTags>();
+
             //fluent API...is this necessary when I also have nav. properties configured in entities?
-            modelBuilder.Entity<Blogg>().ToTable("Blogg")
+            /*modelBuilder.Entity<Blogg>().ToTable("Blogg")
                 .HasMany(p => p.Posts);
 
             modelBuilder.Entity<Post>().ToTable("Post")
@@ -37,6 +43,14 @@ namespace Blog.Data
                 .HasOne(p => p.Post)
                 .WithMany(c => c.Comments)
                 .HasForeignKey(k => k.PostId);
+
+            
+            /*modelBuilder.Entity<Tag>().ToTable("Tag")
+                .HasMany(p => p.Posts);
+
+            modelBuilder.Entity<Post>().ToTable("Post")
+                .HasMany(p => p.Tags);*/
+
 
             modelBuilder.Entity<BloggViewModel>().HasNoKey();
 
@@ -76,7 +90,6 @@ namespace Blog.Data
                 .HasData(new Comment{CommentId = 3, PostId = 2, Created = DateTime.Now, Text = "I really like the blog, but Quisque?"});
 
         }
-        
 
 
         public DbSet<BloggViewModel> BloggViewModel { get; set; }

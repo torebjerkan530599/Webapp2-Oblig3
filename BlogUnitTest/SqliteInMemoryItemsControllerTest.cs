@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 
-
 namespace BlogUnitTest
 {
     public class SqliteInMemoryItemsControllerTest : BlogRepositoryTest, IDisposable

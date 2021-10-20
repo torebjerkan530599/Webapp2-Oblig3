@@ -66,7 +66,7 @@ namespace Blog.Controllers
             try
             {
                 var isAuthorized = await _authorizationService.AuthorizeAsync(
-                    User, blog, BlogOperations.Update);
+                    User, blog, BlogOperations.Create);
 
                 if (!isAuthorized.Succeeded)
                     return View("Ingentilgang");

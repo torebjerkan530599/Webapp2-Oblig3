@@ -90,11 +90,11 @@
 
         //-------------------------View all comments-----------------------------------------------//
         function showAll() {
-            listComments(function (comments) {
+            listComments(function(comments) {
 
                 var strComments = "";
                 $.each(comments,
-                    function (index, comment) {
+                    function(index, comment) {
                         strComments += `<tr><td>${comment.commentId} ${comment.text}</td></tr>`;
                     });
                 $("#comments").html(strComments);
@@ -108,7 +108,7 @@
                     data: {},
                     type: "GET",
                     contentType: "application/json;charset=utf-8",
-                }).then(function (comments) {
+                }).then(function(comments) {
                     callback(comments);
                 });
             }
@@ -117,11 +117,11 @@
         //---------------------------View all comments on post-------------------------------------//
         function get(id) {
 
-            listCommentOnPost(function (products) {
+            listCommentOnPost(function(products) {
 
                 var strProducts = "";
                 $.each(products,
-                    function (index, comment) {
+                    function(index, comment) {
                         strProducts += `<tr><td>${comment.commentId} ${comment.text}</td></tr>`;
                     });
                 $("#commentsOnPost").html(strProducts);
@@ -134,27 +134,68 @@
                     data: {},
                     type: "GET",
                     contentType: "application/json;charset=utf-8",
-                }).then(function (comments) {
+                }).then(function(comments) {
                     callback(comments);
                 });
             }
 
         }
 
-        $(document).ready(function () {
+        //-----------------------add a comment to the post-------------------------------------//
+
+        function add() {
+
+            var innhold = document.getElementById('add').value;
+
+            var comment = {
+                "text": innhold,
+                "postId": 1
+            };
+
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "/Api/CommentsWebApi/",
+                    data: JSON.stringify(comment),
+                    contentType: "application/json;charset=utf-8",
+                    dataType: 'json',
+                    success: function(result) {
+                        $("#update").html("<p>POST ferdig ok ..." + "</p>");
+                    },
+                    error: function(req, status, error) {
+                        $("#update").html("AJAX error");
+                    }
+                });
+        }
+
+        $(document).ready(function() {
 
             $("#commentsOnPost").html("<p>Venter på data fra innlegg..." + "</p>");
             //$("#comments").html("<p>Venter på data fra server" + "</p>");
 
             //showAll(); //viser absolutt alle kommentarer, uavhengig av hvilken post/innlegg de tilhører
-            //add();
             get(@TempData["chosenId"]);
+            //add();
         });
+
     </script>
 }
 
 <div>Kommentarer på innlegg via WebApi: </div>
 <div id="commentsOnPost"></div>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <!--form action="javascript:void(0);" method="POST" onsubmit="add()"-->
+        <!--input asp-for="PostId" type="hidden" class="form-control" />
+    <span asp-validation-for="PostId" class="text-danger"></span-->
+        <input type="text" id="add" placeholder="legg inn Ny kommentar...">
+        <!--textarea type="text" id="add" rows="4" cols="50" placeholder="legg inn ny kommentar..."></!--textarea>-->
+        <input type="submit" value="Legg til" onclick="add()">
+        <!--</!--form>-->
+    </div>
+</div>
 
 <!--
 <table class="table">
@@ -169,47 +210,4 @@
 </table>
 
 -->
-
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form action="javascript:void(0);" method="POST" onsubmit="addItem()">
-            <input asp-for="PostId" type="hidden" class="form-control" />
-            <span asp-validation-for="PostId" class="text-danger"></span>
-            <!--<input type="text" id="add-name" placeholder="legg inn Ny kommentar...">-->
-            <textarea type="text" id="add-name" rows="4" cols="50" placeholder="legg inn Ny kommentar..."></textarea>
-            <input type="submit" value="Add">
-        </form>
-    </div>
-</div>
-
-<!--script>
-    var comment = { "Name": "Spikerpistol2", "Description": "God spikerpistol", "Price": 2550.00, "CategoryId": 1, "ManufacturerId": 1, "OwnerId": "" };
-
-    function addItem() {
-        const addNameTextbox = document.getElementById("add-name");
-
-        const item = {
-            isComplete: false,
-            name: addNameTextbox.value.trim()
-        };
-
-        fetch(uri,
-                {
-                    method: "POST",
-                    url: "/Api/CommentsWebApi/",
-                    data: JSON.stringify(product),
-                    headers: {
-                        'Accept': "application/json",
-                        'Content-Type': "application/json"
-                    },
-                    body: JSON.stringify(item)
-                })
-            .then(response => response.json())
-            .then(() => {
-                getItems();
-                addNameTextbox.value = "";
-            })
-            .catch(error => console.error("Unable to add item.", error));
-    }
-</script-->
+<!--<div id="update"></div>-->

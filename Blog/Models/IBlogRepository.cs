@@ -24,6 +24,8 @@ namespace Blog.Models
         Post GetPost(int? id);
         Task SavePost(Post post,  ClaimsPrincipal user);
 
+        Task SaveComment(Comment comment);
+
         Task UpdatePost(Post post);
         Task DeletePost(Post post);
         CreateBloggViewModel GetCreateBlogViewModel(int? id);

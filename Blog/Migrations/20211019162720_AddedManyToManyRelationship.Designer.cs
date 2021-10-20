@@ -4,14 +4,16 @@ using Blog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Blog.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211019162720_AddedManyToManyRelationship")]
+    partial class AddedManyToManyRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +57,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 1,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 382, DateTimeKind.Local).AddTicks(4470),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 108, DateTimeKind.Local).AddTicks(7529),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Lorem ipsum dolor"
                         },
@@ -63,7 +65,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 2,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 388, DateTimeKind.Local).AddTicks(9228),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 115, DateTimeKind.Local).AddTicks(7519),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Quisque convallis est"
                         },
@@ -71,7 +73,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 3,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 388, DateTimeKind.Local).AddTicks(9459),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 115, DateTimeKind.Local).AddTicks(7775),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Interdum et malesuada"
                         },
@@ -79,7 +81,7 @@ namespace Blog.Migrations
                         {
                             BlogId = 4,
                             ClosedForPosts = false,
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 388, DateTimeKind.Local).AddTicks(9520),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 115, DateTimeKind.Local).AddTicks(7829),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Mauris mi velit"
                         });
@@ -121,7 +123,7 @@ namespace Blog.Migrations
                         new
                         {
                             CommentId = 1,
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 389, DateTimeKind.Local).AddTicks(5800),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(4375),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PostId = 1,
                             Text = "Is this latin?"
@@ -129,7 +131,7 @@ namespace Blog.Migrations
                         new
                         {
                             CommentId = 2,
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 389, DateTimeKind.Local).AddTicks(7171),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(6018),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PostId = 1,
                             Text = "Yes, of course it is"
@@ -137,7 +139,7 @@ namespace Blog.Migrations
                         new
                         {
                             CommentId = 3,
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 389, DateTimeKind.Local).AddTicks(7300),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(6139),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PostId = 2,
                             Text = "I really like the blog, but Quisque?"
@@ -190,7 +192,7 @@ namespace Blog.Migrations
                             PostId = 1,
                             BlogId = 1,
                             Content = "Etiam vulputate massa id ante malesuada elementum. Nulla tellus purus, hendrerit rhoncus justo quis, accumsan ultrices nisi. Integer tristique, ligula in convallis aliquam, massa ligula vehicula odio, in eleifend dolor eros ut nunc",
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 389, DateTimeKind.Local).AddTicks(2176),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(362),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfComments = 2,
                             Title = "First post"
@@ -200,7 +202,7 @@ namespace Blog.Migrations
                             PostId = 2,
                             BlogId = 2,
                             Content = "Praesent non massa a nisl euismod efficitur. Ut laoreet nisi vel eleifend laoreet. Curabitur vel orci semper, auctor erat vel, dapibus nunc. Integer eget tortor nunc. Fusce ac euismod nibh. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae",
-                            Created = new DateTime(2021, 10, 20, 9, 41, 30, 389, DateTimeKind.Local).AddTicks(7248),
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(6091),
                             Modified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NumberOfComments = 1,
                             Title = "Second post"
@@ -228,6 +230,38 @@ namespace Blog.Migrations
                     b.HasKey("TagId");
 
                     b.ToTable("Tags");
+
+                    b.HasData(
+                        new
+                        {
+                            TagId = 1,
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(7950),
+                            TagLabel = "Jesus"
+                        },
+                        new
+                        {
+                            TagId = 2,
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(8788),
+                            TagLabel = "Gud"
+                        },
+                        new
+                        {
+                            TagId = 3,
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(8951),
+                            TagLabel = "Allah"
+                        },
+                        new
+                        {
+                            TagId = 4,
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(9048),
+                            TagLabel = "Odin"
+                        },
+                        new
+                        {
+                            TagId = 5,
+                            Created = new DateTime(2021, 10, 19, 18, 27, 19, 116, DateTimeKind.Local).AddTicks(9314),
+                            TagLabel = "Freya"
+                        });
                 });
 
             modelBuilder.Entity("Blog.Models.ViewModels.BloggViewModel", b =>

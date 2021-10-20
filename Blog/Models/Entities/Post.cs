@@ -10,6 +10,11 @@ namespace Blog.Models.Entities
 {
     public class Post : IAuthorizationEntity
     {
+        /*public Post()
+        {
+            this.Tags = new HashSet<Tag>();
+        }*/
+
         [Key]
         public int PostId { get; set; }
 
@@ -37,5 +42,8 @@ namespace Blog.Models.Entities
         public virtual List<Comment> Comments { get; set; }
 
         public virtual IdentityUser Owner { get; set;}
+
+        //En post kan ha flere tags
+        public virtual ICollection<Tag> Tags { get; set; }
     }
 }

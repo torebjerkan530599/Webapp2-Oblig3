@@ -19,7 +19,65 @@ namespace Blog.Models
         {
             _manager = userManager;
             _db = db;
+            //TestManyToMany();
+            PrintManyToManyRelationship();
         }
+
+        private void ManyToManyRelationship()
+        {
+            //alle felter merket required (her BlogId) på entiteter må sendes med!
+            var post1 = new Post
+            {
+                Title = "Denne posten tilhører taggene 'suppe' og 'kaffe' ",
+                Content = "kobles sammen med to tagger: 'suppe' og 'kaffe')",
+                BlogId = 1
+            };
+
+            var post2 = new Post
+            {
+                Title = "Denne posten tilhører kun taggen 'kaffe' ",
+                Content = "kobles sammen med 'kaffe' ",
+                BlogId = 1
+            };
+
+            _db.AddRange(
+                new Tag
+                { 
+                    TagLabel = "suppe",
+                    Created = DateTime.Now,
+                    Posts = new List<Post> {post1}
+                },
+
+                new Tag
+                {
+                    TagLabel = "kaffe",
+                    Created = DateTime.Now,
+                    Posts = new List<Post> {post1, post2}
+                });
+
+            _db.SaveChanges();
+        }
+
+        private void TestManyToMany()
+        {
+            ManyToManyRelationship(); //seed
+            //PrintManyToManyRelationship();//print
+        }
+
+        private void PrintManyToManyRelationship()
+        {
+            foreach (var tag in _db.Tags.Include(a => a.Posts))//logikk: gå gjennom hver tag og inkluder en liste med poster for hver tag
+            {
+                foreach (var post in tag.Posts) //logikk: gå gjennom hver liste med poster som tilhører en tag
+                {
+                    if (post.PostId == 98) {//logikk: list alle tagger som tilhører post med angitt id
+                        //Console.WriteLine($"Taglabel:{tag.TagLabel}");
+                        System.Diagnostics.Debug.WriteLine($"Taglabel:{tag.TagLabel}");
+                    }
+                }
+            }
+        }
+
 
         public async Task<IEnumerable<Blogg>> GetAllBlogs()
         {
@@ -35,11 +93,9 @@ namespace Blog.Models
                 where post.BlogId == blogId
                 orderby post.Created descending
                 select post;
-
             return postQuery;
 
         }
-
 
         public async Task<IEnumerable<Comment>> GetAllComments() //gets all comments, not just the comments on a specific post
         {
@@ -113,6 +169,12 @@ namespace Blog.Models
         {
             var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);
             comment.Owner = currentUser;
+            _db.Comments.Add(comment);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task SaveComment(Comment comment)
+        {
             _db.Comments.Add(comment);
             await _db.SaveChangesAsync();
         }

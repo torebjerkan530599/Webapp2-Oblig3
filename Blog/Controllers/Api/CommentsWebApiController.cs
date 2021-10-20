@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Blog.Controllers.Api
 {
-    [Route("api/CommentsWebApi")]//[Route("api/[controller]")]
+    [Route("api/[controller]")]//alternativt [Route("api/CommentsWebApi")]
     [ApiController]
     public class CommentsWebApiController : ControllerBase //or just Controller?
     {
@@ -30,7 +30,7 @@ namespace Blog.Controllers.Api
 
         //public CommentsWebApiController(IBlogRepository repo) => _repo = repo;//hvordan får jeg alle metodene til å bruke repo?
 
-        // GET: api/CommentsWebApi
+        // GET: api/CommentsWebApi. Returns all comments
         [HttpGet]
         [AllowAnonymous]
         public async Task<IEnumerable<Comment>> GetComments()
@@ -38,31 +38,27 @@ namespace Blog.Controllers.Api
             return await _repo.GetAllComments();
         }
 
-        //Gets just a single comment identified by it's id
-        // GET: api/CommentsWebApi/5
-        /*[Produces(typeof(Comment))]
+        // GET: api/CommentsWebApi/5. Returns a response from the server containing the comment object.
+        [Produces(typeof(Comment))]
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<Comment>> GetComment(int id, [FromServices] 
-            ILogger<CommentsWebApiController> logger) //se appsettings.json for loglevel
+        [Route("api/CommentsWebApi/Comment/{id:int}")]
+        public async Task<ActionResult<Comment>> GetSingleComment(int id)
         {
-            logger.LogDebug("GetProduct Action Invoked"); //burde skrive til output vinduet ved debugging
             //return _context.Comments.FirstOrDefault();
             var comment = await _context.Comments.FindAsync(id);
             if (comment == null)
             {
                 return NotFound();
             }
-
-            //return comment;
             return Ok(comment);
-        }*/
+        }
 
         [Produces(typeof(IEnumerable<Comment>))]
-        [HttpGet("{postIdToGet:int}")]
+        [HttpGet("{postId:int}")]
         [AllowAnonymous]
-        public async Task<IEnumerable <Comment>> GetComments(int postIdToGet)  //preferrably it should be IHttpActionResult....
+        public async Task<IEnumerable <Comment>> GetComments([FromRoute] int postId)  //preferrably it should be IHttpActionResult....
         {
-            var commentsOnPost = await _repo.GetAllCommentsOnPost(postIdToGet);
+            var commentsOnPost = await _repo.GetAllCommentsOnPost(postId);
             return commentsOnPost; //....so it could return Ok(commentsOnPost)...also simplifies unit testing.
         }
 
@@ -111,17 +107,32 @@ namespace Blog.Controllers.Api
             return NoContent(); //StatusCode 204
         }
 
+
+
+        
+        //await _repo.SaveComment(comment)/*.Wait()*/;
         // POST: api/CommentsWebApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [AllowAnonymous] //must be removed. User must be logged in
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<Comment>> PostComment(Comment comment)
+        public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
         {
-            //_context.Comments.Add(comment);
-            await _repo.SaveComment(comment, User)/*.Wait()*/;
-            //await _context.SaveChangesAsync();
+            //TODO:
+            // Create new comment object containing required fields, ref createmethod mvc. Try to use
+            //newComment = new Comment
+            //{
+            //    Text = CommentDto.Text,
+            //     
+            //};
 
-            return CreatedAtAction(nameof(GetComments), new { id = comment.CommentId }/*, comment*/); //Hvordan virker redirectAtACtion
+            _context.Comments.Add(comment);
+            await _context.SaveChangesAsync();
+            //return StatusCode(201);
+            return CreatedAtAction(nameof(GetSingleComment), new {id = comment.CommentId} ,comment); //can be without route spesified
+
+
+            //https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-5.0&tabs=visual-studio#prevent-over-posting-1
         }
 
         // DELETE: api/CommentsWebApi/5

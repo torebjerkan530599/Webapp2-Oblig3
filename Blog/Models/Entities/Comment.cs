@@ -27,7 +27,7 @@ namespace Blog.Models.Entities
         
         //Navigational Properties
         [Required]
-        [Display(Name = "Blogg")]
+        //[Display(Name = "Blogg")]
         public int PostId { get; set; }
         public virtual Post Post{ get; set; }
 
