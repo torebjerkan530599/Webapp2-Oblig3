@@ -32,6 +32,8 @@ namespace Blog.Models.ViewModels
 
         public virtual List<Post> Posts { get; set; }
 
+        public virtual List<Tag> Tags { get; set; }
+
         public virtual IdentityUser Owner { get; set;}
     }
 }

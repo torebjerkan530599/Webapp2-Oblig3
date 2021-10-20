@@ -35,6 +35,9 @@ namespace Blog.Models
         Task UpdateComment(Comment comment);
         Task DeleteComment(Comment comment);
 
+        IEnumerable<Tag> GetAllTagsForBlog(int BlogId);
+
+        IEnumerable<Post> GetAllPostsInThisBlogWithThisTag(int tagId, int blogId);
 
         public void SetBlogStatus(Blogg blog, bool status);
 

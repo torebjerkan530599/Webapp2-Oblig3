@@ -19,18 +19,31 @@ namespace Blog.Models
         {
             _manager = userManager;
             _db = db;
-            //TestManyToMany();
-            PrintManyToManyRelationship();
+            //SeedManyToMany();
+        }
+
+        private void SeedManyToMany()
+        {
+            ManyToManyRelationship(); //seed
+            //PrintManyToManyRelationship();//print
         }
 
         private void ManyToManyRelationship()
         {
+            //var post = await _db.Posts.Include(c => c.Comments).FirstAsync(x => x.PostId == postIdToGet);
+            //var commentList = post.Comments;//.Where(c => c.PostId == postIdToGet);
+            //return post.Comments;
+
+            var blogs = _db.Blogs.Include(o => o.Owner).Where(b => b.BlogId == 1);
+
             //alle felter merket required (her BlogId) på entiteter må sendes med!
             var post1 = new Post
             {
                 Title = "Denne posten tilhører taggene 'suppe' og 'kaffe' ",
                 Content = "kobles sammen med to tagger: 'suppe' og 'kaffe')",
-                BlogId = 1
+                BlogId = 1,
+                //Owner = ,//Hent ut eier av Blog med id 1 
+              
             };
 
             var post2 = new Post
@@ -58,11 +71,7 @@ namespace Blog.Models
             _db.SaveChanges();
         }
 
-        private void TestManyToMany()
-        {
-            ManyToManyRelationship(); //seed
-            //PrintManyToManyRelationship();//print
-        }
+      
 
         private void PrintManyToManyRelationship()
         {
@@ -77,6 +86,49 @@ namespace Blog.Models
                 }
             }
         }
+
+        //GET TAGS
+        public IEnumerable<Tag> GetAllTagsForBlog(int blogId)
+        {
+            //IEnumerable<Blogg> blogs = _db.Blogs;
+            //IEnumerable<Post> posts = _db.Posts.Include(p => p.Tags);
+
+            var tagsToShow = new List<Tag>();
+            foreach (var tag in _db.Tags.Include(a => a.Posts)) //Henter alle tags
+            {
+                foreach (var tagPost in tag.Posts)  //Traverserer alle poster inne i hver tag
+                {
+                    if (tagPost.BlogId == blogId) //Legger i lista de som tilhører denne blogggen
+                    {
+                        tagsToShow.Add(tag); 
+                    }
+                }
+            }
+            return tagsToShow;
+        }
+
+
+        public IEnumerable<Post> GetAllPostsInThisBlogWithThisTag(int tagId, int blogId)
+        {
+            List<Post> posts = (from p in _db.Posts.Include(p=>p.Tags)
+                where p.BlogId == blogId
+                select p).ToList();
+
+            List<Post> postsToShow = new();
+
+            foreach (var post in posts)
+            {
+                foreach (var postTags in post.Tags)
+                {
+                    if (postTags.TagId == tagId)
+                    {
+                        postsToShow.Add(post);
+                    }
+                }
+            }
+            return postsToShow;
+        }
+
 
 
         public async Task<IEnumerable<Blogg>> GetAllBlogs()

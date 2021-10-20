@@ -1,16 +1,28 @@
-﻿@model IEnumerable<Blog.Models.Entities.Blogg>
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<Blog.Models.Entities.Blogg>
 
 @{
     ViewData["Title"] = "Index";
 }
 
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+
 <h1>Oversikt over blogger</h1>
 
 <p>
-    <a asp-action="Create">Opprett ny blogg</a>
-  
+    @if (signInManager.IsSignedIn(User))
+    {
+        <a asp-action="Create">Opprett ny blogg</a>
+    }
+    else
+    {
+        <a>You are currently not logged in, log in to create a new Blog</a>
+    }
+
+
 </p>
-<table class="table">
+<table class="table table-hover">
     <thead>
         <tr>
             <th>
@@ -52,7 +64,7 @@
                 </td>
 
                 <td>
-                    @Html.ActionLink("Read", "ReadBlog", new {  id=item.BlogId })
+                    @Html.ActionLink("Read", "ReadBlog", new { id = item.BlogId })
                 </td>
             </tr>
         }

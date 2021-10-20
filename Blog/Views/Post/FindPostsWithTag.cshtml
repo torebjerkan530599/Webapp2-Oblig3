@@ -1,13 +1,7 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Authorization
-@model Blog.Models.ViewModels.BloggViewModel
-
-@inject SignInManager<IdentityUser> signInManager
-@inject UserManager<IdentityUser> userManager
-@inject IAuthorizationService AuthorizationService
+﻿@model Blog.Models.ViewModels.BloggViewModel
 
 @{
-    ViewData["Title"] = "Viser bloggen";
+    ViewData["Title"] = "ReadBlog";
 }
 
 <h1>Innlegg for blogg "@Model.Name"</h1>
@@ -25,7 +19,7 @@
     <table class="table table-hover">
         <tr>
             <th>Tags</th>
-            <th> @Html.ActionLink("Fjern søk", "ReadBlog", "Blog", new {id = Model.BlogId })</th>
+            <th> @Html.ActionLink("Vis alle poster", "ReadBlog", "Blog", new { id = Model.BlogId })</th>
         </tr>
         @try
         {
@@ -33,7 +27,7 @@
                 @foreach (var item in Model.Tags)
                 {
                     <td>
-                        @Html.ActionLink(item.TagLabel, "FindPostsWithTag", "Post", new {tagId = item.TagId, blogId = Model.BlogId})
+                        @Html.ActionLink(item.TagLabel, "FindPostsWithTag", "Post", new { tagId = item.TagId, blogId = Model.BlogId })
                     </td>
                 }
             </tr>
@@ -82,7 +76,7 @@
 </table>
 <p>@Html.ActionLink("Opprett nytt innlegg", "CreatePost", "Post", new { blogId = @Model.BlogId })</p>
 <div>
-    <a asp-action="Index">&#8592 Tilbake til alle blogger</a>
+    <a asp-controller="Blog" asp-action="Index">&#8592 Tilbake til alle blogger</a>
 </div>
 
 @section Scripts {

@@ -39,7 +39,7 @@ namespace Blog.Controllers.Api
         }
 
         // GET: api/CommentsWebApi/5. Returns a response from the server containing the comment object.
-        [Produces(typeof(Comment))]
+        /*[Produces(typeof(Comment))]
         [HttpGet("{id:int}")]
         [Route("api/CommentsWebApi/Comment/{id:int}")]
         public async Task<ActionResult<Comment>> GetSingleComment(int id)
@@ -51,7 +51,7 @@ namespace Blog.Controllers.Api
                 return NotFound();
             }
             return Ok(comment);
-        }
+        }*/
 
         [Produces(typeof(IEnumerable<Comment>))]
         [HttpGet("{postId:int}")]
@@ -119,17 +119,19 @@ namespace Blog.Controllers.Api
         public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
         {
             //TODO:
-            // Create new comment object containing required fields, ref createmethod mvc. Try to use
-            //newComment = new Comment
-            //{
-            //    Text = CommentDto.Text,
-            //     
-            //};
-
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
+            // Create new comment object containing required fields, ref createmethod mvc.
+            var newComment = new Comment
+            {
+                Text = comment.Text,
+                PostId = comment.PostId,
+                Created = DateTime.Now,
+            };
+            
+            await _repo.SaveComment(newComment); //must include User later
+            
             //return StatusCode(201);
-            return CreatedAtAction(nameof(GetSingleComment), new {id = comment.CommentId} ,comment); //can be without route spesified
+            return CreatedAtAction(nameof(GetComments) , new { id = newComment.CommentId }); 
+            //return CreatedAtAction(nameof(GetSingleComment), new {id = newComment.CommentId} ,newComment); //with route specified
 
 
             //https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-5.0&tabs=visual-studio#prevent-over-posting-1

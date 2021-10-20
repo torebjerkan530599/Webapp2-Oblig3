@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blog", "Blog.csproj", "{F70
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogUnitTest", "..\BlogUnitTest\BlogUnitTest.csproj", "{BD8283A6-4563-4574-BD13-23A55A8DC1D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIConsume", "..\APIConsume\APIConsume.csproj", "{8CC0DDD8-077D-4B90-840C-266B86213F98}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{BD8283A6-4563-4574-BD13-23A55A8DC1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD8283A6-4563-4574-BD13-23A55A8DC1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD8283A6-4563-4574-BD13-23A55A8DC1D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8CC0DDD8-077D-4B90-840C-266B86213F98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8CC0DDD8-077D-4B90-840C-266B86213F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8CC0DDD8-077D-4B90-840C-266B86213F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8CC0DDD8-077D-4B90-840C-266B86213F98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

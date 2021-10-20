@@ -1,9 +1,16 @@
-﻿@model Blog.Models.ViewModels.PostViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization
+@model Blog.Models.ViewModels.PostViewModel
 
+
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+@inject IAuthorizationService AuthorizationService
 @{
     ViewData["Title"] = "Innlegg";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+
 
 <h1>Kommenarer for innlegget "@Model.Title"</h1>
 <hr />
@@ -149,7 +156,8 @@
 
             var comment = {
                 "text": innhold,
-                "postId": 1
+                "postId": @TempData["chosenId"]
+
             };
 
             $.ajax(
@@ -187,27 +195,25 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <!--form action="javascript:void(0);" method="POST" onsubmit="add()"-->
-        <!--input asp-for="PostId" type="hidden" class="form-control" />
-    <span asp-validation-for="PostId" class="text-danger"></span-->
-        <input type="text" id="add" placeholder="legg inn Ny kommentar...">
-        <!--textarea type="text" id="add" rows="4" cols="50" placeholder="legg inn ny kommentar..."></!--textarea>-->
+        <!--input type="text" id="add" placeholder="legg inn Ny kommentar...">-->
+        <textarea type="text" id="add" rows="4" cols="50" placeholder="legg inn ny kommentar..."></textarea>
         <input type="submit" value="Legg til" onclick="add()">
-        <!--</!--form>-->
+
     </div>
 </div>
 
-<!--
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            ID Kommentarer på alle poster
-        </th>
-    </tr>
-    </thead>
-    <tbody id="comments"></tbody>
-</table>
+
+
+<div id="update"></div>
+
+<!-- I tilfelle jeg trenger dette:
+
+<form action="javascript:void(0);" method="POST" onsubmit="add()">
+    <textarea type="text" id="add" rows="4" cols="50" placeholder="legg inn ny kommentar..."></textarea>
+    <input type="submit" value="Legg til"/>
+</form>
+
+<input asp-for="PostId" type="hidden" class="form-control" />
+<span asp-validation-for="PostId" class="text-danger"></span>
 
 -->
-<!--<div id="update"></div>-->

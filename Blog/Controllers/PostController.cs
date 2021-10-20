@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Blog.Authorization;
 using Blog.Models;
@@ -220,6 +222,36 @@ namespace Blog.Controllers
         public IActionResult NotAllowed()
         {
             return View("IngenTilgang");
+        }
+
+        //TAGS------------------------------------------------------------------------
+        [AllowAnonymous]
+        public ActionResult FindPostsWithTag(int tagId, int blogId)
+        {
+            Blogg blog = _blogRepository.GetBlog(blogId);
+            List<Post> posts = _blogRepository.GetAllPostsInThisBlogWithThisTag(tagId, blogId).ToList();
+            List<Tag> tagsForThisBlog = _blogRepository.GetAllTagsForBlog(blog.BlogId).ToList();
+
+            if (ModelState.IsValid)
+            {
+                BloggViewModel blogViewModel = new()
+                {
+
+                    BlogId = blog.BlogId,
+                    Name = blog.Name,
+                    Title = (from p in posts where p.BlogId==blogId select p.Title).ToString(),
+                    Created = blog.Created,
+                    Modified = blog.Modified,
+                    //Closed = blog.Closed,
+                    Owner = blog.Owner,
+                    Posts = posts.ToList(),
+                    Tags = tagsForThisBlog
+                };
+                return View(blogViewModel);
+            }
+
+            TempData["Feedback"] = "Feil ved søk, feil i Model: " + blog.BlogId;
+            return RedirectToAction("ReadBlog", "Blog", new { id = blog.BlogId });
         }
     }
 }
