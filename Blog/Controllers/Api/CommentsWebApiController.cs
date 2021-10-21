@@ -118,7 +118,6 @@ namespace Blog.Controllers.Api
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
         {
-            //TODO:
             // Create new comment object containing required fields, ref createmethod mvc.
             var newComment = new Comment
             {

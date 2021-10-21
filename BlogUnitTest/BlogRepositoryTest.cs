@@ -41,7 +41,7 @@ namespace BlogUnitTest
 
                 
 
-                var user = new IdentityUser
+                /*var user = new IdentityUser
                 {
                     UserName = "Diry Harry",
                     Email = "harry@dirtymail.com", //nb: provide e-mail during login...
@@ -53,12 +53,12 @@ namespace BlogUnitTest
 
                 var hash = new PasswordHasher<IdentityUser>();
                 var hashedPassword = hash.HashPassword(user, "YourPassword");//...and the password
-                user.PasswordHash = hashedPassword;
+                user.PasswordHash = hashedPassword;*/
 
                 context.Blogs.AddRange(
-                    new Blogg { BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor", Owner = user },
-                    new Blogg{BlogId = 2, ClosedForPosts = false, Created = DateTime.Now, Name = "Quisque convallis est"},
-                    new Blogg{BlogId = 3, ClosedForPosts = false, Created = DateTime.Now, Name = "Interdum et malesuada" }
+                    new Blogg { BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor", /*Owner = user */},
+                    new Blogg{BlogId = 2, ClosedForPosts = false, Created = DateTime.Now, Name = "Quisque convallis est"/*, Owner = user*/},
+                    new Blogg{BlogId = 3, ClosedForPosts = false, Created = DateTime.Now, Name = "Interdum et malesuada"/*, Owner = user*/ }
                 );
 
                 context.Posts.AddRange(
@@ -98,10 +98,10 @@ namespace BlogUnitTest
             var result = await repository.GetAllBlogs();
             //Assert
             Assert.AreEqual(3, result.Count());
-            //var blogs = result as List<Blogg>;
-            //Assert.AreEqual("Lorem ipsum dolor", blogs[0].Name);
-            //Assert.AreEqual("Quisque convallis est", blogs[1].Name);
-            //Assert.AreEqual("Interdum et malesuada", blogs[2].Name);
+            var blogs = result as List<Blogg>;
+            Assert.AreEqual("Lorem ipsum dolor", blogs[0].Name);
+            Assert.AreEqual("Quisque convallis est", blogs[1].Name);
+            Assert.AreEqual("Interdum et malesuada", blogs[2].Name);
         }
 
         /*[TestMethod]
