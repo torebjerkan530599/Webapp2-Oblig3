@@ -7,7 +7,7 @@
 APIConsume/
 
 #Changes made to scaffolded identity
-Blog/Areas/Identity/Pages/Account/
+#Blog/Areas/Identity/Pages/Account/
 
 # User-specific files
 *.rsuser
