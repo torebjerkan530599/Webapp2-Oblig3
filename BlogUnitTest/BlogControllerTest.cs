@@ -211,7 +211,7 @@ namespace BlogUnitTest
         {
 
             //Arrange
-            var owner = new IdentityUser("test")
+            var owner = new IdentityUser()
             {
                 Id = "12345"
             };

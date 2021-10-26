@@ -43,5 +43,8 @@ namespace Blog.Models
 
         public bool? IsActive(Blogg blog);
         Comment GetComment(int commentIdToGet);
+        //Task GetComment(int id);
+
+        public bool CommentExists(int id);
     }
 }

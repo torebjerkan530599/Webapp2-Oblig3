@@ -41,7 +41,7 @@ namespace BlogUnitTest
 
                 
 
-                /*var user = new IdentityUser
+                /*var user = new User
                 {
                     UserName = "Diry Harry",
                     Email = "harry@dirtymail.com", //nb: provide e-mail during login...
@@ -53,10 +53,10 @@ namespace BlogUnitTest
 
                 var hash = new PasswordHasher<IdentityUser>();
                 var hashedPassword = hash.HashPassword(user, "YourPassword");//...and the password
-                user.PasswordHash = hashedPassword;*/
-
+                user.PasswordHash = hashedPassword;
+                */
                 context.Blogs.AddRange(
-                    new Blogg { BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor", /*Owner = user */},
+                    new Blogg { BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor"/*, Owner = user*/ },
                     new Blogg{BlogId = 2, ClosedForPosts = false, Created = DateTime.Now, Name = "Quisque convallis est"/*, Owner = user*/},
                     new Blogg{BlogId = 3, ClosedForPosts = false, Created = DateTime.Now, Name = "Interdum et malesuada"/*, Owner = user*/ }
                 );

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 
 namespace Blog.Models.Entities
 {
@@ -31,6 +32,8 @@ namespace Blog.Models.Entities
         public int PostId { get; set; }
         public virtual Post Post{ get; set; }
 
+        [JsonIgnore]
         public virtual IdentityUser Owner { get; set; }
+        //public virtual IdentityUser Owner { get; set; }
     }
 }

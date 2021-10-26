@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,12 +7,14 @@ using Microsoft.Extensions.Hosting;
 using Blog.Authorization;
 using Blog.Data;
 using Blog.Models;
+using Blog.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Blog
 {
@@ -27,14 +30,48 @@ namespace Blog
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddTransient<IBlogRepository, BlogRepository>();
-            //services.AddSingleton<IBlogRepository, BlogRepository>();
+            services.AddTransient<IAccountsRepository, AccountsRepository>();
+
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<BlogDbContext>();
+                //.AddRoleManager<RoleManager<IdentityRole>>()
+                .AddSignInManager<SignInManager<IdentityUser>>()
+                .AddDefaultUI()
+                .AddEntityFrameworkStores<BlogDbContext>()
+                .AddDefaultTokenProviders(); ;
+
+            var confKey = Configuration.GetSection("TokenSettings")["SecretKey"];
+            var key = Encoding.ASCII.GetBytes(confKey);
+            services.AddAuthentication()
+                // Enable Cookie authentication
+                .AddCookie(cfg => cfg.SlidingExpiration = true)
+                //Enables jwt bearer tokens
+                .AddJwtBearer(x =>
+                {
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+
+                        //NameClaimType = ClaimTypes.NameIdentifier,
+                        //RoleClaimType = ClaimTypes.Role,
+                        ValidateLifetime = true
+                    };
+
+                });
 
             services.AddMvc(config =>
             {
@@ -51,6 +88,8 @@ namespace Blog
             services.AddScoped<IAuthorizationHandler,
                 BlogOwnerAuthorizationHandler>();
 
+
+            //From Microsoft WebApi tutorial
             //services.AddSwaggerGen(c =>
             //{
             //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoApi", Version = "v1" });

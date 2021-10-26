@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Blog.Migrations
 {
-    public partial class AddingIdentityUserstoentities : Migration
+    public partial class AddingApplicationUserstoentities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

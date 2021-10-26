@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Blog.Authorization;
 using Blog.Models;
@@ -39,6 +40,7 @@ namespace Blog.Controllers
         {
             var blog = _blogRepository.GetBlog(blogId);
 
+            
             // requires using AuthorizationHandler
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, blog, BlogOperations.Update);

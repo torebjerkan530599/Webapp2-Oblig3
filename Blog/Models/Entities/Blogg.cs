@@ -36,6 +36,8 @@ namespace Blog.Models.Entities
         public virtual List<Post> Posts { get; set; }
         //foreign key: FK_dbo.Blog_dbo.AspNetUsers_owner_Id (id)
         //[JsonIgnore]
-        public virtual IdentityUser Owner { get; set;}
+        //public virtual IdentityUser Owner { get; set;}
+
+        public virtual IdentityUser Owner { get; set; }
     }
 }

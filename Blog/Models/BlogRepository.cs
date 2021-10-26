@@ -201,6 +201,11 @@ namespace Blog.Models
             return singleCommentQuery.FirstOrDefault();
         }
 
+        public bool CommentExists(int id)
+        {
+            return _db.Comments.Any(e => e.CommentId == id);
+        }
+
         public async Task SaveBlog(Blogg blog,  ClaimsPrincipal user)
         {
             var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);

@@ -9,8 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Web.Http;
 using Blog.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Controllers.Api
 {
@@ -18,17 +20,9 @@ namespace Blog.Controllers.Api
     [ApiController]
     public class CommentsWebApiController : ControllerBase //or just Controller?
     {
-        private readonly BlogDbContext _context;
         private readonly IBlogRepository _repo;
 
-        
-        public CommentsWebApiController(BlogDbContext context,IBlogRepository repo) //hvordan gjøre DI med WebApi for å bruke repo?
-        {
-            _context = context;
-            _repo = repo;
-        }
-
-        //public CommentsWebApiController(IBlogRepository repo) => _repo = repo;//hvordan får jeg alle metodene til å bruke repo?
+        public CommentsWebApiController(IBlogRepository repo) => _repo = repo;//hvordan får jeg alle over på denne konstruksjonen?
 
         // GET: api/CommentsWebApi. Returns all comments
         [HttpGet]
@@ -41,8 +35,8 @@ namespace Blog.Controllers.Api
         // GET: api/CommentsWebApi/5. Returns a response from the server containing the comment object.
         /*[Produces(typeof(Comment))]
         [HttpGet("{id:int}")]
-        [Route("api/CommentsWebApi/Comment/{id:int}")]
-        public async Task<ActionResult<Comment>> GetSingleComment(int id)
+        [Route("api/CommentsWebApi/FetchSingleComment/{id:int}")]
+        public async Task<ActionResult<Comment>> FetchSingleComment([FromRoute]int id)
         {
             //return _context.Comments.FirstOrDefault();
             var comment = await _context.Comments.FindAsync(id);
@@ -89,12 +83,11 @@ namespace Blog.Controllers.Api
 
             try
             {
-                await _repo.UpdateComment(comment)/*.Wait()*/;
-                //await _context.SaveChangesAsync();
+                await _repo.UpdateComment(comment);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CommentExists(id))
+                if (!_repo.CommentExists(id))
                 {
                     return NotFound();
                 }
@@ -140,21 +133,19 @@ namespace Blog.Controllers.Api
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteComment([FromRoute] int id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = _repo.GetComment(id);
+            //var comment = await _context.Comments.FindAsync(id);
             if (comment == null)
             {
                 return NotFound();
             }
 
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
+            
+            await _repo.DeleteComment(comment);
+            //_context.Comments.Remove(comment);
+            //await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool CommentExists(int id)
-        {
-            return _context.Comments.Any(e => e.CommentId == id);
         }
     }
 }

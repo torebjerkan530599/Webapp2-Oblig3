@@ -52,7 +52,7 @@ namespace Blog.Data
                 .HasMany(p => p.Tags);*/
 
 
-            modelBuilder.Entity<BloggViewModel>().HasNoKey();
+            //modelBuilder.Entity<BloggViewModel>().HasNoKey();
 
             modelBuilder.Entity<Blogg>()
                 .HasData(new Blogg{BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor"});
@@ -92,7 +92,7 @@ namespace Blog.Data
         }
 
 
-        public DbSet<BloggViewModel> BloggViewModel { get; set; }
+        //public DbSet<BloggViewModel> BloggViewModel { get; set; }
     }
 
 

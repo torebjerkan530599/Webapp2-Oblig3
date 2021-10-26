@@ -6,6 +6,9 @@
 #Ignore client side project
 APIConsume/
 
+#Changes made to scaffolded identity
+Blog/Areas/Identity/Pages/Account/
+
 # User-specific files
 *.rsuser
 *.suo
