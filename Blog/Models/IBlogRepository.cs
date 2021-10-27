@@ -24,13 +24,14 @@ namespace Blog.Models
         Post GetPost(int? id);
         Task SavePost(Post post,  ClaimsPrincipal user);
 
-        Task SaveComment(Comment comment);
+        Task<bool> SaveComment(Comment comment);
+        Task SaveComment(Comment comment, ClaimsPrincipal user);
 
         Task UpdatePost(Post post);
         Task DeletePost(Post post);
         CreateBloggViewModel GetCreateBlogViewModel(int? id);
 
-        Task SaveComment(Comment newComment, ClaimsPrincipal user);
+        //Task SaveComment(Comment newComment, ClaimsPrincipal user);
 
         Task UpdateComment(Comment comment);
         Task DeleteComment(Comment comment);
@@ -43,6 +44,7 @@ namespace Blog.Models
 
         public bool? IsActive(Blogg blog);
         Comment GetComment(int commentIdToGet);
+        
         //Task GetComment(int id);
 
         public bool CommentExists(int id);

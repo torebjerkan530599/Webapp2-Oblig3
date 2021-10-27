@@ -30,6 +30,8 @@ namespace Blog.Models
 
         private void ManyToManyRelationship()
         {
+            
+            //var comments = _db.Comments.Include(c => c.Post).Include(o=>o.Owner).Where(c => c.PostId == postIdToGet);
             //var post = await _db.Posts.Include(c => c.Comments).FirstAsync(x => x.PostId == postIdToGet);
             //var commentList = post.Comments;//.Where(c => c.PostId == postIdToGet);
             //return post.Comments;
@@ -152,12 +154,12 @@ namespace Blog.Models
         public async Task<IEnumerable<Comment>> GetAllComments() //gets all comments, not just the comments on a specific post
         {
             IEnumerable<Comment> comments = await _db.Comments/*.AsNoTracking()/*.Include(p=>p.Post)/*.Include(o => o.Owner)*/.ToListAsync();;
-            return comments; //AsNoTracking() :https://www.c-sharpcorner.com/UploadFile/ff2f08/entity-framework-and-asnotracking/
+            return comments;
         }
 
         public async Task<IEnumerable<Comment>> GetAllCommentsOnPost(int postIdToGet)
         {
-            var post = await _db.Posts.Include(c => c.Comments).FirstAsync(x => x.PostId == postIdToGet);
+            var post = await _db.Posts.Include(c => c.Comments).Include(o=>o.Owner).FirstAsync(x => x.PostId == postIdToGet);
             //var commentList = post.Comments;//.Where(c => c.PostId == postIdToGet);
             return post.Comments;
         }
@@ -201,6 +203,11 @@ namespace Blog.Models
             return singleCommentQuery.FirstOrDefault();
         }
 
+        /*public async Task GetComment(int commentIdToGet)
+        {
+            return await _db.Comments.FindAsync(commentIdToGet);
+        }*/
+
         public bool CommentExists(int id)
         {
             return _db.Comments.Any(e => e.CommentId == id);
@@ -230,13 +237,13 @@ namespace Blog.Models
             await _db.SaveChangesAsync();
         }
 
-        public async Task SaveComment(Comment comment)
+        public async Task<bool> SaveComment(Comment comment)
         {
             _db.Comments.Add(comment);
-            await _db.SaveChangesAsync();
+            return (await _db.SaveChangesAsync() > 0);
+
         }
 
-        //UPDATE POST
         public async Task UpdatePost(Post post)
         {
 
@@ -244,7 +251,6 @@ namespace Blog.Models
             await _db.SaveChangesAsync();
         }
 
-        //UPDATE COMMENT
         public async Task UpdateComment(Comment comment)
         {
 
@@ -252,16 +258,12 @@ namespace Blog.Models
             await _db.SaveChangesAsync();
         }
 
-
-        //DELETE POST
         public async Task DeletePost(Post post)
         {
             _db.Posts.Remove(post);
             await _db.SaveChangesAsync();
         }
 
-    
-        //DELETE COMMENT
         public async Task DeleteComment(Comment comment)
         {
             _db.Comments.Remove(comment);
@@ -335,7 +337,5 @@ namespace Blog.Models
             return blog.ClosedForPosts;
 
         }
-
-      
     }
 }

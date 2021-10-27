@@ -35,11 +35,11 @@ namespace Blog.Controllers.Api
         // GET: api/CommentsWebApi/5. Returns a response from the server containing the comment object.
         /*[Produces(typeof(Comment))]
         [HttpGet("{id:int}")]
-        [Route("api/CommentsWebApi/FetchSingleComment/{id:int}")]
-        public async Task<ActionResult<Comment>> FetchSingleComment([FromRoute]int id)
+        [Route("GetSingleComment/{id:int}")]
+        public async Task<ActionResult<Comment>> GetSingleComment([FromRoute]int id)
         {
             //return _context.Comments.FirstOrDefault();
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = _repo.GetComment(id);
             if (comment == null)
             {
                 return NotFound();
@@ -49,24 +49,11 @@ namespace Blog.Controllers.Api
 
         [Produces(typeof(IEnumerable<Comment>))]
         [HttpGet("{postId:int}")]
-        [AllowAnonymous]
         public async Task<IEnumerable <Comment>> GetComments([FromRoute] int postId)  //preferrably it should be IHttpActionResult....
         {
             var commentsOnPost = await _repo.GetAllCommentsOnPost(postId);
             return commentsOnPost; //....so it could return Ok(commentsOnPost)...also simplifies unit testing.
         }
-
-
-        /*[Produces(typeof(IEnumerable<Comment>))]
-        [HttpGet("{postIdToGet:int}")]
-        public ActionResult<IEnumerable <Comment>> GetComment(int postIdToGet, [FromServices] //this wont run asyncronously at the current moment
-            ILogger<CommentsWebApiController> logger) //se appsettings.json for loglevel
-        {
-            logger.LogDebug("GetProduct Action Invoked"); //burde skrive til output vinduet ved debugging
-
-            var commentsQuery = _context.Comments.Include(c => c.Post).Include(o=>o.Owner).Where(c => c.PostId == postIdToGet);
-            return Ok(commentsQuery);
-        }*/
 
         // PUT: api/CommentsWebApi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -76,10 +63,7 @@ namespace Blog.Controllers.Api
             if (id != comment.CommentId)
             {
                 return BadRequest();
-            }
-
-            //_context.Entry(comment).State = EntityState.Modified;
-            
+            }            
 
             try
             {
@@ -103,11 +87,10 @@ namespace Blog.Controllers.Api
 
 
         
-        //await _repo.SaveComment(comment)/*.Wait()*/;
         // POST: api/CommentsWebApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        [AllowAnonymous] //must be removed. User must be logged in
+        //[AllowAnonymous] //Only for testing purposes! Delete before release.
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
         {
@@ -117,16 +100,21 @@ namespace Blog.Controllers.Api
                 Text = comment.Text,
                 PostId = comment.PostId,
                 Created = DateTime.Now,
+                Owner = comment.Owner//,
+                //Post = comment.Post
             };
+
+            if(await _repo.SaveComment(newComment))
+            {
+                return Ok(newComment);
+
+            } else
+            {
+                return StatusCode(500);
+            }
             
-            await _repo.SaveComment(newComment); //must include User later
-            
-            //return StatusCode(201);
-            return CreatedAtAction(nameof(GetComments) , new { id = newComment.CommentId }); 
+            //return CreatedAtAction(nameof(GetComments) , new { id = newComment.CommentId }); 
             //return CreatedAtAction(nameof(GetSingleComment), new {id = newComment.CommentId} ,newComment); //with route specified
-
-
-            //https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-5.0&tabs=visual-studio#prevent-over-posting-1
         }
 
         // DELETE: api/CommentsWebApi/5
@@ -134,16 +122,13 @@ namespace Blog.Controllers.Api
         public async Task<IActionResult> DeleteComment([FromRoute] int id)
         {
             var comment = _repo.GetComment(id);
-            //var comment = await _context.Comments.FindAsync(id);
+
             if (comment == null)
             {
                 return NotFound();
             }
-
-            
+          
             await _repo.DeleteComment(comment);
-            //_context.Comments.Remove(comment);
-            //await _context.SaveChangesAsync();
 
             return NoContent();
         }
