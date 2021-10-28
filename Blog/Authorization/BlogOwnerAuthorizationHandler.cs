@@ -9,9 +9,9 @@ namespace Blog.Authorization
     public class BlogOwnerAuthorizationHandler
         : AuthorizationHandler<OperationAuthorizationRequirement, IAuthorizationEntity>
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BlogOwnerAuthorizationHandler(UserManager<IdentityUser>
+        public BlogOwnerAuthorizationHandler(UserManager<ApplicationUser>
             userManager)
         {
             _userManager = userManager;
@@ -39,7 +39,7 @@ namespace Blog.Authorization
                 return Task.CompletedTask;
             }
 
-            if (resource.Owner.Id == _userManager.GetUserId(context.User)) //||  context.User.IsInRole("Admin") )
+            if (resource.Owner.Id == _userManager.GetUserId(context.User) ||  context.User.IsInRole("Admin") )
             {
                 context.Succeed(requirement);
             }

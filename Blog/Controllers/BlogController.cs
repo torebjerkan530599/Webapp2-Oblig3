@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Blog.Controllers
 {
@@ -13,12 +15,43 @@ namespace Blog.Controllers
     {
         private readonly IBlogRepository _blogRepository;
         readonly IAuthorizationService _authorizationService;
-        //private readonly UserManager<IdentityUser> _userManager;
+        //private readonly UserManager<ApplicationUser> _userManager;
+        //HubConnection connection;
 
         public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService = null)
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
+            /*connection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:44462/SignalRHub")
+                .Build();
+
+            connection.Closed += async (error) =>
+            {
+                await Task.Delay(new Random().Next(0, 5) * 1000);
+                await connection.StartAsync();
+            };
+
+            connection.On<string, string>("ReceiveNewPost", (user, message) =>
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    var newMessage = $"{user}: {message}";
+                    messagesList.Items.Add(newMessage);
+                });
+            });
+
+            try
+            {
+                await connection.StartAsync();
+                messagesList.Items.Add("Connection started");
+                connectButton.IsEnabled = false;
+                sendButton.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                messagesList.Items.Add(ex.Message);
+            }*/
         }
 
         [AllowAnonymous]

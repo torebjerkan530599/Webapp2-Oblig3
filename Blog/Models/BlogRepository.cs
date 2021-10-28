@@ -15,8 +15,8 @@ namespace Blog.Models
     public class BlogRepository : IBlogRepository
     {
         private readonly BlogDbContext _db;
-        private UserManager<IdentityUser> _manager;
-        public BlogRepository(UserManager<IdentityUser> userManager, BlogDbContext db)
+        private UserManager<ApplicationUser> _manager;
+        public BlogRepository(UserManager<ApplicationUser> userManager, BlogDbContext db)
         {
             _manager = userManager;
             _db = db;

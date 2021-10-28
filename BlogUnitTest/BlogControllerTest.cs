@@ -25,7 +25,7 @@ namespace BlogUnitTest
     public class BlogControllerTest
     {
         private Mock<IBlogRepository> _repository;
-        private Mock<UserManager<IdentityUser>> _mockUserManager;
+        private Mock<UserManager<ApplicationUser>> _mockUserManager;
         private List<Blogg> _fakeBloggs;
         private IAuthorizationService _authService;
         private ClaimsPrincipal _user;
@@ -49,7 +49,7 @@ namespace BlogUnitTest
         public void SetupContext()
         {
             _repository = new Mock<IBlogRepository>();
-            _mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
+            _mockUserManager = MockHelpers.MockUserManager<ApplicationUser>();
             _mockUserManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("1234"); //mock userid
             var authHandler = new BlogOwnerAuthorizationHandler(_mockUserManager.Object);
 
@@ -209,7 +209,7 @@ namespace BlogUnitTest
         {
 
             //Arrange
-            var owner = new IdentityUser()
+            var owner = new ApplicationUser()
             {
                 Id = "12345"
             };
@@ -228,7 +228,7 @@ namespace BlogUnitTest
             };
 
             _repository.Setup(x => x.GetPost(fakePost.PostId)).Returns(fakePost);
-            //var user = new IdentityUser("testuser");
+            //var user = new ApplicationUser("testuser");
             //user.Id = "1";
             _postController.ControllerContext = MockHelpers.FakeControllerContext(/*true, user.Id, user.UserName*/);
             var tempData = new TempDataDictionary(

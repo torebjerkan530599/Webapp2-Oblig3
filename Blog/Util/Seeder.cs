@@ -26,7 +26,7 @@ namespace Blog.Util
 
             //context.Database.Migrate();
 
-            var user1 = new IdentityUser
+            var user1 = new ApplicationUser
             {
                 UserName = "Diry Harry",
                 Email = "harry@dirtymail.com", //nb: provide e-mail during login...
@@ -36,11 +36,11 @@ namespace Blog.Util
 
             };
 
-            var hash1 = new PasswordHasher<IdentityUser>();
+            var hash1 = new PasswordHasher<ApplicationUser>();
             var hashedPassword1 = hash1.HashPassword(user1, "Vm$€sKKm34");//...and the password
             user1.PasswordHash = hashedPassword1;
 
-            var user2 = new IdentityUser
+            var user2 = new ApplicationUser
             {
                 UserName = "Pelle Parafin",
                 Email = "solo@rock.com", //nb: provide e-mail during login...
@@ -50,7 +50,7 @@ namespace Blog.Util
 
             };
 
-            var hash2 = new PasswordHasher<IdentityUser>();
+            var hash2 = new PasswordHasher<ApplicationUser>();
             var hashedPassword2 = hash2.HashPassword(user1, "k8@fkF3ddk");//...and the password
             user2.PasswordHash = hashedPassword2;
 

@@ -6,8 +6,8 @@ namespace Blog.Models.Entities
     {
         //string OwnerId { get; set; }
 
-        //IdentityUser Owner { get; set; }
+        //ApplicationUser Owner { get; set; }
 
-        IdentityUser Owner { get; set; }
+        ApplicationUser Owner { get; set; }
     }
 }

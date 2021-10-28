@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Blog.Models.Entities;
 
 namespace Blog.Models.ViewModels
 {
@@ -16,7 +17,7 @@ namespace Blog.Models.ViewModels
 
         public DateTime Created { get; internal set; }
 
-        public IdentityUser Owner { get; set; }
+        public ApplicationUser Owner { get; set; }
 
 
 

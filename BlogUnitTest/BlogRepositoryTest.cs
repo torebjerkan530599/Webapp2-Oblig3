@@ -35,7 +35,7 @@ namespace BlogUnitTest
 
 
 
-                var user = new IdentityUser
+                var user = new ApplicationUser
                 {
                     UserName = "Diry Harry",
                     Email = "harry@dirtymail.com", //nb: provide e-mail during login...
@@ -45,7 +45,7 @@ namespace BlogUnitTest
 
                 };
 
-                var hash = new PasswordHasher<IdentityUser>();
+                var hash = new PasswordHasher<ApplicationUser>();
                 var hashedPassword = hash.HashPassword(user, "YourPassword");//...and the password
                 user.PasswordHash = hashedPassword;
                 
@@ -98,7 +98,7 @@ namespace BlogUnitTest
         {
             await using var context = new BlogDbContext(ContextOptions);
             //Arrange
-            var mockUserManager = MockHelpers.MockUserManager<IdentityUser>();
+            var mockUserManager = MockHelpers.MockUserManager<ApplicationUser>();
             var repository = new BlogRepository(mockUserManager.Object, context);
             //Act
             var result = await repository.GetAllBlogs();

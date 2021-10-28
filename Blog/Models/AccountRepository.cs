@@ -14,16 +14,16 @@ using System.Threading.Tasks;
 namespace Blog.Models
 {
     /// <summary>
-    /// Repository for handling interactions with database pertaining IdentityUser
+    /// Repository for handling interactions with database pertaining ApplicationUser
     /// </summary>
-    /// <see cref="IdentityUser"/>
+    /// <see cref="ApplicationUser"/>
     public class AccountsRepository : IAccountsRepository
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _conf;
 
-        public AccountsRepository(SignInManager<IdentityUser> manager, UserManager<IdentityUser> userManager, BlogDbContext _db, IConfiguration conf)
+        public AccountsRepository(SignInManager<ApplicationUser> manager, UserManager<ApplicationUser> userManager, BlogDbContext _db, IConfiguration conf)
         {
             _conf = conf;
             _signInManager = manager;
@@ -33,21 +33,21 @@ namespace Blog.Models
         /// <summary>
         /// Verifies user login
         /// </summary>
-        /// <see cref="IdentityUser"/>
+        /// <see cref="ApplicationUser"/>
         /// <param name="user">User object to be verified</param>
         /// <returns>User object with a jwt bearer token</returns>
         public async Task<ApplicationUser> VerifyCredentials(ApplicationUser user)
         {
-            if (user.Username == null || user.Password == null || user.Username.Length == 0 || user.Password.Length == 0)
+            if (user.UserName == null || user.Password == null || user.UserName.Length == 0 || user.Password.Length == 0)
             {
                 return null;
             }
 
-            var thisUser = await _userManager.FindByNameAsync(user.Username);
+            var thisUser = await _userManager.FindByNameAsync(user.UserName);
             if (thisUser == null)
                 return (null);
 
-            var result = await _signInManager.PasswordSignInAsync(user.Username, user.Password, false, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, user.Password, false, lockoutOnFailure: true);
             if (!result.Succeeded)
             {
                 return null;
@@ -55,7 +55,7 @@ namespace Blog.Models
 
             //var role = await _userManager.GetRolesAsync(thisUser);
             return new ApplicationUser()
-            { Id = thisUser.Id, Username = user.Username }; //, Role = role.FirstOrDefault()};
+            { Id = thisUser.Id, UserName = user.UserName }; //, Role = role.FirstOrDefault()};
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Blog.Models
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Name, user.UserName),
                     //new Claim(ClaimTypes.Role, user.Role)
                     //new Claim("roles", user.Role)
                 });

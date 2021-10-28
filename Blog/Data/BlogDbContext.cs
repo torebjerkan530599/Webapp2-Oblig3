@@ -7,11 +7,13 @@ using System;
 
 namespace Blog.Data
 {
-    public class BlogDbContext : IdentityDbContext<IdentityUser>
+    public class BlogDbContext : IdentityDbContext<ApplicationUser>
     {
         public BlogDbContext(DbContextOptions<BlogDbContext> options)
             : base(options)
-        { }
+        {
+        }
+
         public DbSet<Blogg> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -20,6 +22,7 @@ namespace Blog.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            this.SeedUsers(modelBuilder);
 
             //modelBuilder.Ignore<Tag>();
             //modelBuilder.Ignore<PostsAndTags>();
@@ -49,13 +52,17 @@ namespace Blog.Data
             //modelBuilder.Entity<BloggViewModel>().HasNoKey();
 
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg { BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor" });
+                .HasData(new Blogg
+                    {BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor"});
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg { BlogId = 2, ClosedForPosts = false, Created = DateTime.Now, Name = "Quisque convallis est" });
+                .HasData(new Blogg
+                    {BlogId = 2, ClosedForPosts = false, Created = DateTime.Now, Name = "Quisque convallis est"});
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg { BlogId = 3, ClosedForPosts = false, Created = DateTime.Now, Name = "Interdum et malesuada" });
+                .HasData(new Blogg
+                    {BlogId = 3, ClosedForPosts = false, Created = DateTime.Now, Name = "Interdum et malesuada"});
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg { BlogId = 4, ClosedForPosts = false, Created = DateTime.Now, Name = "Mauris mi velit" });
+                .HasData(new Blogg
+                    {BlogId = 4, ClosedForPosts = false, Created = DateTime.Now, Name = "Mauris mi velit"});
 
             modelBuilder.Entity<Post>()
                 .HasData(new Post
@@ -65,18 +72,19 @@ namespace Blog.Data
                     Title = "First post",
                     Created = DateTime.Now,
                     Content = "Etiam vulputate massa id ante malesuada " +
-                               "elementum. Nulla tellus purus, hendrerit rhoncus " +
-                               "justo quis, " +
-                               "accumsan ultrices nisi. Integer tristique, ligula in convallis aliquam, " +
-                               "massa ligula vehicula odio, in eleifend dolor eros ut nunc",
+                              "elementum. Nulla tellus purus, hendrerit rhoncus " +
+                              "justo quis, " +
+                              "accumsan ultrices nisi. Integer tristique, ligula in convallis aliquam, " +
+                              "massa ligula vehicula odio, in eleifend dolor eros ut nunc",
                     NumberOfComments = 2
                 });
 
             modelBuilder.Entity<Comment>()
-                .HasData(new Comment { CommentId = 1, PostId = 1, Created = DateTime.Now, Text = "Is this latin?" });
+                .HasData(new Comment {CommentId = 1, PostId = 1, Created = DateTime.Now, Text = "Is this latin?"});
 
             modelBuilder.Entity<Comment>()
-                .HasData(new Comment { CommentId = 2, PostId = 1, Created = DateTime.Now, Text = "Yes, of course it is" });
+                .HasData(new Comment
+                    {CommentId = 2, PostId = 1, Created = DateTime.Now, Text = "Yes, of course it is"});
 
             modelBuilder.Entity<Post>()
                 .HasData(new Post
@@ -93,14 +101,43 @@ namespace Blog.Data
                 });
 
             modelBuilder.Entity<Comment>()
-                .HasData(new Comment { CommentId = 3, PostId = 2, Created = DateTime.Now, Text = "I really like the blog, but Quisque?" });
+                .HasData(new Comment
+                    {CommentId = 3, PostId = 2, Created = DateTime.Now, Text = "I really like the blog, but Quisque?"});
 
         }
 
+        private void SeedUsers(ModelBuilder builder)
+        {
+            ApplicationUser user = new ApplicationUser()
+            {
+                Id = "b74ddd14-6340-4840-95c2-db12554843e5",
+                UserName = "Admin",
+                Email = "admin@gmail.com",
+                LockoutEnabled = false,
+                PhoneNumber = "1234567890"
+            };
 
-        //public DbSet<BloggViewModel> BloggViewModel { get; set; }
+            PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
+            passwordHasher.HashPassword(user, "Admin*123");
+
+            builder.Entity<ApplicationUser>().HasData(user);
+        }
+    
+
+        private void SeedRoles(ModelBuilder modelBuilder)
+        {
+        modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole() { Id = "fab4fac1-c546-41de-aebc-a14da6895711", Name = "Admin", ConcurrencyStamp = "1", NormalizedName = "Admin" },
+                new IdentityRole() { Id = "c7b013f0-5201-4317-abd8-c211f91b7330", Name = "HR", ConcurrencyStamp = "2", NormalizedName = "Human Resource" }
+            );
+        }
+
+        private void SeedUserRoles(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>() { RoleId = "fab4fac1-c546-41de-aebc-a14da6895711", UserId = "b74ddd14-6340-4840-95c2-db12554843e5" }
+            );
+        }
     }
-
-
-
 }
+

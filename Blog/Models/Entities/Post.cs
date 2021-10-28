@@ -39,9 +39,9 @@ namespace Blog.Models.Entities
         public virtual Blogg Blog { get; set; }
         public virtual List<Comment> Comments { get; set; }
 
-        //public virtual IdentityUser Owner { get; set;}
+        //public virtual ApplicationUser Owner { get; set;}
 
-        public virtual IdentityUser Owner { get; set; }
+        public virtual ApplicationUser Owner { get; set; }
 
         //En post kan ha flere tags
         public virtual ICollection<Tag> Tags { get; set; }

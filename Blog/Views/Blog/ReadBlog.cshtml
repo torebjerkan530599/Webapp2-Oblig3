@@ -3,8 +3,8 @@
 @using Blog.Models.Entities
 @model Blog.Models.ViewModels.BloggViewModel
 
-@inject SignInManager<IdentityUser> signInManager
-@inject UserManager<IdentityUser> userManager
+@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> userManager
 @inject IAuthorizationService AuthorizationService
 
 @{

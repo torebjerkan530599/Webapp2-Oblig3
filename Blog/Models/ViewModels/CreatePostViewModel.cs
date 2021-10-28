@@ -27,6 +27,6 @@ namespace Blog.Models.ViewModels
 
         public virtual List<Comment> Comments { get; set; }
 
-        public virtual IdentityUser Owner { get; set; }
+        public virtual ApplicationUser Owner { get; set; }
     }
 }

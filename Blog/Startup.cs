@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Blog.Controllers;
+using Blog.Models.Entities;
 
 namespace Blog
 {
@@ -29,7 +31,7 @@ namespace Blog
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -43,9 +45,9 @@ namespace Blog
 
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<ApplicationUser>()
                 //.AddRoleManager<RoleManager<IdentityRole>>()
-                .AddSignInManager<SignInManager<IdentityUser>>()
+                .AddSignInManager<SignInManager<ApplicationUser>>()
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<BlogDbContext>()
                 .AddDefaultTokenProviders(); ;
@@ -94,6 +96,8 @@ namespace Blog
             //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoApi", Version = "v1" });
             //});
             services.AddAutoMapper(typeof(Startup));
+
+            //services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -130,6 +134,7 @@ namespace Blog
                     pattern: "{controller=Blog}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
                 endpoints.MapControllers(); //this will be used for attribute routing in WebApi
+                //endpoints.MapHub<SignalRHub>("/chatHub");
 
             });
 

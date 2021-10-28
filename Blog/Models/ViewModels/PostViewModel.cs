@@ -26,7 +26,7 @@ namespace Blog.Models.ViewModels
 
         public virtual List<Comment> Comments { get; set; }
 
-        public virtual IdentityUser Owner { get; set; }
+        public virtual ApplicationUser Owner { get; set; }
         public virtual ICollection<Tag> Tags { get; set; }
         public IList<string> SelectedTags { get; set; }
         public IList<Tag> AvailableTags { get; set; }
