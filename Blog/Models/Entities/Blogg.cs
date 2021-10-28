@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models.Entities
 {
@@ -18,7 +16,7 @@ namespace Blog.Models.Entities
         [Column("Name")]
         [Display(Name = "Blogg")]
         public string Name { get; set; }
-        public bool? ClosedForPosts { get; set; }
+        public bool ClosedForPosts { get; set; }
 
         //Datoer og tid:
         [Column(TypeName = "datetime2")]
@@ -32,7 +30,7 @@ namespace Blog.Models.Entities
         //public int PostId { get; set; }
 
         //public virtual Post Post { get; set; }
-        
+
         public virtual List<Post> Posts { get; set; }
         //foreign key: FK_dbo.Blog_dbo.AspNetUsers_owner_Id (id)
         //[JsonIgnore]

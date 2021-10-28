@@ -1,7 +1,7 @@
-﻿@model Blog.Models.ViewModels.CreatePostViewModel
+﻿@model Blog.Models.ViewModels.PostViewModel
 
 @{
-    ViewData["Title"] = "CreatePost";
+    ViewData["Title"] = "Skriv nytt innlegg";
 }
 
 <h1>CreatePost</h1>
@@ -28,6 +28,23 @@
                 <span asp-validation-for="BlogId" class="text-danger"></span>
             </div>
 
+            @*https://stackoverflow.com/questions/37778489/how-to-make-check-box-list-in-asp-net-mvc/37779070*@
+
+            @*if (Model.Tags != null)
+            {
+                <label asp-for="Tags" class="control-label">Choose tags:</label>
+                @foreach (var item in Model.Tags)
+                {
+                    <div class="checkbox">
+                    <label>
+                        <input type="checkbox"
+                               name="SelectedTags"
+                               value="@item.TagId"
+                               @if (Model.SelectedTags.Contains(item.TagLabel)) { <text> checked </text> } /> @item.TagLabel
+                        </label>
+                    </div>
+                }            
+            }*@
 
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -38,8 +55,6 @@
 
 <div>
     <a asp-controller="Blog" asp-action="Index">&#8592 Tilbake til alle blogger</a>
-    @*<a asp-action="ReadBlog">&#8592 Blogg oversikt<br></a>
-        <p>&#8592 @Html.ActionLink("Innlegg", "ReadBlog", new { id = Model.BlogId })</p>*@
 
 </div>
 

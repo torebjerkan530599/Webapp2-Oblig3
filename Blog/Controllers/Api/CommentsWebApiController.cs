@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Blog.Data;
+﻿using Blog.Models;
 using Blog.Models.Entities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Web.Http;
-using Blog.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Blog.Controllers.Api
 {
@@ -49,7 +43,7 @@ namespace Blog.Controllers.Api
 
         [Produces(typeof(IEnumerable<Comment>))]
         [HttpGet("{postId:int}")]
-        public async Task<IEnumerable <Comment>> GetComments([FromRoute] int postId)  //preferrably it should be IHttpActionResult....
+        public async Task<IEnumerable<Comment>> GetComments([FromRoute] int postId)  //preferrably it should be IHttpActionResult....
         {
             var commentsOnPost = await _repo.GetAllCommentsOnPost(postId);
             return commentsOnPost; //....so it could return Ok(commentsOnPost)...also simplifies unit testing.
@@ -63,7 +57,7 @@ namespace Blog.Controllers.Api
             if (id != comment.CommentId)
             {
                 return BadRequest();
-            }            
+            }
 
             try
             {
@@ -86,7 +80,7 @@ namespace Blog.Controllers.Api
 
 
 
-        
+
         // POST: api/CommentsWebApi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -104,15 +98,16 @@ namespace Blog.Controllers.Api
                 //Post = comment.Post
             };
 
-            if(await _repo.SaveComment(newComment))
+            if (await _repo.SaveComment(newComment))
             {
                 return Ok(newComment);
 
-            } else
+            }
+            else
             {
                 return StatusCode(500);
             }
-            
+
             //return CreatedAtAction(nameof(GetComments) , new { id = newComment.CommentId }); 
             //return CreatedAtAction(nameof(GetSingleComment), new {id = newComment.CommentId} ,newComment); //with route specified
         }
@@ -127,7 +122,7 @@ namespace Blog.Controllers.Api
             {
                 return NotFound();
             }
-          
+
             await _repo.DeleteComment(comment);
 
             return NoContent();

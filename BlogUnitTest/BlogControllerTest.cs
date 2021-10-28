@@ -1,31 +1,26 @@
+using Blog.Authorization;
+using Blog.Controllers;
+using Blog.Models;
+using Blog.Models.Entities;
+using Blog.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Blog.Authorization;
-using Blog.Controllers;
-using Blog.Data;
-using Blog.Models;
-using Blog.Models.Entities;
-using Blog.Models.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using BlogUnitTest;
 
 namespace BlogUnitTest
 {
-    
+
     [TestClass]
     public class BlogControllerTest
     {
@@ -61,7 +56,7 @@ namespace BlogUnitTest
             _authService = BuildAuthorizationService(services =>
             {
                 services.AddScoped(_ => _repository?.Object);
-                services.AddScoped<IAuthorizationHandler>(_=> authHandler);
+                services.AddScoped<IAuthorizationHandler>(_ => authHandler);
 
                 services.AddAuthorization(options =>
                 {
@@ -72,9 +67,9 @@ namespace BlogUnitTest
                         policy.AddAuthenticationSchemes("Basic");
                         policy.RequireClaim("Permission", "CanViewPage");
                     });
-                }); 
+                });
 
-                
+
 
             });
 
@@ -101,7 +96,7 @@ namespace BlogUnitTest
             Assert.IsNotNull(result, "View Result is null");
         }
 
-        
+
         /*[TestMethod]
         public async Task IndexReturnsAllBlogsAndIsOfCorrectType()
         {
@@ -116,14 +111,14 @@ namespace BlogUnitTest
             var blogs = result.ViewData.Model as List<Blogg>;
             Assert.AreNotEqual(_fakeBloggs.Count, blogs.Count, "Forskjellig antall blogger");
         }*/
-       
+
         [TestMethod]
         public void SaveIsCalledWhenBlogIsCreated()
-        { 
+        {
             // Arrange
             _blogController.ControllerContext = MockHelpers.FakeControllerContext(true); //true = is logged in
             _repository.Setup(x => x.SaveBlog(It.IsAny<Blogg>(), It.IsAny<ClaimsPrincipal>()));
-            
+
             // Act
             var result = _blogController.Create(new CreateBloggViewModel());
             // Assert
@@ -134,10 +129,10 @@ namespace BlogUnitTest
         }
 
         [TestMethod]
-        public void CreateViewIsReturnedWhenInputIsNotValid() 
+        public void CreateViewIsReturnedWhenInputIsNotValid()
         {
             // Arrange
-            var viewModel = new CreateBloggViewModel() 
+            var viewModel = new CreateBloggViewModel()
             {
                 Name = ""
             };
@@ -161,15 +156,17 @@ namespace BlogUnitTest
         }
 
         [TestMethod]
-        public void CreateRedirectActionRedirectsToIndexAction() {
+        public void CreateRedirectActionRedirectsToIndexAction()
+        {
             // Arrange
 
             _blogController.ControllerContext = MockHelpers.FakeControllerContext(false);
-            
+
             var tempData =
                 new TempDataDictionary(_blogController.ControllerContext.HttpContext, Mock.Of<ITempDataProvider>());
             _blogController.TempData = tempData;
-            var viewModel = new CreateBloggViewModel() {
+            var viewModel = new CreateBloggViewModel()
+            {
                 Name = "Mine ideer til fornybar energi kilder",
                 ClosedForPosts = false
             };
@@ -183,7 +180,8 @@ namespace BlogUnitTest
         }
 
         [TestMethod]
-        public void CreateReturnsNotNullResult() {
+        public void CreateReturnsNotNullResult()
+        {
             // Act
             var result = (ViewResult)_blogController.Create();
 
@@ -244,7 +242,7 @@ namespace BlogUnitTest
             Assert.IsNotNull(result, "Should not be null");
             Assert.AreEqual("NotAllowed", result.ActionName);
         }
-        
+
 
 
     }

@@ -1,5 +1,4 @@
-﻿@model Blog.Models.Entities.Post
-
+﻿@model Blog.Models.ViewModels.PostViewModel
 @{
     ViewData["Title"] = "EditPost";
 }
@@ -33,6 +32,20 @@
                 <input asp-for="BlogId" type="hidden" class="form-control" />
                 <span asp-validation-for="BlogId" class="text-danger"></span>
             </div>
+            
+            @if (Model.Tags.Count != 0)
+            {
+                <label asp-for="Tags" class="control-label">Choose tags:</label>
+                    @foreach (var item in Model.Tags)
+                    {
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"
+                                       name="SelectedTags"
+                                       value="@item.TagId"
+                                       @if (Model.SelectedTags.Contains(item.TagLabel)) { <text> checked </text> } /> @item.TagLabel
+                            </label>
+                        </div>                }            }
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

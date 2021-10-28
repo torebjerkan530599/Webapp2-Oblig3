@@ -1,20 +1,19 @@
-using System.Text;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Blog.Authorization;
 using Blog.Data;
 using Blog.Models;
-using Blog.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Blog
 {
@@ -75,7 +74,7 @@ namespace Blog
 
             services.AddMvc(config =>
             {
-                
+
                 // using Microsoft.AspNetCore.Mvc.Authorization;
                 // using Microsoft.AspNetCore.Authorization;
                 var policy = new AuthorizationPolicyBuilder()
@@ -94,6 +93,7 @@ namespace Blog
             //{
             //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoApi", Version = "v1" });
             //});
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -112,7 +112,7 @@ namespace Blog
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
-            
+
             //for javascript
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -130,7 +130,7 @@ namespace Blog
                     pattern: "{controller=Blog}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
                 endpoints.MapControllers(); //this will be used for attribute routing in WebApi
-                
+
             });
 
             //if multiple endpoints

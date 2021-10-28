@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
-using Blog.Authorization;
+﻿using Blog.Authorization;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace Blog.Controllers
 {
@@ -15,7 +15,7 @@ namespace Blog.Controllers
         private readonly IBlogRepository _blogRepository;
         readonly IAuthorizationService _authorizationService;
 
-        public CommentController(IBlogRepository blogRepository, IAuthorizationService authorizationService=null) 
+        public CommentController(IBlogRepository blogRepository, IAuthorizationService authorizationService = null)
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
@@ -31,7 +31,7 @@ namespace Blog.Controllers
         // POST: Comment/CreateComment/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateComment(int PostId, [Bind("CommentId, Text, Created, PostId, Owner")]CommentViewModel newCommentViewModel)
+        public ActionResult CreateComment(int PostId, [Bind("CommentId, Text, Created, PostId, Owner")] CommentViewModel newCommentViewModel)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace Blog.Controllers
                 TempData["username"] = comment.Owner.UserName; //just for testing purposes. Used in ReadPost action methon in PostController.
                 return RedirectToAction("ReadPost", "Post", new { id = PostId });
             }
-            catch 
+            catch
             {
                 return View();
             }
@@ -78,9 +78,10 @@ namespace Blog.Controllers
         // Post/Comment/EditComment/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditComment(int? CommentId, int PostId,[Bind("CommentId, Text, Created, Modified, PostId, Post, Owner")] Comment comment)
+        public ActionResult EditComment(int? CommentId, int PostId, [Bind("CommentId, Text, Created, Modified, PostId, Post, Owner")] Comment comment)
         {
-            if (CommentId == null) {
+            if (CommentId == null)
+            {
                 return NotFound();
             }
             //var postId = comment.PostId;
@@ -94,7 +95,9 @@ namespace Blog.Controllers
 
                 return RedirectToAction("ReadPost", "Post", new { id = PostId });
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.ToString());
                 return View();
             }
@@ -142,7 +145,9 @@ namespace Blog.Controllers
 
                 return RedirectToAction("ReadPost", "Post", new { id = postId });
 
-            } catch {
+            }
+            catch
+            {
                 return ViewBag("Fikk ikke slettet kommentar");
             }
         }

@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Blog.Models;
+﻿using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Blog.Controllers
 {
@@ -16,7 +15,7 @@ namespace Blog.Controllers
         readonly IAuthorizationService _authorizationService;
         //private readonly UserManager<IdentityUser> _userManager;
 
-        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService=null) 
+        public BlogController(IBlogRepository blogRepository, IAuthorizationService authorizationService = null)
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
@@ -33,7 +32,7 @@ namespace Blog.Controllers
         // GET: Blog
         public async Task<ActionResult> Index()
         {
-         
+
             var blogs = await _blogRepository.GetAllBlogs();//.ToList(); ;
             return View(blogs);
         }
@@ -54,12 +53,12 @@ namespace Blog.Controllers
             {
                 BlogId = id,
                 Name = blog.Name,
-                Title = (from p in posts where p.BlogId==id select p.Title).ToString(),
+                Title = (from p in posts where p.BlogId == id select p.Title).ToString(),
                 Posts = posts.ToList(), //hvorfor "possible multiple enumeration"?
                 Owner = blog.Owner, //another way of including owner
                 Tags = tagsForThisBlog
             };
-            
+
             return View(bv);
         }
 
@@ -76,7 +75,7 @@ namespace Blog.Controllers
         [HttpPost]
         //[Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind("Name, ClosedForPosts, Created, Owner")]CreateBloggViewModel newBlog)
+        public ActionResult Create([Bind("Name, ClosedForPosts, Created, Owner")] CreateBloggViewModel newBlog)
         {
             try
             {
@@ -89,9 +88,9 @@ namespace Blog.Controllers
                     Owner = newBlog.Owner
 
                 };
-                    _blogRepository.SaveBlog(blog,User).Wait();
-                    TempData["message"] = $"{blog.Name} har blitt opprettet";
-                    return RedirectToAction(nameof(Index));
+                _blogRepository.SaveBlog(blog, User).Wait();
+                TempData["message"] = $"{blog.Name} har blitt opprettet";
+                return RedirectToAction(nameof(Index));
             }
             catch
             {

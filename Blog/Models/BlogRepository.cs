@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Blog.Data;
+using Blog.Models.Entities;
+using Blog.Models.ViewModels;
+using Blog.Util;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Blog.Data;
-using Blog.Models.Entities;
-using Blog.Models.ViewModels;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Models
 {
@@ -19,6 +20,7 @@ namespace Blog.Models
         {
             _manager = userManager;
             _db = db;
+            //_ = new Seeder(_db); //Får ikke den til å virke
             //SeedManyToMany();
         }
 
@@ -30,13 +32,13 @@ namespace Blog.Models
 
         private void ManyToManyRelationship()
         {
-            
+
             //var comments = _db.Comments.Include(c => c.Post).Include(o=>o.Owner).Where(c => c.PostId == postIdToGet);
             //var post = await _db.Posts.Include(c => c.Comments).FirstAsync(x => x.PostId == postIdToGet);
             //var commentList = post.Comments;//.Where(c => c.PostId == postIdToGet);
             //return post.Comments;
 
-            var blogs = _db.Blogs.Include(o => o.Owner).Where(b => b.BlogId == 1);
+            //Blogg blog1 = (_db.Blogs.Include(o => o.Owner).Where(b => b.BlogId == 1)).FirstOrDefault();
 
             //alle felter merket required (her BlogId) på entiteter må sendes med!
             var post1 = new Post
@@ -44,8 +46,8 @@ namespace Blog.Models
                 Title = "Denne posten tilhører taggene 'suppe' og 'kaffe' ",
                 Content = "kobles sammen med to tagger: 'suppe' og 'kaffe')",
                 BlogId = 1,
-                //Owner = ,//Hent ut eier av Blog med id 1 
-              
+              //  Owner = blog1.Owner,//Hent ut eier av Blog med id 1 
+
             };
 
             var post2 = new Post
@@ -57,23 +59,23 @@ namespace Blog.Models
 
             _db.AddRange(
                 new Tag
-                { 
+                {
                     TagLabel = "suppe",
                     Created = DateTime.Now,
-                    Posts = new List<Post> {post1}
+                    Posts = new List<Post> { post1 }
                 },
 
                 new Tag
                 {
                     TagLabel = "kaffe",
                     Created = DateTime.Now,
-                    Posts = new List<Post> {post1, post2}
+                    Posts = new List<Post> { post1, post2 }
                 });
 
             _db.SaveChanges();
         }
 
-      
+
 
         private void PrintManyToManyRelationship()
         {
@@ -81,7 +83,8 @@ namespace Blog.Models
             {
                 foreach (var post in tag.Posts) //logikk: gå gjennom hver liste med poster som tilhører en tag
                 {
-                    if (post.PostId == 98) {//logikk: list alle tagger som tilhører post med angitt id
+                    if (post.PostId == 98)
+                    {//logikk: list alle tagger som tilhører post med angitt id
                         //Console.WriteLine($"Taglabel:{tag.TagLabel}");
                         System.Diagnostics.Debug.WriteLine($"Taglabel:{tag.TagLabel}");
                     }
@@ -102,19 +105,33 @@ namespace Blog.Models
                 {
                     if (tagPost.BlogId == blogId) //Legger i lista de som tilhører denne blogggen
                     {
-                        tagsToShow.Add(tag); 
+                        tagsToShow.Add(tag);
                     }
                 }
             }
             return tagsToShow;
         }
 
+        public async Task<IEnumerable<Tag>> GetAllTags()
+        {
+            List<Tag> tags = await _db.Tags.Include(t => t.Posts).ToListAsync();
+            return tags;
+        }
+
+        public Tag GetTag(int tagIdToGet)
+        {
+            var tagQuery = (from tag in _db.Tags
+                            where tag.TagId == tagIdToGet
+                            select tag).Include(o => o.Posts);
+            return tagQuery.FirstOrDefault();
+        }
+
 
         public IEnumerable<Post> GetAllPostsInThisBlogWithThisTag(int tagId, int blogId)
         {
-            List<Post> posts = (from p in _db.Posts.Include(p=>p.Tags)
-                where p.BlogId == blogId
-                select p).ToList();
+            List<Post> posts = (from p in _db.Posts.Include(p => p.Tags)
+                                where p.BlogId == blogId
+                                select p).ToList();
 
             List<Post> postsToShow = new();
 
@@ -135,7 +152,7 @@ namespace Blog.Models
 
         public async Task<IEnumerable<Blogg>> GetAllBlogs()
         {
-            IEnumerable<Blogg> blogs = await _db.Blogs.Include(o => o.Owner).ToListAsync();;
+            IEnumerable<Blogg> blogs = await _db.Blogs.Include(o => o.Owner).ToListAsync(); ;
             return blogs;
         }
 
@@ -144,22 +161,22 @@ namespace Blog.Models
 
             IEnumerable<Post> posts = _db.Posts;
             var postQuery = from post in posts
-                where post.BlogId == blogId
-                orderby post.Created descending
-                select post;
+                            where post.BlogId == blogId
+                            orderby post.Created descending
+                            select post;
             return postQuery;
 
         }
 
         public async Task<IEnumerable<Comment>> GetAllComments() //gets all comments, not just the comments on a specific post
         {
-            IEnumerable<Comment> comments = await _db.Comments/*.AsNoTracking()/*.Include(p=>p.Post)/*.Include(o => o.Owner)*/.ToListAsync();;
+            IEnumerable<Comment> comments = await _db.Comments/*.AsNoTracking()/*.Include(p=>p.Post)/*.Include(o => o.Owner)*/.ToListAsync(); ;
             return comments;
         }
 
         public async Task<IEnumerable<Comment>> GetAllCommentsOnPost(int postIdToGet)
         {
-            var post = await _db.Posts.Include(c => c.Comments).Include(o=>o.Owner).FirstAsync(x => x.PostId == postIdToGet);
+            var post = await _db.Posts.Include(c => c.Comments).Include(o => o.Owner).FirstAsync(x => x.PostId == postIdToGet);
             //var commentList = post.Comments;//.Where(c => c.PostId == postIdToGet);
             return post.Comments;
         }
@@ -169,37 +186,37 @@ namespace Blog.Models
         {
             IEnumerable<Comment> comments = _db.Comments.Include(o => o.Owner);
             var commentsQuery = from comment in comments
-                where comment.PostId == postIdToGet
-                orderby comment.Created descending 
-                select comment;
+                                where comment.PostId == postIdToGet
+                                orderby comment.Created descending
+                                select comment;
             return commentsQuery;
         }
 
 
         public Blogg GetBlog(int blogId)
         {
-            IEnumerable<Blogg> blogs = _db.Blogs.Include(o=>o.Owner);
+            IEnumerable<Blogg> blogs = _db.Blogs.Include(o => o.Owner);
             var singleBlogQuery = from blog in blogs
-                where blog.BlogId == blogId
-                select blog;
+                                  where blog.BlogId == blogId
+                                  select blog;
             return singleBlogQuery.FirstOrDefault();
         }
 
         public Post GetPost(int? id)
         {
             return ((from p in _db.Posts
-                where p.PostId == id
-                select p)).Include(o=>o.Owner).FirstOrDefault();
+                     where p.PostId == id
+                     select p)).Include(o => o.Owner).FirstOrDefault();
         }
 
         //GET COMMENT
         public Comment GetComment(int commentIdToGet)
         {
 
-            IEnumerable<Comment> comments = _db.Comments.Include(o=>o.Owner);
+            IEnumerable<Comment> comments = _db.Comments.Include(o => o.Owner);
             var singleCommentQuery = from comment in comments
-                where comment.CommentId == commentIdToGet
-                select comment;
+                                     where comment.CommentId == commentIdToGet
+                                     select comment;
             return singleCommentQuery.FirstOrDefault();
         }
 
@@ -213,7 +230,7 @@ namespace Blog.Models
             return _db.Comments.Any(e => e.CommentId == id);
         }
 
-        public async Task SaveBlog(Blogg blog,  ClaimsPrincipal user)
+        public async Task SaveBlog(Blogg blog, ClaimsPrincipal user)
         {
             var currentUser = await _manager.FindByNameAsync(user.Identity?.Name);
             blog.Owner = currentUser;
@@ -281,14 +298,14 @@ namespace Blog.Models
 
             else
             {
-                p = _db.Blogs.Include(blogg=>blogg.Posts)
+                p = _db.Blogs.Include(blogg => blogg.Posts)
                         .Where(b => b.BlogId == id)
                         .Select(k => new CreateBloggViewModel()
-                            {
-                                BlogId = k.BlogId,
-                                Name = k.Name,
-                                Created = DateTime.Now
-                            }
+                        {
+                            BlogId = k.BlogId,
+                            Name = k.Name,
+                            Created = DateTime.Now
+                        }
                         ).FirstOrDefault();
             }
             return p;
@@ -303,9 +320,9 @@ namespace Blog.Models
             }
             else
             {
-                p = _db.Posts.Include(o=>o.Comments).Include(o=>o.Owner)
+                p = _db.Posts.Include(o => o.Comments).Include(o => o.Owner)
                     .Where(o => o.PostId == id)
-                    .Select(o => new PostViewModel 
+                    .Select(o => new PostViewModel
                     {
                         PostId = o.PostId,
                         Title = o.Title,
@@ -321,7 +338,7 @@ namespace Blog.Models
             return p;
         }
 
-  
+
 
         //marks the blog as either closed or open in db
         public void SetBlogStatus(Blogg blog, bool status)

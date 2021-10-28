@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-using Blog.Models.Entities;
+﻿using Blog.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blog.Models.ViewModels
 {
@@ -34,6 +31,6 @@ namespace Blog.Models.ViewModels
 
         public virtual List<Tag> Tags { get; set; }
 
-        public virtual IdentityUser Owner { get; set;}
+        public virtual IdentityUser Owner { get; set; }
     }
 }

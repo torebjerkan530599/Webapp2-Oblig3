@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Blog.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Blog.Models.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models.ViewModels
 {

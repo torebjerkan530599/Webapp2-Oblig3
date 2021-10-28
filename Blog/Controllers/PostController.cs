@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Blog.Authorization;
+﻿using Blog.Authorization;
 using Blog.Models;
 using Blog.Models.Entities;
 using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Blog.Controllers
 {
@@ -18,13 +17,13 @@ namespace Blog.Controllers
         private readonly IBlogRepository _blogRepository;
         readonly IAuthorizationService _authorizationService;
 
-        public PostController(IBlogRepository blogRepository, IAuthorizationService authorizationService=null) 
+        public PostController(IBlogRepository blogRepository, IAuthorizationService authorizationService = null)
         {
             _blogRepository = blogRepository;
             _authorizationService = authorizationService;
         }
 
-        
+
         [AllowAnonymous]
         public ActionResult ReadPost(int id) //show all comments on post
         {
@@ -40,7 +39,7 @@ namespace Blog.Controllers
         {
             var blog = _blogRepository.GetBlog(blogId);
 
-            
+
             // requires using AuthorizationHandler
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, blog, BlogOperations.Update);
@@ -50,20 +49,27 @@ namespace Blog.Controllers
 
 
             var closed = blog.ClosedForPosts;
-            
-            if (!closed.GetValueOrDefault(false)) //hvis ikke stengt, gå til opprett post
+
+            if (closed) //hvis ikke stengt, gå til opprett post
             {
-                return View();
+                //hvis bloggen er stengt, gi beskjed.
+                TempData["message"] = "Bloggen er stengt for innlegg";
+                return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
             }
 
-            //hvis bloggen er stengt, gi beskjed.
-            TempData["message"] = "Bloggen er stengt for innlegg";
-            return RedirectToAction("ReadBlog","Blog", new {id= blogId});
+            List<Tag> tags = (List<Tag>)await _blogRepository.GetAllTags();
+            //List<Tag> emptyList = new List<Tag>();
+            PostViewModel postViewModel = new()
+            {
+                Tags = tags,
+                AvailableTags = tags
+            };
+            return View(postViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreatePost(int blogId,[Bind("Title, Content, Created, BlogId, Owner")]PostViewModel  newPost)
+        public async Task<ActionResult> CreatePost(int blogId, [Bind("Title, Content, Created, BlogId, Owner, Tags")] PostViewModel newPost)
         {
             var blog = _blogRepository.GetBlog(blogId);
 
@@ -77,28 +83,51 @@ namespace Blog.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    /*var tagsList = new List<Tag>();
+                    if (newPost.SelectedTags.Count != 0)
+                    {
+                        string tagsToString = string.Join(",", newPost.SelectedTags);
+                        tagsList = GetTagsCommaSeparated(tagsToString);
+                    }*/
+
                     var post = new Post()
                     {
                         Title = newPost.Title,
                         Content = newPost.Content,
                         Created = DateTime.Now,
                         BlogId = blogId,
+                        //Tags = tagsList
                     };
 
                     _blogRepository.SavePost(post, User).Wait();
                     TempData["message"] = $"{newPost.Title} har blitt opprettet";
-                    return RedirectToAction("ReadBlog","Blog", new {id= blogId});
+                    return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e); 
+                Console.WriteLine(e);
                 return View();
             }
 
             TempData["message"] = "Fikk ikke opprettet ny post";
-            return RedirectToAction("ReadBlog","Blog", new {id= blogId});
+            return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
         }
+
+        private List<Tag> GetTagsCommaSeparated(string tagsStrings)
+        {
+            char[] delimiterChars = { ',' };
+            var tagsIdNumbers = tagsStrings.Split(delimiterChars).ToList();
+
+            List<Tag> tagsListTemp = new List<Tag>();
+
+            foreach (var idNumber in tagsIdNumbers)
+            {
+                tagsListTemp.Add(_blogRepository.GetTag(Int32.Parse(idNumber)));
+            }
+            return tagsListTemp;
+        }
+
 
         [HttpGet]
         public async Task<ActionResult> EditPost(int? id)
@@ -107,7 +136,7 @@ namespace Blog.Controllers
             {
                 return NotFound("Bad parameter");
             }
-         
+
             //Get the post to edit 
             var post = _blogRepository.GetPost(id);
 
@@ -122,44 +151,55 @@ namespace Blog.Controllers
         // POST: Contact/Edit/#
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditPost(int? id, [Bind("PostId, Title, Content, Modified, BlogId, Owner")]Post post)
+        public async Task<ActionResult> EditPost(int? id, [Bind("PostId, Title, Content, Modified, BlogId, Owner")] PostViewModel post)
         {
-            try 
+            try
             {
 
-                if(id == null)
+                if (id == null)
                 {
                     return NotFound();
                 }
 
-                var content = post.Content;
-                var title = post.Title;
+                var tagsList = new List<Tag>();
+                if (post.SelectedTags.Count != 0)
+                {
+                    var tagsToString = string.Join(",", post.SelectedTags);
+                    tagsList = GetTagsCommaSeparated(tagsToString);
+                }
+
 
                 var editedPost = _blogRepository.GetPost(id);
-                editedPost.Content = content;
-                editedPost.Title = title;
+
 
                 var isAuthorized = await _authorizationService.AuthorizeAsync(User, editedPost, BlogOperations.Update);
                 if (!isAuthorized.Succeeded)
                 {
                     return View("IngenTilgang");
                 }
-                
+
                 var blogId = post.BlogId;
 
                 if (ModelState.IsValid)
                 {
-             
-                    //post.Modified = DateTime.Now;
+                    var content = post.Content;
+                    var title = post.Title;
+                    editedPost.Content = content;
+                    editedPost.Title = title;
+                    editedPost.Modified = DateTime.Now;
+                    editedPost.Tags = tagsList;
+
                     _blogRepository.UpdatePost(editedPost).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
-                    return RedirectToAction("ReadBlog","Blog", new { id = blogId });
-          
+                    return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
+
                 }
 
-                return RedirectToAction("Index","Blog");
+                return RedirectToAction("Index", "Blog");
 
-            } catch (Exception e){
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.ToString());
                 return View(post);
             }
@@ -170,8 +210,8 @@ namespace Blog.Controllers
         public async Task<ActionResult> DeletePost(int id)
         {
             var post = _blogRepository.GetPost(id);
-            var isAuthorized =  await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Delete);
-            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Delete);
+
             if (!isAuthorized.Succeeded)
             {
                 //return View("IngenTilgang");
@@ -189,10 +229,10 @@ namespace Blog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeletePost(int id, IFormCollection collection)
         {
-            
+
             var post = _blogRepository.GetPost(id);
-            var isAuthorized =  await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Delete);
-            
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Delete);
+
             if (!isAuthorized.Succeeded)
             {
                 //return View("IngenTilgang");
@@ -211,7 +251,7 @@ namespace Blog.Controllers
                     TempData["message"] = $"{postToDelete.Title} er slettet";
 
                     return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
-                        
+
                 }
                 return new ChallengeResult();
             }
@@ -226,7 +266,6 @@ namespace Blog.Controllers
             return View("IngenTilgang");
         }
 
-        //TAGS------------------------------------------------------------------------
         [AllowAnonymous]
         public ActionResult FindPostsWithTag(int tagId, int blogId)
         {
@@ -241,7 +280,7 @@ namespace Blog.Controllers
 
                     BlogId = blog.BlogId,
                     Name = blog.Name,
-                    Title = (from p in posts where p.BlogId==blogId select p.Title).ToString(),
+                    Title = (from p in posts where p.BlogId == blogId select p.Title).ToString(),
                     Created = blog.Created,
                     Modified = blog.Modified,
                     //Closed = blog.Closed,

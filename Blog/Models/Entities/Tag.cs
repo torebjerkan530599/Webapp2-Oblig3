@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Blog.Models.Entities
 {
@@ -16,7 +13,7 @@ namespace Blog.Models.Entities
 
         [Key] //, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TagId { get; set; }
-       
+
         [Required]
         [StringLength(50)]
         public string TagLabel { get; set; }

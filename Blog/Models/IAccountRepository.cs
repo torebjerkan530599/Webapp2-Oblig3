@@ -1,7 +1,6 @@
+using Blog.Models.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Blog.Models.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace Blog.Models
 {

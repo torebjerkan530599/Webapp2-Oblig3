@@ -1,18 +1,15 @@
 
+using Blog.Data;
 using Blog.Models.Entities;
-using Blog.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Blog.Data;
-using Microsoft.Extensions.Hosting.Internal;
 
 namespace Blog.Models
 {
@@ -26,7 +23,7 @@ namespace Blog.Models
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _conf;
 
-        public AccountsRepository(SignInManager<IdentityUser> manager, UserManager<IdentityUser> userManager, BlogDbContext _db,  IConfiguration conf)
+        public AccountsRepository(SignInManager<IdentityUser> manager, UserManager<IdentityUser> userManager, BlogDbContext _db, IConfiguration conf)
         {
             _conf = conf;
             _signInManager = manager;
@@ -49,16 +46,16 @@ namespace Blog.Models
             var thisUser = await _userManager.FindByNameAsync(user.Username);
             if (thisUser == null)
                 return (null);
-            
+
             var result = await _signInManager.PasswordSignInAsync(user.Username, user.Password, false, lockoutOnFailure: true);
             if (!result.Succeeded)
             {
                 return null;
             }
-            
+
             //var role = await _userManager.GetRolesAsync(thisUser);
             return new ApplicationUser()
-                {Id = thisUser.Id, Username = user.Username}; //, Role = role.FirstOrDefault()};
+            { Id = thisUser.Id, Username = user.Username }; //, Role = role.FirstOrDefault()};
         }
 
         /// <summary>
@@ -92,8 +89,8 @@ namespace Blog.Models
             var tokenString = tokenHandler.WriteToken(token);
 
             return tokenString;
-            
-            
+
+
         }
 
         public Task<bool> ChangePasswd(ApplicationUser u, string oldP, string newP)
