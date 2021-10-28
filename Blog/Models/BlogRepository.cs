@@ -95,8 +95,6 @@ namespace Blog.Models
         //GET TAGS
         public IEnumerable<Tag> GetAllTagsForBlog(int blogId)
         {
-            //IEnumerable<Blogg> blogs = _db.Blogs;
-            //IEnumerable<Post> posts = _db.Posts.Include(p => p.Tags);
 
             var tagsToShow = new List<Tag>();
             foreach (var tag in _db.Tags.Include(a => a.Posts)) //Henter alle tags
@@ -105,7 +103,10 @@ namespace Blog.Models
                 {
                     if (tagPost.BlogId == blogId) //Legger i lista de som tilhører denne blogggen
                     {
-                        tagsToShow.Add(tag);
+                        if (!tagsToShow.Contains(tag))
+                        {
+                            tagsToShow.Add(tag);
+                        }
                     }
                 }
             }

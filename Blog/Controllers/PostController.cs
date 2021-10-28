@@ -58,11 +58,13 @@ namespace Blog.Controllers
             }
 
             List<Tag> tags = (List<Tag>)await _blogRepository.GetAllTags();
-            //List<Tag> emptyList = new List<Tag>();
+            List<string> selectedTags = new List<string>();
             PostViewModel postViewModel = new()
             {
+                //BlogId = blog.BlogId,
                 Tags = tags,
-                AvailableTags = tags
+                AvailableTags = tags,
+                SelectedTags = selectedTags,
             };
             return View(postViewModel);
         }
@@ -83,12 +85,12 @@ namespace Blog.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    /*var tagsList = new List<Tag>();
+                    var tagsList = new List<Tag>();
                     if (newPost.SelectedTags.Count != 0)
                     {
                         string tagsToString = string.Join(",", newPost.SelectedTags);
                         tagsList = GetTagsCommaSeparated(tagsToString);
-                    }*/
+                    }
 
                     var post = new Post()
                     {
@@ -96,7 +98,7 @@ namespace Blog.Controllers
                         Content = newPost.Content,
                         Created = DateTime.Now,
                         BlogId = blogId,
-                        //Tags = tagsList
+                        Tags = tagsList
                     };
 
                     _blogRepository.SavePost(post, User).Wait();
@@ -114,7 +116,7 @@ namespace Blog.Controllers
             return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
         }
 
-        private List<Tag> GetTagsCommaSeparated(string tagsStrings)
+        public List<Tag> GetTagsCommaSeparated(string tagsStrings)
         {
             char[] delimiterChars = { ',' };
             var tagsIdNumbers = tagsStrings.Split(delimiterChars).ToList();
@@ -283,7 +285,7 @@ namespace Blog.Controllers
                     Title = (from p in posts where p.BlogId == blogId select p.Title).ToString(),
                     Created = blog.Created,
                     Modified = blog.Modified,
-                    //Closed = blog.Closed,
+                    ClosedForPosts = blog.ClosedForPosts,
                     Owner = blog.Owner,
                     Posts = posts.ToList(),
                     Tags = tagsForThisBlog

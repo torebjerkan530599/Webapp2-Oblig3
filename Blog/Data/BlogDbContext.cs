@@ -48,8 +48,20 @@ namespace Blog.Data
             modelBuilder.Entity<Post>().ToTable("Post")
                 .HasMany(p => p.Tags);*/
 
-
-            //modelBuilder.Entity<BloggViewModel>().HasNoKey();
+            /*modelBuilder.Entity<Blogg>(b =>
+            {
+                b.HasData(new ApplicationUser
+                {
+                    UserName = "Pelle",
+                    Email = "parafin@rock.com", //nb: provide e-mail during login...
+                    EmailConfirmed = true,
+                    NormalizedUserName = "PELLE",
+                    NormalizedEmail = "PARAFIN@ROCK.COM",
+                    LockoutEnabled = false,
+                });
+                b.HasData(new Blogg
+                    {BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor"});
+            });*/
 
             modelBuilder.Entity<Blogg>()
                 .HasData(new Blogg

@@ -30,6 +30,6 @@ namespace Blog.Models.Entities
         //public virtual Post Post { get; set; }
 
         //En tag kan ha flere poster
-        public /*virtual*/ ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
     }
 }
