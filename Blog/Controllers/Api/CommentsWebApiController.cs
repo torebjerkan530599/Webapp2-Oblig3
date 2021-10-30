@@ -2,6 +2,7 @@
 using Blog.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,8 +16,16 @@ namespace Blog.Controllers.Api
     public class CommentsWebApiController : ControllerBase //or just Controller?
     {
         private readonly IBlogRepository _repo;
+        private UserManager<ApplicationUser> _userManager;
 
-        public CommentsWebApiController(IBlogRepository repo) => _repo = repo;//hvordan får jeg alle over på denne konstruksjonen?
+        //public CommentsWebApiController(IBlogRepository repo) => _repo = repo;//hvordan får jeg alle over på denne konstruksjonen?
+        
+        public CommentsWebApiController (IBlogRepository repo, UserManager<ApplicationUser> userManager)
+        { 
+            
+                _userManager = userManager;
+                _repo = repo;
+        }
 
         // GET: api/CommentsWebApi. Returns all comments
         [HttpGet]
@@ -88,13 +97,14 @@ namespace Blog.Controllers.Api
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<Comment>> PostComment([FromBody] Comment comment)
         {
+            var owner = await _userManager.GetUserAsync(HttpContext.User);
             // Create new comment object containing required fields, ref createmethod mvc.
             var newComment = new Comment
             {
                 Text = comment.Text,
                 PostId = comment.PostId,
                 Created = DateTime.Now,
-                Owner = comment.Owner//,
+                Owner = owner,
                 //Post = comment.Post
             };
 

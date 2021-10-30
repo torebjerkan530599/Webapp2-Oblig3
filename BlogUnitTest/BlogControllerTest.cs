@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -79,7 +80,8 @@ namespace BlogUnitTest
 
             _fakeBloggs = new List<Blogg>{
                 new() {BlogId = 1, Name = "First in line", ClosedForPosts = false},
-                new() {BlogId = 2, Name = "Everything was great", ClosedForPosts = false}
+                new() {BlogId = 2, Name = "Everything was great", ClosedForPosts = false},
+                new() {BlogId = 3, Name = "Nothing new to see", ClosedForPosts = false}
             };
         }
 
@@ -95,22 +97,6 @@ namespace BlogUnitTest
             // Assert
             Assert.IsNotNull(result, "View Result is null");
         }
-
-
-        /*[TestMethod]
-        public async Task IndexReturnsAllBlogsAndIsOfCorrectType()
-        {
-            // Arrange
-            _repository.Setup(x => x.GetAllBlogs(2)).Returns(_fakeBloggs);
-            // Act
-            var result =  await _blogController.Index() as ViewResult;
-            // Assert
-            Assert.IsNotNull(result, "View Result is null");
-            CollectionAssert.AllItemsAreInstancesOfType((ICollection)result.ViewData.Model, typeof(Blogg));
-            //
-            var blogs = result.ViewData.Model as List<Blogg>;
-            Assert.AreNotEqual(_fakeBloggs.Count, blogs.Count, "Forskjellig antall blogger");
-        }*/
 
         [TestMethod]
         public void SaveIsCalledWhenBlogIsCreated()
@@ -243,6 +229,20 @@ namespace BlogUnitTest
             Assert.AreEqual("NotAllowed", result.ActionName);
         }
 
+        [TestMethod]
+        public async Task IndexReturnsAllBlogsAndIsOfCorrectType()
+        {
+            // Arrange
+            _repository.Setup(x => x.GetAllBlogs()).Returns(Task.FromResult(_fakeBloggs.AsEnumerable()));
+            // Act
+            var result =  await _blogController.Index() as ViewResult;
+            // Assert
+            Assert.IsNotNull(result, "View Result is null");
+            CollectionAssert.AllItemsAreInstancesOfType((ICollection)result.ViewData.Model, typeof(Blogg));
+            //
+            var blogs = result.ViewData.Model as List<Blogg>;
+            Assert.AreNotEqual(_fakeBloggs.Count, blogs.Count, "Forskjellig antall blogger");
+        }
 
 
     }

@@ -22,7 +22,7 @@ namespace Blog.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            this.SeedUsers(modelBuilder);
+            //this.SeedUsers(modelBuilder);
 
             //modelBuilder.Ignore<Tag>();
             //modelBuilder.Ignore<PostsAndTags>();
@@ -42,39 +42,61 @@ namespace Blog.Data
                 .HasForeignKey(k => k.PostId);
 
             
-            /*modelBuilder.Entity<Tag>().ToTable("Tag")
+            modelBuilder.Entity<Tag>().ToTable("Tag")
                 .HasMany(p => p.Posts);
 
             modelBuilder.Entity<Post>().ToTable("Post")
                 .HasMany(p => p.Tags);*/
 
-            /*modelBuilder.Entity<Blogg>(b =>
-            {
-                b.HasData(new ApplicationUser
-                {
+            //modelBuilder.Entity<Blogg>().HasOne(i => i.Owner).WithMany(b=>b.Bloggs);
+
+            //modelBuilder.Entity<ApplicationUser>(u => { u.HasData(user1);});
+
+            var userId_01 = Guid.NewGuid().ToString();
+            var hash = new PasswordHasher<ApplicationUser>();
+
+             modelBuilder.Entity<ApplicationUser>().HasData(new {
+                    Id = userId_01,
+                    PasswordHash = hash.HashPassword(null, "Vm$€sKKm34"),
                     UserName = "Pelle",
-                    Email = "parafin@rock.com", //nb: provide e-mail during login...
+                    Email = "parafin@rock.com",
                     EmailConfirmed = true,
                     NormalizedUserName = "PELLE",
                     NormalizedEmail = "PARAFIN@ROCK.COM",
                     LockoutEnabled = false,
-                });
-                b.HasData(new Blogg
-                    {BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor"});
-            });*/
+                    AccessFailedCount = 10,
+                    PhoneNumberConfirmed = true,
+                    TwoFactorEnabled = false,
+            });
+
+            var userId_02 = Guid.NewGuid().ToString();
+            modelBuilder.Entity<ApplicationUser>().HasData(new {
+
+                    Id = userId_02,
+                    PasswordHash = hash.HashPassword(null, "k8@fkF3ddk"),
+                    UserName = "Harry",
+                    Email = "harry@dirtymail.com",
+                    EmailConfirmed = true,
+                    NormalizedUserName = "HARRY",
+                    NormalizedEmail  = "HARRY@DIRTYMAIL.COM",
+                    LockoutEnabled = false,
+                    AccessFailedCount = 10,
+                    PhoneNumberConfirmed = true,
+                    TwoFactorEnabled = false,
+            });
 
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg
-                    {BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor"});
+                .HasData(new
+                    {BlogId = 1, ClosedForPosts = false, Created = DateTime.Now, Name = "Lorem ipsum dolor", OwnerId=userId_01, Modified= DateTime.Now});
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg
-                    {BlogId = 2, ClosedForPosts = false, Created = DateTime.Now, Name = "Quisque convallis est"});
+                .HasData(new
+                    {BlogId = 2, ClosedForPosts = false, Created = DateTime.Now, Name = "Quisque convallis est", OwnerId = userId_02, Modified = DateTime.Now});
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg
-                    {BlogId = 3, ClosedForPosts = false, Created = DateTime.Now, Name = "Interdum et malesuada"});
+                .HasData(new
+                    {BlogId = 3, ClosedForPosts = false, Created = DateTime.Now, Name = "Interdum et malesuada", OwnerId = userId_01, Modified = DateTime.Now});
             modelBuilder.Entity<Blogg>()
-                .HasData(new Blogg
-                    {BlogId = 4, ClosedForPosts = false, Created = DateTime.Now, Name = "Mauris mi velit"});
+                .HasData(new
+                    {BlogId = 4, ClosedForPosts = false, Created = DateTime.Now, Name = "Mauris mi velit", OwnerId = userId_01, Modified = DateTime.Now});
 
             modelBuilder.Entity<Post>()
                 .HasData(new Post

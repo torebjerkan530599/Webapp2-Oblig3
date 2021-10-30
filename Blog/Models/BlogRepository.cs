@@ -20,7 +20,7 @@ namespace Blog.Models
         {
             _manager = userManager;
             _db = db;
-            //_ = new Seeder(_db); //Får ikke den til å virke
+            //_ = new SeedData(_db);
             //SeedManyToMany();
         }
 
@@ -207,7 +207,7 @@ namespace Blog.Models
         {
             return ((from p in _db.Posts
                      where p.PostId == id
-                     select p)).Include(o => o.Owner).FirstOrDefault();
+                     select p)).Include(o => o.Owner).Include(p=>p.Tags).FirstOrDefault();
         }
 
         //GET COMMENT

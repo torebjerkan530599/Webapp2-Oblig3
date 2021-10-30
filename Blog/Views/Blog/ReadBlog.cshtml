@@ -23,27 +23,24 @@
 
 @if (Model.Tags != null)
 {
-    <table class="table table-hover">
+<table class="table table-hover">
+
+    @try
+    {
         <tr>
-            <th>Tags</th>
-            <th> @Html.ActionLink("Fjern søk", "ReadBlog", "Blog", new {id = Model.BlogId })</th>
+            @foreach (var item in Model.Tags)
+            {
+                <td>
+                    @Html.ActionLink(item.TagLabel, "FindPostsWithTag", "Post", new { tagId = item.TagId, blogId = Model.BlogId })
+                </td>
+            }
         </tr>
-        @try
-        {
-            <tr>
-                @foreach (var item in Model.Tags)
-                {
-                    <td>
-                        @Html.ActionLink(item.TagLabel, "FindPostsWithTag", "Post", new {tagId = item.TagId, blogId = Model.BlogId})
-                    </td>
-                }
-            </tr>
-        }
-        catch (NullReferenceException e)
-        {
-            Console.Write(e);
-        }
-    </table>
+    }
+    catch (NullReferenceException e)
+    {
+        Console.Write(e);
+    }
+</table>
     <hr />
 }
 

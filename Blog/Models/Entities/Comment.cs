@@ -31,6 +31,5 @@ namespace Blog.Models.Entities
 
         [JsonIgnore]
         public virtual ApplicationUser Owner { get; set; }
-        //public virtual ApplicationUser Owner { get; set; }
     }
 }

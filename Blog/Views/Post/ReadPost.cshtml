@@ -11,80 +11,13 @@
     ViewData["Title"] = "Kommentarer";
 }
 
-
-@*<h1>Kommenarer for innlegget "@Model.Title"</h1>
-    <hr />
-    <p>
-        @if (@Model.Owner == null)
-        {<a> Bruker er ikke registrert</a> }
-        else
-        {<a> Eier av innlegg: @Model.Owner.UserName</a>}
-    </p>
-
-
-    <div>
-
-        <table class="table table-hover">
-            <tr>
-                <th>Eier</th>
-                <th>Kommentar</th>
-                <th>Opprettet</th>
-                <th>Valg</th>
-            </tr>
-
-
-            @try
-            {
-                @foreach (var item in Model.Comments)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Owner.UserName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Text)
-                        </td>
-
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Created)
-                        </td>
-
-                        <td>
-                            @Html.ActionLink("Edit", "EditComment", "Comment", new { CommentId = item.CommentId }) |
-
-                            @Html.ActionLink("Delete", "DeleteComment", "Comment", new { CommentId = item.CommentId })
-                        </td>
-                    </tr>
-                }
-            }
-            catch (NullReferenceException e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-
-
-        </table>
-        <p>@Html.ActionLink("Opprett ny kommentar", "CreateComment", "Comment", new { PostId = @Model.PostId, id = @Model.PostId })</p>
-        <!--https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_ref_js_modal&stacked=h-->
-
-    </div>
-
-
-
-    <div>
-
-        <a asp-controller="Blog" asp-action="Index">&#8592 Tilbake til alle blogger<br></a>
-        <p>&#8592 @Html.ActionLink("Tilbake til innlegg", "ReadBlog", "Blog", new { id = Model.BlogId })</p>
-    </div>
-*@
-
 @section scripts{
     <partial name="_ValidationScriptsPartial" />
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
         //------------------------------------------JWT-------------------------------------------------------//
         function handleError(xhr, textStatus, errorThrown){
-            if (xhr.status === 401) //not sure why this is better than ==. It wants to compare types as well
+            if (xhr.status === 401)
                 $('#responseContainer').html("Unauthorized request");
             else{
                 var message = "<p>Status code: " + xhr.status + "</p>";
@@ -180,11 +113,22 @@
 
             listCommentOnPost(function (comments) {
                 if (isUserLoggedIn()) {
-                    var strComments = "";
+                    var strComments = `<table class="table table-hover">
+                                            <tr>
+                                            <th>Eier</th>
+                                            <th>Opprettet</th>
+                                            <th>Kommentar</th>
+                                        </tr >`;
                     $.each(comments,
                         function(index, comment) {
-                            strComments += `<tr><td>${comment.commentId} ${comment.text} @*${comment.Owner.UserName}*@ </td></tr>`;
+                            strComments += `
+                                    <tr>
+                                        <td>${comment.Owner}</td>
+                                        <td>${formatDate(comment.created)}</td>
+                                        <td>${comment.text}</td>
+                                    </tr>`;
                         });
+                    strComments += `</table >`;
                     $("#commentsOnPost").html(strComments);
                 }
 
@@ -215,6 +159,20 @@
             }
         }
 
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear(),
+                hour = '' + d.getHours(),
+                minutes = '' + d.getMinutes();
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+            return [day, month, year, hour, minutes].join('-');
+        }
+
         //-----------------------add a comment to the post-------------------------------------//
 
         function add() {
@@ -236,7 +194,7 @@
                         //$("#update").html("<p>POST ferdig ok ..." + "</p>");
                         swal({
                             title: "Bra jobba!",
-                            text: "Kommentaren er lagreet!",
+                            text: "Kommentaren er lagret!",
                             icon: "success",
                             button: "Aww yiss!",
                         });
@@ -264,12 +222,12 @@
             //showAll(); //viser absolutt alle kommentarer
         });
 
- 
+
 
     </script>
 }
 
-<div style="margin: 50px auto; width:600px;">
+<!--<div style="margin: 50px auto; width:600px;">
     <div id="btLoginContainer">
         <label>Oppgi gyldig brukernavn og passord for å se kommentarer</label>
         <input type="text" name="username" id="InputEmail" placeholder="Username" />
@@ -279,6 +237,24 @@
     </div>
     <div id="btLogoutContainer">
         <button id="btLogout">Logout</button>
+    </div>
+</div>-->
+
+<div class="col-md-4 align-content-lg-start">
+    <div class="form-group" id="btLoginContainer">
+        <label class="control-label">Oppgi gyldig brukernavn og passord</label>
+        <div class="form-group">
+            <input class="form-control" type="text" name="username" id="InputEmail" placeholder="Username" />
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password" id="InputPassword" placeholder="Password" />
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-success" id="loginToCreateToken">Logg inn for å generere token</button><br>
+        </div>
+    </div>
+    <div id="btLogoutContainer">
+        <button type="button" class="btn btn-info" id="btLogout">Logout JWT</button>
     </div>
 </div>
 
@@ -295,7 +271,7 @@
 
 <div class="container">
     <!-- Trigger the modal with a button -->
-    <button type="button" id="modalButton"class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Legg til kommentar</button>
+    <button type="button" id="modalButton" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Legg til kommentar</button>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">

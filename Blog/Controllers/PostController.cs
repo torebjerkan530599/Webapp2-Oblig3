@@ -71,7 +71,7 @@ namespace Blog.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreatePost(int blogId, [Bind("Title, Content, Created, BlogId, Owner, Tags")] PostViewModel newPost)
+        public async Task<ActionResult> CreatePost(int blogId, [Bind("Title, Content, Created, BlogId, Owner, Tags, AvailableTags, SelectedTags" )] PostViewModel newPost)
         {
             var blog = _blogRepository.GetBlog(blogId);
 
@@ -116,7 +116,7 @@ namespace Blog.Controllers
             return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
         }
 
-        public List<Tag> GetTagsCommaSeparated(string tagsStrings)
+        public List<Tag> GetTagsCommaSeparated(string tagsStrings) //
         {
             char[] delimiterChars = { ',' };
             var tagsIdNumbers = tagsStrings.Split(delimiterChars).ToList();
@@ -141,19 +141,29 @@ namespace Blog.Controllers
 
             //Get the post to edit 
             var post = _blogRepository.GetPost(id);
+            var emptyList = new List<string>();
 
+            PostViewModel postViewModel = new()
+            {
+                PostId = post.PostId,
+                Content = post.Content,
+                Tags = post.Tags,
+                BlogId = post.BlogId,
+                Created = post.Created,
+                SelectedTags = emptyList
+            };
 
             // requires using AuthorizationHandler
             var isAuthorized = await _authorizationService.AuthorizeAsync(
                 User, post, BlogOperations.Update);
 
-            return !isAuthorized.Succeeded ? View("Ingentilgang") : View(post);
+            return !isAuthorized.Succeeded ? View("Ingentilgang") : View(postViewModel);
         }
 
         // POST: Contact/Edit/#
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditPost(int? id, [Bind("PostId, Title, Content, Modified, BlogId, Owner")] PostViewModel post)
+        public async Task<ActionResult> EditPost(int? id, [Bind("PostId, Title, Content, Created, Modified, BlogId, Tags, AvailableTags, SelectedTags, Owner")] PostViewModel postViewModel)
         {
             try
             {
@@ -163,37 +173,34 @@ namespace Blog.Controllers
                     return NotFound();
                 }
 
+                Post post = _blogRepository.GetPost(postViewModel.PostId);
+                Blogg blog = _blogRepository.GetBlog(post.BlogId);
+                post.Blog = blog; 
+
                 var tagsList = new List<Tag>();
-                if (post.SelectedTags.Count != 0)
+                if (postViewModel.SelectedTags.Count != 0)
                 {
-                    var tagsToString = string.Join(",", post.SelectedTags);
+                    var tagsToString = string.Join(",", postViewModel.SelectedTags);
                     tagsList = GetTagsCommaSeparated(tagsToString);
                 }
 
 
-                var editedPost = _blogRepository.GetPost(id);
-
-
-                var isAuthorized = await _authorizationService.AuthorizeAsync(User, editedPost, BlogOperations.Update);
+                var isAuthorized = await _authorizationService.AuthorizeAsync(User, post, BlogOperations.Update);
                 if (!isAuthorized.Succeeded)
                 {
                     return View("IngenTilgang");
                 }
 
-                var blogId = post.BlogId;
-
                 if (ModelState.IsValid)
                 {
-                    var content = post.Content;
-                    var title = post.Title;
-                    editedPost.Content = content;
-                    editedPost.Title = title;
-                    editedPost.Modified = DateTime.Now;
-                    editedPost.Tags = tagsList;
+                    post.Content = postViewModel.Content;
+                    post.Title = postViewModel.Title;
+                    post.Modified = DateTime.Now;
+                    post.Tags = tagsList;
 
-                    _blogRepository.UpdatePost(editedPost).Wait();
+                    _blogRepository.UpdatePost(post).Wait();
                     TempData["message"] = $"{post.Title} er oppdatert";
-                    return RedirectToAction("ReadBlog", "Blog", new { id = blogId });
+                    return RedirectToAction("ReadBlog", "Blog", new { id = post.BlogId });
 
                 }
 
@@ -203,7 +210,7 @@ namespace Blog.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                return View(post);
+                return View(postViewModel);
             }
 
         }
