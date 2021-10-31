@@ -8,29 +8,49 @@ namespace Blog.Models
 {
     public interface IBlogRepository
     {
+        //Get: Blogg
         Task<IEnumerable<Blogg>> GetAllBlogs();
+        Blogg GetBlog(int blogIdToGet);
+
+        //Get: Viewmodel Blogg
+        CreateBloggViewModel GetCreateBlogViewModel(int? id);
+
+        //Get: Viewmodel Innlegg
+        PostViewModel GetPostViewModel(int? id);
+
+        //Get: Innlegg
+        IEnumerable<Post> GetAllPosts(int blogId);
+        Post GetPost(int? id);
+
+        //Get: kommentarer
         Task<IEnumerable<Comment>> GetAllComments(); //Returns all comments. Called from WebApi 
         Task<IEnumerable<Comment>> GetAllCommentsOnPost(int postId); //returns all comments on a post. Called from WebApi
-        IEnumerable<Post> GetAllPosts(int blogId);
-        IEnumerable<Tag> GetAllTagsForBlog(int BlogId);
+        Comment GetComment(int commentIdToGet);
+
+        //Get: Tags
         Task<IEnumerable<Tag>> GetAllTags();
+        IEnumerable<Tag> GetAllTagsForBlog(int BlogId);
         IEnumerable<Post> GetAllPostsInThisBlogWithThisTag(int tagId, int blogId);
-        Blogg GetBlog(int blogIdToGet);
-        Post GetPost(int? id);
         Tag GetTag(int tagIdToGet);
+
+        //Save
         Task SaveBlog(Blogg blog, ClaimsPrincipal user);
-        PostViewModel GetPostViewModel(int? id);
         Task SavePost(Post post, ClaimsPrincipal user);
-        Task<bool> SaveComment(Comment comment);
         Task SaveComment(Comment comment, ClaimsPrincipal user);
+        Task<bool> SaveComment(Comment comment);
+        
+        //Update
         Task UpdatePost(Post post);
-        Task DeletePost(Post post);
-        CreateBloggViewModel GetCreateBlogViewModel(int? id);
         Task UpdateComment(Comment comment);
+        
+        //Delete
+        Task DeletePost(Post post);
         Task DeleteComment(Comment comment);
+        
+        //Hjelpemetoder
         public void SetBlogStatus(Blogg blog, bool status);
         public bool? IsActive(Blogg blog);
-        Comment GetComment(int commentIdToGet);
+        
         public bool CommentExists(int id);
     }
 }
