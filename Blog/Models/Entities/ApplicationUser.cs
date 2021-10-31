@@ -19,7 +19,7 @@ namespace Blog.Models.Entities
 
         public bool? IsAdmin { get; set; }
 
-        //public List<Blogg> Bloggs { get; set; } //abonnement
+        public virtual ICollection<BlogApplicationUser> BlogApplicationUsers { get; set; }
 
     }
 }

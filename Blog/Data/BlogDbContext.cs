@@ -18,17 +18,31 @@ namespace Blog.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<BlogApplicationUser> BlogApplicationUser { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BlogApplicationUser>()
+                .HasKey(b => new { b.BlogId, b.OwnerId });
+            
+            modelBuilder.Entity<BlogApplicationUser>()
+                .HasOne(b => b.Blog)
+                .WithMany(b => b.BlogApplicationUsers)
+                .HasForeignKey(b => b.BlogId);
+            modelBuilder.Entity<BlogApplicationUser>()
+                .HasOne(b => b.Owner)
+                .WithMany(b => b.BlogApplicationUsers)
+                .HasForeignKey(b => b.OwnerId);
             //this.SeedUsers(modelBuilder);
 
             //modelBuilder.Ignore<Tag>();
             //modelBuilder.Ignore<PostsAndTags>();
 
             //fluent API...is this necessary when I also have nav. properties configured in entities?
-            /*modelBuilder.Entity<Blogg>().ToTable("Blogg")
+            modelBuilder.Entity<Blogg>().ToTable("Blogg")
                 .HasMany(p => p.Posts);
 
             modelBuilder.Entity<Post>().ToTable("Post")
@@ -46,7 +60,7 @@ namespace Blog.Data
                 .HasMany(p => p.Posts);
 
             modelBuilder.Entity<Post>().ToTable("Post")
-                .HasMany(p => p.Tags);*/
+                .HasMany(p => p.Tags);
 
             //modelBuilder.Entity<Blogg>().HasOne(i => i.Owner).WithMany(b=>b.Bloggs);
 

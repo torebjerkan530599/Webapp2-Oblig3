@@ -45,7 +45,7 @@
                 <span asp-validation-for="BlogId" class="text-danger"></span>
             </div>
 
-            @if (Model.Tags.Count != 0)
+            @if (Model.Tags is not null)
             {
                 <label asp-for="Tags" class="control-label">Choose tags:</label>
                 @foreach (var item in Model.Tags)
@@ -57,7 +57,19 @@
                                    value="@item.TagId"
                                    @if (Model.SelectedTags.Contains(item.TagLabel)) { <text> checked </text> } /> @item.TagLabel
                             </label>
-                        </div>}}
+                        </div>
+
+                }
+
+            }
+            else
+            {
+                <p>Du må legge til/seede noen tags for at dette skal virke:
+                    NB: Hvis du klikker flere ganger vil databasen fylles opp med det samme flere ganger </p>
+                <button id="seedBtn" type="button" value="seed" onclick="location.href= @Url.Action("SeedTags", "Post")"></button>
+
+
+            }
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

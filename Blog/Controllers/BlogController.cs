@@ -4,6 +4,7 @@ using Blog.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 //using Microsoft.AspNetCore.SignalR;
@@ -66,8 +67,18 @@ namespace Blog.Controllers
         public async Task<ActionResult> Index()
         {
 
-            var blogs = await _blogRepository.GetAllBlogs();//.ToList(); ;
-            return View(blogs);
+            var blogs = await _blogRepository.GetAllBlogs();
+            var posts = _blogRepository.GetLatestUpdatesOnPosts();
+            var tags = _blogRepository.GetAllTags().Result;
+
+            var indexViewModel = new IndexViewModel()
+            {
+                Blogs = blogs,
+                Posts = posts,
+                Tags = tags
+            };
+            return View(indexViewModel);
+            //return View(blogs);
         }
 
         // GET: Blog/ReadBlog/5
@@ -129,6 +140,39 @@ namespace Blog.Controllers
             {
                 return View();
             }
+        }
+
+        [HttpGet]
+        public ActionResult SubscribeToBlog(int id)
+        {
+            var user =  _blogRepository.GetOwner(User).Result;
+            var blog = _blogRepository.GetBlog(id);
+            var blogAppUser = new BlogApplicationUser()
+            {
+                Owner = user,
+                OwnerId = user.Id,
+                Blog = blog,
+                BlogId = blog.BlogId
+            };
+
+            _blogRepository.Subscribe(blogAppUser);
+            TempData["Feedback"] = $"Bruker \"{user.FirstName}\" er abonnert på blogg id: \"{blog.BlogId}\"";
+            
+            return RedirectToAction("Index", "Blog");
+        }
+
+        [HttpGet]
+        public ActionResult UnSubscribeToBlog(int id)
+        {
+            var user =  _blogRepository.GetOwner(User).Result;
+            var blog = _blogRepository.GetBlog(id);
+            BlogApplicationUser blogApplicationUser1 = _blogRepository.GetBlogApplicationUser(blog, user);
+
+            _blogRepository.UnSubscribe(blogApplicationUser1);
+            TempData["Feedback"] =
+                $"Bruker \"{user.FirstName}\" er ikke lenger abonnert på blogg id: \"{blog.BlogId}\"";
+            
+            return RedirectToAction("Index", "Blog");
         }
     }
 }

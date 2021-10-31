@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\HomeController.cs" />
     <Compile Remove="Data\UnitOfWork.cs" />
     <Compile Remove="Models\GenericRepository.cs" />
     <Compile Remove="Models\IGenericRepository.cs" />

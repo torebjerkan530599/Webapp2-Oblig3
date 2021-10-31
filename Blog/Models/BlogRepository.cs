@@ -20,7 +20,11 @@ namespace Blog.Models
         {
             _manager = userManager;
             _db = db;
-            //_ = new SeedData(_db);
+        }
+
+        public void SeedTagsOnPosts()
+        {
+            _ = new SeedData(_db);
         }
 
         public async Task<IEnumerable<Blogg>> GetAllBlogs()
@@ -277,6 +281,63 @@ namespace Blog.Models
         public bool CommentExists(int id)
         {
             return _db.Comments.Any(e => e.CommentId == id);
+        }
+
+        public async Task<ApplicationUser> GetOwner(ClaimsPrincipal user)
+        {
+            return await _manager.GetUserAsync(user);
+        }
+
+        public BlogApplicationUser GetBlogApplicationUser(Blogg blogToSubscribe, ApplicationUser userSubscriber)
+        {
+            var blogApplicationUser = _db.BlogApplicationUser
+                .Include(b => b.Owner)
+                .Include(b => b.Blog)
+                .Where(bu => bu.Owner == userSubscriber).Where(bu => bu.Blog == blogToSubscribe);
+            return blogApplicationUser.FirstOrDefault();
+        }
+
+        public async Task Subscribe(BlogApplicationUser userSubscriber1)
+        {
+            _db.BlogApplicationUser.AddRange(userSubscriber1);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task UnSubscribe(BlogApplicationUser userSubscriber1)
+        {
+            _db.BlogApplicationUser.RemoveRange(userSubscriber1);
+            await _db.SaveChangesAsync();
+        }
+
+        public IEnumerable<Blogg> GetLatestUpdatesOnBlog()
+        {
+            IEnumerable<Blogg> blogs = _db.Blogs.Include(o => o.Owner).Include(o => o.BlogApplicationUsers)
+                .Take(10).OrderByDescending(p=>p.Modified);
+            return blogs;
+        }
+
+        public IEnumerable<Blogg> GetAllSubscribedBlogs(ApplicationUser userSubscriber)
+        {
+            IEnumerable<Blogg> blogs = _db.Blogs.Include(o => o.Owner).Include(o => o.BlogApplicationUsers)
+                .OrderByDescending(p => p.Modified);
+            var blogList = new List<Blogg>();
+            
+            foreach (var blog in blogs)
+            {
+                blogList.AddRange(from applicationUser in blog.BlogApplicationUsers where applicationUser.OwnerId == userSubscriber.Id select blog);
+            }
+            return blogList;
+        }
+
+        public IEnumerable<Post> GetLatestUpdatesOnPosts()
+        {
+            return _db.Posts.Include(p => p.Blog).Include(p => p.Owner)
+                .Take(10).OrderByDescending(p => p.Created); 
+        }
+
+        public IEnumerable<Post> GetAllPostsInBlog(int blogIdToGet)
+        {
+            throw new NotImplementedException();
         }
     }
 }

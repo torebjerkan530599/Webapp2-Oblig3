@@ -37,5 +37,8 @@ namespace Blog.Models.Entities
         //public virtual ApplicationUser Owner { get; set;}
 
         public virtual ApplicationUser Owner { get; set; }
+
+        public virtual ICollection<BlogApplicationUser> BlogApplicationUsers { get; set; } =
+            new List<BlogApplicationUser>();
     }
 }

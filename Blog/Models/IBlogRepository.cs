@@ -24,7 +24,10 @@ namespace Blog.Models
 
         //Get: kommentarer
         Task<IEnumerable<Comment>> GetAllComments(); //Returns all comments. Called from WebApi 
-        Task<IEnumerable<Comment>> GetAllCommentsOnPost(int postId); //returns all comments on a post. Called from WebApi
+
+        Task<IEnumerable<Comment>>
+            GetAllCommentsOnPost(int postId); //returns all comments on a post. Called from WebApi
+
         Comment GetComment(int commentIdToGet);
 
         //Get: Tags
@@ -38,19 +41,34 @@ namespace Blog.Models
         Task SavePost(Post post, ClaimsPrincipal user);
         Task SaveComment(Comment comment, ClaimsPrincipal user);
         Task<bool> SaveComment(Comment comment);
-        
+
         //Update
         Task UpdatePost(Post post);
         Task UpdateComment(Comment comment);
-        
+
         //Delete
         Task DeletePost(Post post);
         Task DeleteComment(Comment comment);
-        
+
         //Hjelpemetoder
-        public void SetBlogStatus(Blogg blog, bool status);
-        public bool? IsActive(Blogg blog);
-        
-        public bool CommentExists(int id);
+        void SetBlogStatus(Blogg blog, bool status);
+        bool? IsActive(Blogg blog);
+
+        bool CommentExists(int id);
+
+        Task<ApplicationUser> GetOwner(ClaimsPrincipal user);
+
+        Task Subscribe(BlogApplicationUser userSubscriber1);
+
+        BlogApplicationUser GetBlogApplicationUser(Blogg blogToSubscribe, ApplicationUser userSubscriber);
+
+        Task UnSubscribe(BlogApplicationUser userSubscriber1);
+        IEnumerable<Blogg> GetLatestUpdatesOnBlog();
+        IEnumerable<Blogg> GetAllSubscribedBlogs(ApplicationUser userSubscriber);
+
+        IEnumerable<Post> GetLatestUpdatesOnPosts();
+        IEnumerable<Post> GetAllPostsInBlog(int blogIdToGet);
+
+        public void SeedTagsOnPosts();
     }
 }

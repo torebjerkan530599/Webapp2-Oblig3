@@ -150,7 +150,8 @@ namespace Blog.Controllers
                 Tags = post.Tags,
                 BlogId = post.BlogId,
                 Created = post.Created,
-                SelectedTags = emptyList
+                SelectedTags = emptyList,
+                Owner = post.Owner
             };
 
             // requires using AuthorizationHandler
@@ -302,6 +303,11 @@ namespace Blog.Controllers
 
             TempData["Feedback"] = "Feil ved søk, feil i Model: " + blog.BlogId;
             return RedirectToAction("ReadBlog", "Blog", new { id = blog.BlogId });
+        }
+
+        public void SeedTags()
+        {
+            _blogRepository.SeedTagsOnPosts();
         }
     }
 }
