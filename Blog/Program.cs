@@ -14,23 +14,24 @@ namespace Blog
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            
-           /*  using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
 
-                try
-                {
-                    var context = services.GetRequiredService<BlogDbContext>();
-                    //context.Database.Migrate();
-                    SeedData.Initialize(services);
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred seeding the DB.");
-                }
-            }*/
+
+            /*  using (var scope = host.Services.CreateScope())
+             {
+                 var services = scope.ServiceProvider;
+ 
+                 try
+                 {
+                     var context = services.GetRequiredService<BlogDbContext>();
+                     //context.Database.Migrate();
+                     SeedData.Initialize(services);
+                 }
+                 catch (Exception ex)
+                 {
+                     var logger = services.GetRequiredService<ILogger<Program>>();
+                     logger.LogError(ex, "An error occurred seeding the DB.");
+                 }
+             }*/
 
             host.Run();
 

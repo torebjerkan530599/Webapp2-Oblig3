@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -299,12 +298,6 @@ namespace BlogUnitTest
             Assert.IsNotNull(result, "Should not be null");
             Assert.AreEqual("NotAllowed", result.ActionName);
         }
-
-        //-------------------------------PostControllerTester------------------------------------------------//
-
-        //return a user
-        //_userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-        //.Returns(Task.FromResult(new ApplicationUser { Id = "f42b68b2-3fe3-41d2-a58b-08d980f4d1de" }));
 
         [TestMethod]
         public void ReadBlogReturnsBloggViewModel()
