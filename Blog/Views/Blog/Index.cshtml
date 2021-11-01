@@ -20,10 +20,10 @@
     }
     else
     {
-        <a>You are currently not logged in, log in to create a new Blog</a>
+        <a>Du er ikke logget inn, logg inn for å opprette en Blogg</a>
     }
     
-    @if(Model.Blogs is not null)
+    @*if(Model.Blogs is not null)
     {
         <h5 class="text-info">
             Abonnementer: @Model.Blogs.Count()......
@@ -38,7 +38,7 @@
             Antall kommentarer: @Model.Comments.Count()
             Siste Aktivitet : @Model.Comments.First().Created.DayOfWeek
         </h5>
-    }
+    }*@
 
 
 </p>
@@ -87,14 +87,15 @@
                 @Html.ActionLink("Read", "ReadBlog", new { id = item.BlogId })
             </td>
             <td>
-                @Html.ActionLink("Subscribe ⚝", "SubscribeToBlog", "Blog", new { id = item.BlogId })
+                @Html.ActionLink("Subscribe", "SubscribeToBlog", "Blog", new { id = item.BlogId })
             </td>
+            <td> @Html.ActionLink("Unsubscribe", "UnSubscribeToBlog", "Blog", new { id = item.BlogId })</td>
         </tr>
     }
     </tbody>
 </table>
 <hr />
-<h4>Siste 10 innlegg aktiviteter:</h4>
+<h4>Siste aktiviteter på innlegg:</h4>
 <table class="table table-hover">
     <thead>
     <tr>

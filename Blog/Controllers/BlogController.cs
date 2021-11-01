@@ -70,12 +70,15 @@ namespace Blog.Controllers
             var blogs = await _blogRepository.GetAllBlogs();
             var posts = _blogRepository.GetLatestUpdatesOnPosts();
             var tags = _blogRepository.GetAllTags().Result;
+            var comments =  _blogRepository.GetAllComments().Result;
 
             var indexViewModel = new IndexViewModel()
             {
                 Blogs = blogs,
                 Posts = posts,
+                Comments = comments,
                 Tags = tags
+
             };
             return View(indexViewModel);
             //return View(blogs);
@@ -84,11 +87,13 @@ namespace Blog.Controllers
         // GET: Blog/ReadBlog/5
         [AllowAnonymous]
         [HttpGet]
-        public ActionResult ReadBlog(int id) //shows all posts on blog
+        public ActionResult ReadBlog(int? tagId, int id) //shows all posts on blog
         {
+            var posts = tagId != null ? _blogRepository.GetAllPostsInThisBlogWithThisTag((int)tagId, id).ToList() : _blogRepository.GetAllPosts(id);
+
 
             var blog = _blogRepository.GetBlog(id);
-            var posts = _blogRepository.GetAllPosts(id);
+            
             var tagsForThisBlog = _blogRepository.GetAllTagsForBlog(blog.BlogId).ToList();
 
             if (!ModelState.IsValid) return View();
@@ -147,7 +152,7 @@ namespace Blog.Controllers
         {
             var user =  _blogRepository.GetOwner(User).Result;
             var blog = _blogRepository.GetBlog(id);
-            var blogAppUser = new BlogApplicationUser()
+            var blogAppUser = new BlogApplicationUser
             {
                 Owner = user,
                 OwnerId = user.Id,
@@ -156,7 +161,7 @@ namespace Blog.Controllers
             };
 
             _blogRepository.Subscribe(blogAppUser);
-            TempData["Feedback"] = $"Bruker \"{user.FirstName}\" er abonnert på blogg id: \"{blog.BlogId}\"";
+            TempData["Feedback"] = $"Bruker \"{user.UserName}\" er abonnert på blogg id: \"{blog.BlogId}\"";
             
             return RedirectToAction("Index", "Blog");
         }

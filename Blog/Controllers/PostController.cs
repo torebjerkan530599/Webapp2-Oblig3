@@ -304,10 +304,5 @@ namespace Blog.Controllers
             TempData["Feedback"] = "Feil ved søk, feil i Model: " + blog.BlogId;
             return RedirectToAction("ReadBlog", "Blog", new { id = blog.BlogId });
         }
-
-        public void SeedTags()
-        {
-            _blogRepository.SeedTagsOnPosts();
-        }
     }
 }

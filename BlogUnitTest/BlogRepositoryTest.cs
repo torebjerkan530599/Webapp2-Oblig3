@@ -10,13 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Assert = Xunit.Assert;
-using Moq;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Blog.Controllers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using Blog.Authorization;
+
 
 namespace BlogUnitTest
 {

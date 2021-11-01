@@ -39,6 +39,7 @@ namespace Blog.Authorization
                 return Task.CompletedTask;
             }
 
+            if (resource.Owner is null) return Task.CompletedTask;
             if (resource.Owner.Id == _userManager.GetUserId(context.User)) // ||  context.User.IsInRole("Admin") )
             {
                 context.Succeed(requirement);

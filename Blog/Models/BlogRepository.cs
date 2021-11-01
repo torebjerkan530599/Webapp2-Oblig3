@@ -20,6 +20,7 @@ namespace Blog.Models
         {
             _manager = userManager;
             _db = db;
+            //SeedTagsOnPosts();
         }
 
         public void SeedTagsOnPosts()
@@ -109,7 +110,7 @@ namespace Blog.Models
         {
             return ((from p in _db.Posts
                      where p.PostId == id
-                     select p)).Include(o => o.Owner).Include(p=>p.Tags).FirstOrDefault();
+                     select p)).Include(b=>b.Blog).Include(o => o.Owner).Include(p=>p.Tags).FirstOrDefault();
         }
 
         public async Task<IEnumerable<Comment>> GetAllComments() //gets all comments, not just the comments on a specific post

@@ -44,6 +44,10 @@ namespace Blog
             services.AddTransient<IAccountsRepository, AccountsRepository>();
 
             services.AddDbContext<BlogDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen();
+
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddDefaultIdentity<ApplicationUser>()
                 //.AddRoleManager<RoleManager<IdentityRole>>()
@@ -106,8 +110,9 @@ namespace Blog
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseSwagger();
-                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoApi v1"));
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1"));
+                //app.UseSwaggerUI();
             }
             else
             {
